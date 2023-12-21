@@ -3,12 +3,12 @@
 
 #include "PSCWorldSubsystem.h"
 
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "MyUtilsLibraries/UtilsLibrary.h"
 
 // Returns this Subsystem, is checked and wil crash if can't be obtained
 UPSCWorldSubsystem& UPSCWorldSubsystem::Get()
 {
-	const UWorld* World = UMyBlueprintFunctionLibrary::GetStaticWorld();
+	const UWorld* World = UUtilsLibrary::GetPlayWorld();
 	checkf(World, TEXT("%s: 'World' is null"), *FString(__FUNCTION__));
 	UPSCWorldSubsystem* ThisSubsystem = World->GetSubsystem<ThisClass>();
 	checkf(ThisSubsystem, TEXT("%s: 'SoundsSubsystem' is null"), *FString(__FUNCTION__));

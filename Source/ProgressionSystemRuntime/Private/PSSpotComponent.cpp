@@ -33,7 +33,7 @@ void UPSSpotComponent::BeginPlay()
 	{
 		HandleGameState(MyGameState);	
 	}
-	else if (AMyPlayerController* MyPC = GetOwner<AMyPlayerController>())
+	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
 	{
 		MyPC->OnGameStateCreated.AddUniqueDynamic(this, &ThisClass::HandleGameState);
 	}
@@ -42,10 +42,17 @@ void UPSSpotComponent::BeginPlay()
 	{
 		HandleEndGameState(MyPlayerState);	
 	}
+
+	// Listen events on player type changed and Character spawned
 	if (APlayerCharacter* MyPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
 	{
 		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
 	}
+	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
+	{
+		MyPC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnCharacterPossessed);
+	}
+	
 }
 
 UMySkeletalMeshComponent* UPSSpotComponent::GetMySkeletalMeshComponent() const
@@ -103,6 +110,18 @@ void UPSSpotComponent::HandleEndGameState(AMyPlayerState* MyPlayerState)
 	MyPlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
+void UPSSpotComponent::OnCharacterPossessed(APawn* MyPawn)
+{
+	if (APlayerCharacter* MyPlayerCharacter = Cast<APlayerCharacter>(MyPawn))
+	{
+		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
+
+		//Unsubscribe to ignore null events call
+		AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController();
+		MyPC->GetOnNewPawnNotifier().RemoveAll(this);
+	}
+}
+
 void UPSSpotComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
 	ChangeSpotVisibilityStatus();
@@ -122,4 +141,3 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus()
 		}
 	}
 }
-

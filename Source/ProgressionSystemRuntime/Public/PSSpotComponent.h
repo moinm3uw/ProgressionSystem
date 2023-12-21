@@ -48,6 +48,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void HandleEndGameState(class AMyPlayerState* MyPlayerState);
 
+	/** Is called to handle character possession event */
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnCharacterPossessed(class APawn* MyPawn);
+	
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
@@ -57,16 +61,15 @@ protected:
 	void ChangeSpotVisibilityStatus();
 	
 	/** A Progression System Component */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
+	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = " Progression System ComponentInternal", ShowOnlyInnerProperties))
 	TObjectPtr<UProgressionSystemComponent> MyProgressionSystemComponentInternal = nullptr;
 
 	/** A player skeletal mesh actor */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
+	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Player Spot On  Level Internal", ShowOnlyInnerProperties))
 	TObjectPtr<UMySkeletalMeshComponent> PlayerSpotOnLevelInternal = nullptr;
 
 	/** Current Progression  */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
-	FProgressionRowData CurrentProgressionRowDataInternal; 
+	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Current Progression Row Data Internal", ShowOnlyInnerProperties))
+	FProgressionRowData CurrentProgressionRowDataInternal;
 	
-		
 };

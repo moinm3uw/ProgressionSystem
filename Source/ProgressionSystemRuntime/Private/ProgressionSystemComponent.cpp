@@ -46,18 +46,23 @@ void UProgressionSystemComponent::BeginPlay()
 	{
 		HandleGameState(MyGameState);	
 	}
-	else if (AMyPlayerController* MyPC = GetOwner<AMyPlayerController>())
+	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
 	{
 		MyPC->OnGameStateCreated.AddUniqueDynamic(this, &ThisClass::HandleGameState);
 	}
-
 	if (AMyPlayerState* MyPlayerState = UMyBlueprintFunctionLibrary::GetLocalPlayerState())
 	{
 		HandleEndGameState(MyPlayerState);	
 	}
+
+	// Listen events on player type changed and Character spawned
 	if (APlayerCharacter* MyPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
 	{
 		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
+	}
+	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
+	{
+		MyPC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnCharacterPossessed);
 	}
 
 	// Save reference of this component to the world subsystem
@@ -68,11 +73,10 @@ void UProgressionSystemComponent::BeginPlay()
 
 void UProgressionSystemComponent::LoadGameFromSave()
 {
-	SaveGameInstanceInternal = Cast<UPSCSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()));
-	
 	// Check if the save game file exists
 	if (UGameplayStatics::DoesSaveGameExist(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()))
-	{		
+	{
+		SaveGameInstanceInternal = Cast<UPSCSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()));
 		if (SaveGameInstanceInternal)
 		{
 			for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
@@ -100,16 +104,20 @@ void UProgressionSystemComponent::LoadGameFromSave()
 			SaveGameInstanceInternal->SavedProgressionRows = SavedProgressionRows;
 			SaveDataAsync();
 		}
-				
-		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
-		{
-			FName Key = KeyValue.Key;
-			FProgressionRowData RowData = KeyValue.Value;
 
-			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter()->GetPlayerTag())
-			{
-				SavedProgressionRowDataInternal = SaveGameInstanceInternal->SavedProgressionRows[Key];
-			}
+		// Create an iterator for the TMap
+		TMap<FName, FProgressionRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
+
+		// Check if the iterator is pointing to a valid position
+		if (Iterator)
+		{
+			// Access the key and value of the first element
+			SavedProgressionRowDataInternal = Iterator.Value();
+		}
+		else
+		{
+			// The TMap is empty
+			UE_LOG(LogTemp, Warning, TEXT("The TMap is empty."));
 		}
 	}
 	UpdateProgressionWidgetForPlayer();
@@ -157,7 +165,8 @@ void UProgressionSystemComponent::SaveCurrentGameProgression()
 	if (SaveGameInstanceInternal)
 	{
 		SaveGameInstanceInternal->SavedProgressionRowDataInternal = SavedProgressionRowDataInternal;
-		
+
+		//find in Save current FProgressionRow struct and save
 		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
 		{
 			FName Key = KeyValue.Key;
@@ -183,8 +192,7 @@ FName UProgressionSystemComponent::GetProgressionRowName(ELevelType Map, FPlayer
 	TArray<FName> RowNames = ProgressionDataTableInternal->GetRowNames();
 	for (auto RowName : RowNames)
 	{
-		FProgressionRowData* Row = ProgressionDataTableInternal->FindRow<FProgressionRowData>(
-			RowName, "Finding progression row name");
+		FProgressionRowData* Row = ProgressionDataTableInternal->FindRow<FProgressionRowData>(RowName, "Finding progression row name");
 		if (Row)
 		{
 			if (Row->Map == Map && Row->Character == Character)
@@ -195,7 +203,7 @@ FName UProgressionSystemComponent::GetProgressionRowName(ELevelType Map, FPlayer
 	}
 	return CurrentProgressionRowName;
 }
-
+// Find next item in the level from current. TMap represents levels in savefile 
 void UProgressionSystemComponent::NextLevelProgressionRowData()
 {
 	FName Key;
@@ -238,6 +246,7 @@ void UProgressionSystemComponent::NextLevelProgressionRowData()
 	}
 }
 
+// Listening game states changes events 
 void UProgressionSystemComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 {
 	// Show Progression Menu widget in Main Menu
@@ -248,6 +257,7 @@ void UProgressionSystemComponent::OnGameStateChanged(ECurrentGameState CurrentGa
 	}
 }
 
+// Listening end game states changes events (win, lose, draw) 
 void UProgressionSystemComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 {
 	if (EndGameState != EEndGameState::None)
@@ -256,6 +266,7 @@ void UProgressionSystemComponent::OnEndGameStateChanged(EEndGameState EndGameSta
 	}
 }
 
+// Listen game state changes events 
 void UProgressionSystemComponent::HandleGameState(AMyGameStateBase* MyGameState)
 {
 	checkf(MyGameState, TEXT("ERROR: 'MyGameState' is null!"));
@@ -281,12 +292,27 @@ void UProgressionSystemComponent::HandleEndGameState(AMyPlayerState* MyPlayerSta
 	MyPlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
+// Listen event whe Character Possessed 
+void UProgressionSystemComponent::OnCharacterPossessed(APawn* MyPawn)
+{
+	if (APlayerCharacter* MyPlayerCharacter = Cast<APlayerCharacter>(MyPawn))
+	{
+		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
+
+		//Unsubscribe to ignore null events call
+		AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController();
+		MyPC->GetOnNewPawnNotifier().RemoveAll(this);
+	}
+}
+
+// Handle events when player type changes
 void UProgressionSystemComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
 	CurrentPlayerTagInternal = PlayerTag;
 	UpdateProgressionWidgetForPlayer();
 }
 
+// Refresh the main menu progression widget player 
 void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 {
 	if (SaveGameInstanceInternal)
@@ -303,28 +329,34 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 		}
 		SaveDataAsync();
 	}
-	
+	// reset amount of start for a level
 	ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
-	
+
+	//set updated amount of stars
 	if (SavedProgressionRowDataInternal.CurrentLevelProgression >= SavedProgressionRowDataInternal.PointsToUnlock)
 	{
+		// set required points (stars)  to achieve for a level  
 		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.PointsToUnlock, 0);
 	} else
 	{
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.CurrentLevelProgression, SavedProgressionRowDataInternal.PointsToUnlock - SavedProgressionRowDataInternal.CurrentLevelProgression);
+		// Calculate the unlocked against locked points (stars) 
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.CurrentLevelProgression, SavedProgressionRowDataInternal.PointsToUnlock - SavedProgressionRowDataInternal.CurrentLevelProgression);// Listen game state changes events 
 	}
 	DisplayLevelUIOverlay(SavedProgressionRowDataInternal.IsLevelLocked);
 }
 
+// Show or hide the LevelUIOverlay depends on the level lock state for current level
+// by default overlay is always displayed 
 void UProgressionSystemComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 {
-	
 	if(IsLevelLocked)
 	{
+		// Level is locked show the blocking overlay
 		ProgressionMenuWidgetInternal->PSCBackgroundOverlay->SetVisibility(ESlateVisibility::Visible);
 		ProgressionMenuWidgetInternal->PSCBackgroundIconLock->SetVisibility(ESlateVisibility::Visible);
 	} else
 	{
+		// Level is unlocked hide the blocking overlay
 		ProgressionMenuWidgetInternal->PSCBackgroundOverlay->SetVisibility(ESlateVisibility::Collapsed);
 		ProgressionMenuWidgetInternal->PSCBackgroundIconLock->SetVisibility(ESlateVisibility::Collapsed);
 	}
