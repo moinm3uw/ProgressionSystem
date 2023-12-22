@@ -11,6 +11,8 @@
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ProgressionMenuWidget)
+
 void UProgressionMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
 {
 	if (HorizontalBox)

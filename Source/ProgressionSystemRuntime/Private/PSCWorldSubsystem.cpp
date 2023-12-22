@@ -4,6 +4,8 @@
 
 #include "MyUtilsLibraries/UtilsLibrary.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PSCWorldSubsystem)
+
 // Returns this Subsystem, is checked and wil crash if can't be obtained
 UPSCWorldSubsystem& UPSCWorldSubsystem::Get()
 {

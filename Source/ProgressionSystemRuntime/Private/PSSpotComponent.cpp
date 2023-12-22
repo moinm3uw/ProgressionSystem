@@ -11,6 +11,8 @@
 #include "LevelActors/PlayerCharacter.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
+
 // Sets default values for this component's properties
 UPSSpotComponent::UPSSpotComponent()
 {

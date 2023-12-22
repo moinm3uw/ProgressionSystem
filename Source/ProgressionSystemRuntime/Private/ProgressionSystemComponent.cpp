@@ -21,6 +21,8 @@
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ProgressionSystemComponent)
+
 // Sets default values for this component's properties
 UProgressionSystemComponent::UProgressionSystemComponent()
 {	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features

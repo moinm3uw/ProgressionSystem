@@ -10,6 +10,8 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ProgressionSaveWidget)
+
 void UProgressionSaveWidget::ConfigureWidgetText(FText endGameState, FText pointsGained, FText totalScore)
 {
 	if (EndGameStateTextWidget && PointsGainTextWidget && TotalScoreTextWidget)
