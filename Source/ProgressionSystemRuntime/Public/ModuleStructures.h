@@ -51,11 +51,3 @@ struct FProgressionRowData : public FTableRowBase
 	float SecondsToSurvive;
 };
 
-/**
- * 
- */
-UCLASS()
-class PROGRESSIONSYSTEMRUNTIME_API UModuleStructures : public UObject
-{
-	GENERATED_BODY()
-};
