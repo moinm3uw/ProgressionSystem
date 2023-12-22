@@ -1,7 +1,12 @@
 # ProgressionSystem
-Progression System Component for the Bomber project JanSeliv/Bomber
-Trello item: https://trello.com/c/HuRuz2rh/639-5-progression-system
 
+## Overview
+
+It's a Progression System that allows unlocking new characters by playing the game developed for (Bomber project)[https://github.com/JanSeliv/Bomber).
+
+It's developed as a Modular Game Feature (MGF) module. Technically, it's a plugin, but can't be used in other projects as it heavily depends on the Bomber code. However, you could still use it in your projects if you manage to replace all Bomber dependencies with your own.
+
+## Implementation Details
 
 ![image](https://github.com/h4rdmol/ProgressionSystem/assets/5227233/61930c27-6247-45b3-ac81-a349841ed12e)
 
@@ -35,6 +40,13 @@ Additional:
 1. There is a saving score widget in the end game.
 2. For now it is disabled but can be easily reactivated.
    ![image](https://github.com/h4rdmol/ProgressionSystem/assets/5227233/a56bc34e-5056-4c83-bca5-d2a223879cb5)
+
+## License
+
+This project is licensed under the terms of the MIT license. See [LICENSE](LICENSE) for more details.
+
+We hope you find this plugin useful and we look forward to your feedback and contributions.
+
 
 
 
