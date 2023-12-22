@@ -1,4 +1,4 @@
-﻿// Copyright (c) Yevhenii Selivanov
+﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #include "ProgressionSystemComponent.h"
 //---

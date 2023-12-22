@@ -1,4 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #pragma once
 
