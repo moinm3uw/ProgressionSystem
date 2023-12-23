@@ -29,7 +29,7 @@ public:
 protected:
 	
 	/** Progression System component reference*/
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Transient)
 	TObjectPtr<class UProgressionSystemComponent> ProgressionSystemComponentInternal = nullptr;
 	
 };
