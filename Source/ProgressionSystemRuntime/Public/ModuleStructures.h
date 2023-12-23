@@ -15,7 +15,7 @@ struct FProgressionRowData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	ELevelType Map = ELevelType::None;;
+	ELevelType Map = ELevelType::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	FPlayerTag Character = FPlayerTag::None;
