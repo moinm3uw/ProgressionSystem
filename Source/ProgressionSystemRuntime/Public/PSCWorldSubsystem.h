@@ -20,7 +20,8 @@ public:
 	static UPSCWorldSubsystem& Get(const UObject& WorldContextObject);
 
 	/** Returns a progression System component reference */
-	FORCEINLINE TObjectPtr<class UProgressionSystemComponent> GetProgressionSystemComponent() const { return ProgressionSystemComponentInternal; }
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE class UProgressionSystemComponent* GetProgressionSystemComponent() const { return ProgressionSystemComponentInternal; }
 
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetProgressionSystemComponent(UProgressionSystemComponent* MyProgressionSystemComponent);
