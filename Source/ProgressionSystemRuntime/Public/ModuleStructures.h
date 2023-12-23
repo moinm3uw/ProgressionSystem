@@ -15,39 +15,39 @@ struct FProgressionRowData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	ELevelType Map;
+	ELevelType Map = ELevelType::None;;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	FPlayerTag Character;
+	FPlayerTag Character = FPlayerTag::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	UTexture* Icon;
+	TObjectPtr<UTexture> Icon = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	FColor ActiveColor;
+	FColor ActiveColor = FColor::Red;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	FColor InactiveColor;
+	FColor InactiveColor = FColor::Red;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 CurrentLevelProgression;
+	int32 CurrentLevelProgression = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 PointsToUnlock;
+	int32 PointsToUnlock = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	bool IsLevelLocked;
+	bool IsLevelLocked = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 WinReward;
+	int32 WinReward = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 DrawReward;
+	int32 DrawReward = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 LossReward;
+	int32 LossReward = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	float SecondsToSurvive;
+	float SecondsToSurvive = 0.f;
 };
 

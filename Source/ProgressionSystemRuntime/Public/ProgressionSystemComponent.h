@@ -71,7 +71,7 @@ protected:
 
 	/** The current selected player */
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "Currnet Player Tag", ShowOnlyInnerProperties))
-	FPlayerTag CurrentPlayerTagInternal;
+	FPlayerTag CurrentPlayerTagInternal = FPlayerTag::None;
 
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
