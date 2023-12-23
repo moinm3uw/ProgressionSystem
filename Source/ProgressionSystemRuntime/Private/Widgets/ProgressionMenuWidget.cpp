@@ -4,7 +4,6 @@
 //---
 
 //---
-#include <string>
 #include "ProgressionSystemDataAsset.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/HorizontalBox.h"
