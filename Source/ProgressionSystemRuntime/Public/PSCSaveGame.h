@@ -8,7 +8,7 @@
 #include "PSCSaveGame.generated.h"
 
 /**
- * 
+ * Defines the standard process for the saving slots names and index 
  */
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UPSCSaveGame : public USaveGame

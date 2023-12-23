@@ -7,7 +7,7 @@
 #include "PSCWorldSubsystem.generated.h"
 
 /**
- * 
+ * Implements the world subsystem to access different components in the module 
  */
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UPSCWorldSubsystem : public UWorldSubsystem

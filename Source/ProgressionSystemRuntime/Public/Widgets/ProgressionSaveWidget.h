@@ -10,7 +10,7 @@ class UButton;
 class UTextBlock;
 class UImage;
 /**
- * 
+ * Widget that displays the end game earned points accrual
  */
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UProgressionSaveWidget : public UUserWidget

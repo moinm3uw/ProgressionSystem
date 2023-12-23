@@ -8,7 +8,10 @@
 #include "Structures/PlayerTag.h"
 #include "ModuleStructures.generated.h"
 
-
+/**
+ * Basic structure for all save data information regarding the progression.
+ * Same structure will reflected in the save file. Initial load performed based on the data in the DT Table 
+ */
 USTRUCT(BlueprintType)
 struct FProgressionRowData : public FTableRowBase
 {

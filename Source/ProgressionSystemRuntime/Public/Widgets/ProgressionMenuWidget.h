@@ -9,7 +9,7 @@ enum class ECurrentGameState : uint8;
 
 
 /**
- * 
+ * Widget to display the progression as stars in the main menu.
  */
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UProgressionMenuWidget : public UUserWidget
