@@ -2,11 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ModuleStructures.h"
-#include "ProgressionSystemDataAsset.h"
-#include "Components/ActorComponent.h"
-#include "Components/MySkeletalMeshComponent.h"
 #include "PSSpotComponent.generated.h"
 
 /**

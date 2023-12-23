@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "ProgressionMenuWidget.generated.h"
 enum class ECurrentGameState : uint8;

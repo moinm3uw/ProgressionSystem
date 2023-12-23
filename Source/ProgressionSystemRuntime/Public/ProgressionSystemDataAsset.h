@@ -2,10 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
-#include "Engine/DataTable.h"
-#include "Widgets/ProgressionMenuWidget.h"
 #include "ProgressionSystemDataAsset.generated.h"
 
 /**

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ModuleStructures.h"
 #include "GameFramework/SaveGame.h"
 #include "PSCSaveGame.generated.h"

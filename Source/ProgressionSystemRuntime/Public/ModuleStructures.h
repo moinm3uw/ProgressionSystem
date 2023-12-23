@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Engine/DataTable.h"
 #include "Bomber.h"
 #include "Structures/PlayerTag.h"
 #include "ModuleStructures.generated.h"
