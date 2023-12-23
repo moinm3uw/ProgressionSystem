@@ -1,4 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright (c) Valeriy Rotermel and Yevhenii Selivanov
 
 using UnrealBuildTool;
 
