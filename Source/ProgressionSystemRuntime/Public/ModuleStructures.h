@@ -23,18 +23,6 @@ struct FProgressionRowData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	FPlayerTag Character = FPlayerTag::None;
 
-	/** Icon for each level. Currently not in use*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	TObjectPtr<UTexture> Icon = nullptr;
-
-	/** Stores the required color for level. Not used at the moment  */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	FColor ActiveColor = FColor::Red;
-
-	/** Stores the required color for level. Not used at the moment  */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	FColor InactiveColor = FColor::Red;
-
 	/** Current progression for each level  */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	int32 CurrentLevelProgression = 0;
@@ -58,13 +46,6 @@ struct FProgressionRowData : public FTableRowBase
 	/** Amount of points to gain after loss */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	int32 LossReward = 0;
-
-	/** Amount of seconds to survive in order to provide loss rewards. 
-	* Usage will depends if the game will provide any loss reward.
-	* If yes, then this is against loss abuse system
-	* NOTE: Currently, is not used. 
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	float SecondsToSurvive = 0.f;
+	
 };
 
