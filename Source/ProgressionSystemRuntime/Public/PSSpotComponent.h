@@ -57,15 +57,15 @@ protected:
 	void ChangeSpotVisibilityStatus();
 	
 	/** A Progression System Component */
-	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = " Progression System ComponentInternal", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "My Progression System Component"))
 	TObjectPtr<UProgressionSystemComponent> MyProgressionSystemComponentInternal = nullptr;
 
 	/** A player skeletal mesh actor */
-	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Player Spot On  Level Internal", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Player Spot On Level"))
 	TObjectPtr<UMySkeletalMeshComponent> PlayerSpotOnLevelInternal = nullptr;
 
 	/** Current Progression  */
-	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Current Progression Row Data Internal", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Progression Row Data"))
 	FProgressionRowData CurrentProgressionRowDataInternal;
 	
 };

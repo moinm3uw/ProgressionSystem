@@ -28,7 +28,7 @@ public:
 protected:
 	
 	/** Progression System component reference*/
-	UPROPERTY(Transient)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Component"))
 	TObjectPtr<class UProgressionSystemComponent> ProgressionSystemComponentInternal = nullptr;
 	
 };

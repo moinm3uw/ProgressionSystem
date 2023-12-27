@@ -54,27 +54,27 @@ protected:
 	TObjectPtr<UProgressionSystemDataAsset> ProgressionSystemDataAssetInternal;
 
 	/** Created Main Menu widget. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Main Menu Widget"))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient,  Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
 	TObjectPtr<class UProgressionMenuWidget> ProgressionMenuWidgetInternal = nullptr;
 
 	/** Created Save points widget. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Main Menu Widget"))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Save Widget"))
 	TObjectPtr<class UProgressionSaveWidget> ProgressionSaveWidgetInternal = nullptr;
 
 	/** Store the save game instance */
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
 	TObjectPtr<class UPSCSaveGame> SaveGameInstanceInternal = nullptr;
 
 	/** The current Saved Progression of a player. */
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Saved Progression", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
 	FProgressionRowData SavedProgressionRowDataInternal;
 
 	/** The current selected player */
-	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "Currnet Player Tag", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Player Tag"))
 	FPlayerTag CurrentPlayerTagInternal = FPlayerTag::None;
 
 	/** The Progression Data Table that is responsible for progression configuration. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Data Table"))
 	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
 
 	/*********************************************************************************************

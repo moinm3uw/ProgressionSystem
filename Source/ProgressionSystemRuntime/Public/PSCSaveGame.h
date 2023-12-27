@@ -23,11 +23,11 @@ public:
 	static int32 GetSaveSlotIndex() { return 0; }
 	
 	/** The current Saved Progression of a player. */
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Saved Progression", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
 	FProgressionRowData SavedProgressionRowDataInternal;
 
 	/** The current Saved Progression of a player. */
-	UPROPERTY(EditAnywhere, meta = (DisplayName = "Saved Progression TMap", ShowOnlyInnerProperties))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))
 	TMap<FName, FProgressionRowData> SavedProgressionRows;
 	
 };
