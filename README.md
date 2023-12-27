@@ -2,7 +2,7 @@
 
 ## Overview
 
-It's a Progression System that allows unlocking new characters by playing the game developed for (Bomber project)[https://github.com/JanSeliv/Bomber).
+It's a Progression System that allows unlocking new characters by playing the game developed for [Bomber project](https://github.com/JanSeliv/Bomber).
 
 It's developed as a Modular Game Feature (MGF) module. Technically, it's a plugin, but can't be used in other projects as it heavily depends on the Bomber code. However, you could still use it in your projects if you manage to replace all Bomber dependencies with your own.
 
