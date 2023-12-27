@@ -79,19 +79,6 @@ void UProgressionSystemComponent::LoadGameFromSave()
 	if (UGameplayStatics::DoesSaveGameExist(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()))
 	{
 		SaveGameInstanceInternal = Cast<UPSCSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()));
-		if (SaveGameInstanceInternal)
-		{
-			for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
-			{
-				FName Key = KeyValue.Key;
-				FProgressionRowData RowData = KeyValue.Value;
-
-				if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == CurrentPlayerTagInternal)
-				{
-					SavedProgressionRowDataInternal = SaveGameInstanceInternal->SavedProgressionRows[Key];
-				}
-			}
-		}
 	}
 	else
 	{
@@ -115,6 +102,7 @@ void UProgressionSystemComponent::LoadGameFromSave()
 		{
 			// Access the key and value of the first element
 			SavedProgressionRowDataInternal = Iterator.Value();
+			SavedProgressionRowDataInternal.IsLevelLocked = false;
 		}
 		else
 		{
@@ -319,6 +307,7 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 {
 	if (SaveGameInstanceInternal)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("SaveGameInstanceInternal true"));
 		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
 		{
 			FName Key = KeyValue.Key;
@@ -327,24 +316,27 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == CurrentPlayerTagInternal)
 			{
 				SavedProgressionRowDataInternal  = SaveGameInstanceInternal->SavedProgressionRows[Key];
+				UE_LOG(LogTemp, Warning, TEXT("Assigned current progression to level with: %d"), SavedProgressionRowDataInternal.IsLevelLocked);
 			}
 		}
 		SaveDataAsync();
-	}
-	// reset amount of start for a level
-	ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
 
-	//set updated amount of stars
-	if (SavedProgressionRowDataInternal.CurrentLevelProgression >= SavedProgressionRowDataInternal.PointsToUnlock)
-	{
-		// set required points (stars)  to achieve for a level  
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.PointsToUnlock, 0);
-	} else
-	{
-		// Calculate the unlocked against locked points (stars) 
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.CurrentLevelProgression, SavedProgressionRowDataInternal.PointsToUnlock - SavedProgressionRowDataInternal.CurrentLevelProgression);// Listen game state changes events 
+		// reset amount of start for a level
+		ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
+
+		//set updated amount of stars
+		if (SavedProgressionRowDataInternal.CurrentLevelProgression >= SavedProgressionRowDataInternal.PointsToUnlock)
+		{
+			// set required points (stars)  to achieve for a level  
+			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.PointsToUnlock, 0);
+		} else
+		{
+			// Calculate the unlocked against locked points (stars) 
+			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.CurrentLevelProgression, SavedProgressionRowDataInternal.PointsToUnlock - SavedProgressionRowDataInternal.CurrentLevelProgression);// Listen game state changes events 
+		}
+		UE_LOG(LogTemp, Warning, TEXT("DisplayLevelUIOverlay current progression to level with: %d"), SavedProgressionRowDataInternal.IsLevelLocked);
+		DisplayLevelUIOverlay(SavedProgressionRowDataInternal.IsLevelLocked);
 	}
-	DisplayLevelUIOverlay(SavedProgressionRowDataInternal.IsLevelLocked);
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
