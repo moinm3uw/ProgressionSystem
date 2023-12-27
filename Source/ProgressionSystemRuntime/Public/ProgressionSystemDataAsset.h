@@ -29,9 +29,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class UProgressionSaveWidget> GetProgressionSaveWidget() const { return ProgressionSaveWidgetInternal; }
 
-	/** Returns a progression System component reference */
-	FORCEINLINE TObjectPtr<class UProgressionSystemComponent> GetProgressionSystemComponent() const { return ProgressionSystemComponentInternal; }
-
 	/** Returns a locked progression icon reference */
 	FORCEINLINE TObjectPtr<class UTexture2D> GetLockedProgressionIcon() const { return LockedProgressionIconInternal; }
 
@@ -50,10 +47,6 @@ protected:
 	/** Main progression widget */
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UProgressionMenuWidget> ProgressionMenuWidgetInternal = nullptr;
-
-	/** Progression System component reference*/
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UProgressionSystemComponent> ProgressionSystemComponentInternal = nullptr;
 
 	/** Image for locked progression */
 	UPROPERTY(EditAnywhere)

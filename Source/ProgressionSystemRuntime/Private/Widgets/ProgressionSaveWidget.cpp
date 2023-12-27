@@ -33,8 +33,6 @@ void UProgressionSaveWidget::NativeConstruct()
 		ConfirmButton->SetClickMethod(EButtonClickMethod::PreciseClick);
 		ConfirmButton->OnClicked.AddUniqueDynamic(this, &ThisClass::OnConfirmationButtonPressed);
 	}
-
-	ProgressionSystemComponentInternal = ProgressionSystemDataAssetInternal->GetProgressionSystemComponent();
 }
 
 void UProgressionSaveWidget::OnConfirmationButtonPressed()
