@@ -24,7 +24,10 @@ public:
 
 	/** Returns the Progression System data asset. */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	static const UProgressionSystemDataAsset* GetProgressionSystemDataAsset() {return &UProgressionSystemDataAsset::Get(); }
+	static const UProgressionSystemDataAsset* GetProgressionSystemDataAsset()
+	{
+		return &UProgressionSystemDataAsset::Get();
+	}
 
 	/** Returns current saved progression. */
 	UFUNCTION(BlueprintCallable, Category="C++")
@@ -54,7 +57,7 @@ protected:
 	TObjectPtr<UProgressionSystemDataAsset> ProgressionSystemDataAssetInternal;
 
 	/** Created Main Menu widget. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient,  Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
 	TObjectPtr<class UProgressionMenuWidget> ProgressionMenuWidgetInternal = nullptr;
 
 	/** Created Save points widget. */
@@ -91,7 +94,7 @@ protected:
 	/** */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void NextLevelProgressionRowData();
-	
+
 	/** Called when the current game state was changed. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnGameStateChanged(ECurrentGameState CurrentGameState);
@@ -99,7 +102,7 @@ protected:
 	/** Called when the end game state was changed. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnEndGameStateChanged(EEndGameState EndGameState);
-	
+
 	/** Is called to prepare the widget for Menu game state. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void HandleGameState(class AMyGameStateBase* MyGameState);
@@ -111,7 +114,7 @@ protected:
 	/** Is called to handle character possession event */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnCharacterPossessed(class APawn* MyPawn);
-	
+
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);

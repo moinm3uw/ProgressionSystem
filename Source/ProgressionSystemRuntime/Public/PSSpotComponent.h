@@ -14,7 +14,7 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSSpotComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UPSSpotComponent();
 
@@ -22,7 +22,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	class UMySkeletalMeshComponent* GetMySkeletalMeshComponent() const;
 	class UMySkeletalMeshComponent& GetMeshChecked() const;
-	 
 
 protected:
 	// Called when the game starts
@@ -35,7 +34,7 @@ protected:
 	/** Called when the end game state was changed. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnEndGameStateChanged(EEndGameState EndGameState);
-	
+
 	/** Is called to prepare the widget for Menu game state. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void HandleGameState(class AMyGameStateBase* MyGameState);
@@ -47,15 +46,15 @@ protected:
 	/** Is called to handle character possession event */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnCharacterPossessed(class APawn* MyPawn);
-	
+
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
 
-		/** Locks the player spot when progression for level achieved */
-	UFUNCTION(BlueprintCallable,Category= "C++", meta=(BlueprintProtected))
+	/** Locks the player spot when progression for level achieved */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta=(BlueprintProtected))
 	void ChangeSpotVisibilityStatus();
-	
+
 	/** A Progression System Component */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "My Progression System Component"))
 	TObjectPtr<UProgressionSystemComponent> MyProgressionSystemComponentInternal = nullptr;
@@ -67,5 +66,4 @@ protected:
 	/** Current Progression  */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Progression Row Data"))
 	FProgressionRowData CurrentProgressionRowDataInternal;
-	
 };

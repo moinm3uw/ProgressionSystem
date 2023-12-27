@@ -25,7 +25,8 @@
 
 // Sets default values for this component's properties
 UProgressionSystemComponent::UProgressionSystemComponent()
-{	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
@@ -37,7 +38,7 @@ void UProgressionSystemComponent::BeginPlay()
 	Super::BeginPlay();
 
 	UE_LOG(LogProgressionSystem, Warning, TEXT("--- I'm running ---"));
-	
+
 	AMyHUD* MyHUD = Cast<AMyHUD>(GetOwner());
 	const AMyHUD& HUD = *MyHUD;
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UProgressionMenuWidget>(ProgressionSystemDataAssetInternal->GetProgressionMenuWidget(), true, 1);
@@ -46,7 +47,7 @@ void UProgressionSystemComponent::BeginPlay()
 	// Listen states to spawn widgets
 	if (AMyGameStateBase* MyGameState = UMyBlueprintFunctionLibrary::GetMyGameState())
 	{
-		HandleGameState(MyGameState);	
+		HandleGameState(MyGameState);
 	}
 	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
 	{
@@ -54,7 +55,7 @@ void UProgressionSystemComponent::BeginPlay()
 	}
 	if (AMyPlayerState* MyPlayerState = UMyBlueprintFunctionLibrary::GetLocalPlayerState())
 	{
-		HandleEndGameState(MyPlayerState);	
+		HandleEndGameState(MyPlayerState);
 	}
 
 	// Listen events on player type changed and Character spawned
@@ -69,7 +70,7 @@ void UProgressionSystemComponent::BeginPlay()
 
 	// Save reference of this component to the world subsystem
 	UPSCWorldSubsystem::Get().SetProgressionSystemComponent(this);
-	
+
 	LoadGameFromSave();
 }
 
@@ -87,7 +88,7 @@ void UProgressionSystemComponent::LoadGameFromSave()
 		TMap<FName, FProgressionRowData> SavedProgressionRows;
 		UMyDataTable::GetRows(*ProgressionDataTableInternal, SavedProgressionRows);
 		SaveGameInstanceInternal = Cast<UPSCSaveGame>(UGameplayStatics::CreateSaveGameObject(UPSCSaveGame::StaticClass()));
-		
+
 		if (SaveGameInstanceInternal)
 		{
 			SaveGameInstanceInternal->SavedProgressionRows = SavedProgressionRows;
@@ -95,7 +96,8 @@ void UProgressionSystemComponent::LoadGameFromSave()
 		}
 
 		// Create an iterator for the TMap
-		TMap<FName, FProgressionRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
+		TMap<FName, FProgressionRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.
+			CreateIterator();
 
 		// Check if the iterator is pointing to a valid position
 		if (Iterator)
@@ -122,7 +124,7 @@ void UProgressionSystemComponent::SavePoints(ELevelType Map, FPlayerTag Characte
 	{
 		NextLevelProgressionRowData();
 	}
-	
+
 	SaveCurrentGameProgression();
 }
 
@@ -133,9 +135,9 @@ int32 UProgressionSystemComponent::GetProgressionReward(ELevelType Map, FPlayerT
 	FProgressionRowData* ProgressionRowData = ProgressionDataTableInternal->FindRow<FProgressionRowData>(CurrentProgressionRowName, "Finding a needed row");
 	if (!ProgressionRowData)
 	{
-		return 0; 
+		return 0;
 	}
-	
+
 	switch (EndGameState)
 	{
 	case EEndGameState::Win:
@@ -162,7 +164,8 @@ void UProgressionSystemComponent::SaveCurrentGameProgression()
 			FName Key = KeyValue.Key;
 			FProgressionRowData RowData = KeyValue.Value;
 
-			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == CurrentPlayerTagInternal)
+			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character ==
+				CurrentPlayerTagInternal)
 			{
 				SaveGameInstanceInternal->SavedProgressionRows[Key] = SavedProgressionRowDataInternal;
 			}
@@ -173,7 +176,7 @@ void UProgressionSystemComponent::SaveCurrentGameProgression()
 
 void UProgressionSystemComponent::SaveDataAsync()
 {
-	UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstanceInternal, SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex());	
+	UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstanceInternal, SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex());
 }
 
 FName UProgressionSystemComponent::GetProgressionRowName(ELevelType Map, FPlayerTag Character)
@@ -193,11 +196,12 @@ FName UProgressionSystemComponent::GetProgressionRowName(ELevelType Map, FPlayer
 	}
 	return CurrentProgressionRowName;
 }
+
 // Find next item in the level from current. TMap represents levels in savefile 
 void UProgressionSystemComponent::NextLevelProgressionRowData()
 {
 	FName Key;
-	
+
 	if (SaveGameInstanceInternal)
 	{
 		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
@@ -229,7 +233,7 @@ void UProgressionSystemComponent::NextLevelProgressionRowData()
 				// Access the key and value using the iterator
 				FName NextProgressionName = CurrentIterator.Key();
 				SaveGameInstanceInternal->SavedProgressionRows[NextProgressionName].IsLevelLocked = false;
-				
+
 				SaveDataAsync();
 			}
 		}
@@ -278,7 +282,7 @@ void UProgressionSystemComponent::HandleGameState(AMyGameStateBase* MyGameState)
 
 void UProgressionSystemComponent::HandleEndGameState(AMyPlayerState* MyPlayerState)
 {
-	checkf(MyPlayerState, TEXT("ERROR: 'MyGameState' is null!")); 
+	checkf(MyPlayerState, TEXT("ERROR: 'MyGameState' is null!"));
 	MyPlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
@@ -307,7 +311,6 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 {
 	if (SaveGameInstanceInternal)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SaveGameInstanceInternal true"));
 		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
 		{
 			FName Key = KeyValue.Key;
@@ -315,8 +318,7 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 
 			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == CurrentPlayerTagInternal)
 			{
-				SavedProgressionRowDataInternal  = SaveGameInstanceInternal->SavedProgressionRows[Key];
-				UE_LOG(LogTemp, Warning, TEXT("Assigned current progression to level with: %d"), SavedProgressionRowDataInternal.IsLevelLocked);
+				SavedProgressionRowDataInternal = SaveGameInstanceInternal->SavedProgressionRows[Key];
 			}
 		}
 		SaveDataAsync();
@@ -329,12 +331,12 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 		{
 			// set required points (stars)  to achieve for a level  
 			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.PointsToUnlock, 0);
-		} else
+		}
+		else
 		{
 			// Calculate the unlocked against locked points (stars) 
-			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.CurrentLevelProgression, SavedProgressionRowDataInternal.PointsToUnlock - SavedProgressionRowDataInternal.CurrentLevelProgression);// Listen game state changes events 
+			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.CurrentLevelProgression, SavedProgressionRowDataInternal.PointsToUnlock - SavedProgressionRowDataInternal.CurrentLevelProgression); // Listen game state changes events 
 		}
-		UE_LOG(LogTemp, Warning, TEXT("DisplayLevelUIOverlay current progression to level with: %d"), SavedProgressionRowDataInternal.IsLevelLocked);
 		DisplayLevelUIOverlay(SavedProgressionRowDataInternal.IsLevelLocked);
 	}
 }
@@ -343,12 +345,13 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 // by default overlay is always displayed 
 void UProgressionSystemComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 {
-	if(IsLevelLocked)
+	if (IsLevelLocked)
 	{
 		// Level is locked show the blocking overlay
 		ProgressionMenuWidgetInternal->PSCBackgroundOverlay->SetVisibility(ESlateVisibility::Visible);
 		ProgressionMenuWidgetInternal->PSCBackgroundIconLock->SetVisibility(ESlateVisibility::Visible);
-	} else
+	}
+	else
 	{
 		// Level is unlocked hide the blocking overlay
 		ProgressionMenuWidgetInternal->PSCBackgroundOverlay->SetVisibility(ESlateVisibility::Collapsed);

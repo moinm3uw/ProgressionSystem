@@ -31,4 +31,3 @@ void UPSCWorldSubsystem::SetProgressionSystemComponent(UProgressionSystemCompone
 	checkf(MyProgressionSystemComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
 	ProgressionSystemComponentInternal = MyProgressionSystemComponent;
 }
-

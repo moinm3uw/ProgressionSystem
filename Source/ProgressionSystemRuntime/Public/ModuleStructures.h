@@ -47,4 +47,3 @@ struct FProgressionRowData : public FTableRowBase
 	UPROPERTY()
 	bool IsLevelLocked = true;
 };
-

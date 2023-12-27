@@ -20,15 +20,13 @@ public:
 
 	/** Returns a progression System component reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UProgressionSystemComponent* GetProgressionSystemComponent() const { return ProgressionSystemComponentInternal; }
+	FORCEINLINE class UProgressionSystemComponent* GetProgressionSystemComponent() const { return ProgressionSystemComponentInternal;	}
 
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetProgressionSystemComponent(UProgressionSystemComponent* MyProgressionSystemComponent);
 
 protected:
-	
 	/** Progression System component reference*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Component"))
 	TObjectPtr<class UProgressionSystemComponent> ProgressionSystemComponentInternal = nullptr;
-	
 };

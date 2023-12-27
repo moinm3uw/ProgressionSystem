@@ -13,6 +13,7 @@ UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UPSCSaveGame : public USaveGame
 {
 	GENERATED_BODY()
+
 public:
 	/** Returns the name of the save slot. */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -21,7 +22,7 @@ public:
 	/** Returns the Slot Index of the save slot. */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	static int32 GetSaveSlotIndex() { return 0; }
-	
+
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
 	FProgressionRowData SavedProgressionRowDataInternal;
@@ -29,5 +30,4 @@ public:
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))
 	TMap<FName, FProgressionRowData> SavedProgressionRows;
-	
 };
