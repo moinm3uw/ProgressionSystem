@@ -4,9 +4,6 @@
 //---
 
 //---
-#include <string>
-
-#include "ProgressionSystemDataAsset.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
