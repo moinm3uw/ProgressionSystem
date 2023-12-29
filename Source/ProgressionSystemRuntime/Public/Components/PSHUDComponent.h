@@ -7,7 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "Structures/PlayerTag.h"
 //---
-#include "ProgressionSystemComponent.generated.h"
+#include "PSHUDComponent.generated.h"
 
 /**
  * Implements the core logic on project about Progression System.

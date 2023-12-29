@@ -2,7 +2,7 @@
 
 #include "PSSpotComponent.h"
 
-#include "ProgressionSystemComponent.h"
+#include "Components\PSHUDComponent.h"
 #include "PSCWorldSubsystem.h"
 #include "Components/MySkeletalMeshComponent.h"
 #include "Controllers/MyPlayerController.h"

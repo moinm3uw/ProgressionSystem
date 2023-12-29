@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
-#include "ProgressionSystemComponent.h"
+#include "Components\PSHUDComponent.h"
 //---
 #include "Bomber.h"
 #include "Controllers/MyPlayerController.h"
@@ -21,7 +21,7 @@
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(ProgressionSystemComponent)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
 
 // Sets default values for this component's properties
 UProgressionSystemComponent::UProgressionSystemComponent()
