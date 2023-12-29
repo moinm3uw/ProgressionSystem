@@ -11,7 +11,7 @@
 #include "UI/MyHUD.h"
 #include "Widgets/ProgressionMenuWidget.h"
 #include "Widgets/ProgressionSaveWidget.h"
-#include "ModuleStructures.h"
+#include "Data/PSTypes.h"
 #include "PSCSaveGame.h"
 #include "PSCWorldSubsystem.h"
 #include "Components/Image.h"

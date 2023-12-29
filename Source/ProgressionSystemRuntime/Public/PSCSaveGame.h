@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ModuleStructures.h"
+#include "Data/PSTypes.h"
 #include "GameFramework/SaveGame.h"
 #include "PSCSaveGame.generated.h"
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ModuleStructures.h"
+#include "Data/PSTypes.h"
 #include "ProgressionSystemDataAsset.h"
 #include "Components/ActorComponent.h"
 #include "Structures/PlayerTag.h"

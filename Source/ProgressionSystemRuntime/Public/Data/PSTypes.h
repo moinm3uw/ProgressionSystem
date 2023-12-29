@@ -4,7 +4,7 @@
 
 #include "Bomber.h"
 #include "Structures/PlayerTag.h"
-#include "ModuleStructures.generated.h"
+#include "PSTypes.generated.h"
 
 /**
  * Basic structure for all save data information regarding the progression.
