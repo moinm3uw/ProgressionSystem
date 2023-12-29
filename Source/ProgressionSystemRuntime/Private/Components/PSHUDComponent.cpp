@@ -41,6 +41,8 @@ void UPSHUDComponent::BeginPlay()
 
 	AMyHUD* MyHUD = Cast<AMyHUD>(GetOwner());
 	const AMyHUD& HUD = *MyHUD;
+	ProgressionSystemDataAssetInternal = UPSWorldSubsystem::Get().GetPSDataAsset();
+	checkf(ProgressionSystemDataAssetInternal, TEXT("ERROR: 'ProgressionSystemDataAssetIntenral' is null'"));
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(ProgressionSystemDataAssetInternal->GetProgressionMenuWidget(), true, 1);
 	ProgressionDataTableInternal = ProgressionSystemDataAssetInternal->GetProgressionDataTable();
 

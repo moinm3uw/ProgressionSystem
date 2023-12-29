@@ -9,6 +9,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
+#include "Data/PSWorldSubsystem.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
@@ -71,6 +72,8 @@ void UPSMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	ProgressionSystemDataAssetInternal = UPSWorldSubsystem::Get().GetPSDataAsset();
+	checkf(ProgressionSystemDataAssetInternal, TEXT("ERROR: 'ProgressionSystemDataAssetIntenral' is null'"));
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);
 }

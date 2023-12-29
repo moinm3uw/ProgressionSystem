@@ -45,8 +45,8 @@ protected:
 	virtual void NativeConstruct() override;
 
 	/** Progression System data asset */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TObjectPtr<class UPSDataAsset> ProgressionSystemDataAssetInternal = nullptr;
+	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
+	TSoftObjectPtr<class UPSDataAsset> ProgressionSystemDataAssetInternal = nullptr;
 
 	/** Amount of Stars unlocked on a level */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Amount of Unlocked points debug"))

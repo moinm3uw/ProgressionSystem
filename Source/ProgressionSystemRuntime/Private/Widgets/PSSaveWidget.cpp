@@ -6,6 +6,7 @@
 //---
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Data/PSWorldSubsystem.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveWidget)
 
@@ -22,6 +23,10 @@ void UPSSaveWidget::ConfigureWidgetText(FText endGameState, FText pointsGained, 
 void UPSSaveWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	ProgressionSystemDataAssetInternal = UPSWorldSubsystem::Get().GetPSDataAsset();
+	checkf(ProgressionSystemDataAssetInternal, TEXT("ERROR: 'ProgressionSystemDataAssetIntenral' is null'"));
+	
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);
 

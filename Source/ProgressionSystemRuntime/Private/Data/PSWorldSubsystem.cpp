@@ -26,6 +26,12 @@ UPSWorldSubsystem& UPSWorldSubsystem::Get(const UObject& WorldContextObject)
 	return *ThisSubsystem;
 }
 
+// Returns the data asset that contains all the assets of Progression System game feature
+const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
+{
+	return PSDataAssetInternal.LoadSynchronous();
+}
+
 void UPSWorldSubsystem::SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent)
 {
 	checkf(MyProgressionSystemComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
