@@ -1,6 +1,6 @@
 // Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
-#include "PSSpotComponent.h"
+#include "Components\PSSpotComponent.h"
 
 #include "Components\PSHUDComponent.h"
 #include "Data/PSWorldSubsystem.h"
