@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
-#include "ProgressionSaveWidget.generated.h"
+#include "PSSaveWidget.generated.h"
 
 class UButton;
 class UTextBlock;
@@ -12,7 +12,7 @@ class UImage;
  * Widget that displays the end game earned points accrual
  */
 UCLASS()
-class PROGRESSIONSYSTEMRUNTIME_API UProgressionSaveWidget : public UUserWidget
+class PROGRESSIONSYSTEMRUNTIME_API UPSSaveWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

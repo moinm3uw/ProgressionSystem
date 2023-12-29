@@ -1,15 +1,15 @@
 // Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
-#include "Widgets/ProgressionSaveWidget.h"
+#include "Widgets/PSSaveWidget.h"
 //---
 
 //---
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(ProgressionSaveWidget)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveWidget)
 
-void UProgressionSaveWidget::ConfigureWidgetText(FText endGameState, FText pointsGained, FText totalScore)
+void UPSSaveWidget::ConfigureWidgetText(FText endGameState, FText pointsGained, FText totalScore)
 {
 	if (EndGameStateTextWidget && PointsGainTextWidget && TotalScoreTextWidget)
 	{
@@ -19,7 +19,7 @@ void UProgressionSaveWidget::ConfigureWidgetText(FText endGameState, FText point
 	}
 }
 
-void UProgressionSaveWidget::NativeConstruct()
+void UPSSaveWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	// Hide this widget by default
@@ -32,7 +32,7 @@ void UProgressionSaveWidget::NativeConstruct()
 	}
 }
 
-void UProgressionSaveWidget::OnConfirmationButtonPressed()
+void UPSSaveWidget::OnConfirmationButtonPressed()
 {
 	SetVisibility(ESlateVisibility::Collapsed);
 }

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
-#include "ProgressionMenuWidget.generated.h"
+#include "PSMenuWidget.generated.h"
 enum class ECurrentGameState : uint8;
 
 
@@ -11,7 +11,7 @@ enum class ECurrentGameState : uint8;
  * Widget to display the progression as stars in the main menu.
  */
 UCLASS()
-class PROGRESSIONSYSTEMRUNTIME_API UProgressionMenuWidget : public UUserWidget
+class PROGRESSIONSYSTEMRUNTIME_API UPSMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

@@ -55,11 +55,11 @@ protected:
 
 	/** Created Main Menu widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
-	TObjectPtr<class UProgressionMenuWidget> ProgressionMenuWidgetInternal = nullptr;
+	TObjectPtr<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
 
 	/** Created Save points widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Save Widget"))
-	TObjectPtr<class UProgressionSaveWidget> ProgressionSaveWidgetInternal = nullptr;
+	TObjectPtr<class UPSSaveWidget> ProgressionSaveWidgetInternal = nullptr;
 
 	/** Store the save game instance */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))

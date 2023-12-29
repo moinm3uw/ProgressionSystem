@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
-#include "Widgets/ProgressionMenuWidget.h"
+#include "Widgets/PSMenuWidget.h"
 //---
 
 //---
@@ -10,9 +10,9 @@
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(ProgressionMenuWidget)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
-void UProgressionMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
+void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
 {
 	if (HorizontalBox)
 	{
@@ -20,7 +20,11 @@ void UProgressionMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoin
 		for (int32 i = 0; i < AmountOfUnlockedPoints; i++)
 		{
 			UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-			ImageWidget->SetBrushFromTexture(ProgressionSystemDataAssetInternal->GetUnlockedProgressionIcon());
+			if (ProgressionSystemDataAssetInternal)
+			{
+				ImageWidget->SetBrushFromTexture(ProgressionSystemDataAssetInternal->GetUnlockedProgressionIcon());	
+			}
+			
 			// Load and set the image texture here using ImagePath or other methods
 			HorizontalBox->AddChildToHorizontalBox(ImageWidget);
 
@@ -55,7 +59,7 @@ void UProgressionMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoin
 	}
 }
 
-void UProgressionMenuWidget::ClearImagesFromHorizontalBox()
+void UPSMenuWidget::ClearImagesFromHorizontalBox()
 {
 	if (HorizontalBox)
 	{
@@ -63,7 +67,7 @@ void UProgressionMenuWidget::ClearImagesFromHorizontalBox()
 	}
 }
 
-void UProgressionMenuWidget::NativeConstruct()
+void UPSMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 

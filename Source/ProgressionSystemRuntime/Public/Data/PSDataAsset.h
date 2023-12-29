@@ -23,11 +23,11 @@ public:
 
 	/** Returns a progression menu widget to be displayed in the main menu*/
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TSubclassOf<class UProgressionMenuWidget> GetProgressionMenuWidget() const { return ProgressionMenuWidgetInternal; }
+	FORCEINLINE TSubclassOf<class UPSMenuWidget> GetProgressionMenuWidget() const { return ProgressionMenuWidgetInternal; }
 
 	/** Returns a progression save widget to be displayed in the end of game */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TSubclassOf<class UProgressionSaveWidget> GetProgressionSaveWidget() const { return ProgressionSaveWidgetInternal; }
+	FORCEINLINE TSubclassOf<class UPSSaveWidget> GetProgressionSaveWidget() const { return ProgressionSaveWidgetInternal; }
 
 	/** Returns a locked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -44,11 +44,11 @@ protected:
 
 	/**  Progression acquiring (adding, saving) widget */
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UProgressionSaveWidget> ProgressionSaveWidgetInternal = nullptr;
+	TSubclassOf<UPSSaveWidget> ProgressionSaveWidgetInternal = nullptr;
 
 	/** Main progression widget */
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UProgressionMenuWidget> ProgressionMenuWidgetInternal = nullptr;
+	TSubclassOf<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
 
 	/** Image for locked progression */
 	UPROPERTY(EditAnywhere)

@@ -9,8 +9,8 @@
 #include "ProgressionSystemRuntimeModule.h"
 #include "Blueprint/WidgetTree.h"
 #include "UI/MyHUD.h"
-#include "Widgets/ProgressionMenuWidget.h"
-#include "Widgets/ProgressionSaveWidget.h"
+#include "..\..\Public\Widgets\PSMenuWidget.h"
+#include "..\..\Public\Widgets\PSSaveWidget.h"
 #include "Data/PSTypes.h"
 #include "Data/PSSaveGameData.h"
 #include "Data/PSWorldSubsystem.h"
@@ -41,7 +41,7 @@ void UPSHUDComponent::BeginPlay()
 
 	AMyHUD* MyHUD = Cast<AMyHUD>(GetOwner());
 	const AMyHUD& HUD = *MyHUD;
-	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UProgressionMenuWidget>(ProgressionSystemDataAssetInternal->GetProgressionMenuWidget(), true, 1);
+	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(ProgressionSystemDataAssetInternal->GetProgressionMenuWidget(), true, 1);
 	ProgressionDataTableInternal = ProgressionSystemDataAssetInternal->GetProgressionDataTable();
 
 	// Listen states to spawn widgets
