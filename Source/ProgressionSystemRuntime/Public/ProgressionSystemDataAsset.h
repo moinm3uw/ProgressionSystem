@@ -30,10 +30,12 @@ public:
 	FORCEINLINE TSubclassOf<class UProgressionSaveWidget> GetProgressionSaveWidget() const { return ProgressionSaveWidgetInternal; }
 
 	/** Returns a locked progression icon reference */
-	FORCEINLINE TObjectPtr<class UTexture2D> GetLockedProgressionIcon() const { return LockedProgressionIconInternal; }
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE UTexture2D* GetLockedProgressionIcon() const { return LockedProgressionIconInternal; }
 
 	/** Returns a unlocked progression icon reference */
-	FORCEINLINE TObjectPtr<class UTexture2D> GetUnlockedProgressionIcon() const { return UnlockedProgressionIconInternal; }
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE UTexture2D* GetUnlockedProgressionIcon() const { return UnlockedProgressionIconInternal; }
 
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */

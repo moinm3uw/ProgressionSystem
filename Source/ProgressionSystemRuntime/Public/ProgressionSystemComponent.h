@@ -24,10 +24,7 @@ public:
 
 	/** Returns the Progression System data asset. */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	static const UProgressionSystemDataAsset* GetProgressionSystemDataAsset()
-	{
-		return &UProgressionSystemDataAsset::Get();
-	}
+	static const UProgressionSystemDataAsset* GetProgressionSystemDataAsset() { return &UProgressionSystemDataAsset::Get(); }
 
 	/** Returns current saved progression. */
 	UFUNCTION(BlueprintCallable, Category="C++")
