@@ -57,7 +57,7 @@ protected:
 
 	/** A Progression System Component */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "My Progression System Component"))
-	TObjectPtr<UProgressionSystemComponent> MyProgressionSystemComponentInternal = nullptr;
+	TObjectPtr<UPSHUDComponent> MyProgressionSystemComponentInternal = nullptr;
 
 	/** A player skeletal mesh actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Player Spot On Level"))

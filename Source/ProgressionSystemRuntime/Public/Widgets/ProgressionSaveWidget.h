@@ -51,9 +51,9 @@ protected:
 
 	/** Progression System data asset */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TObjectPtr<class UProgressionSystemDataAsset> ProgressionSystemDataAssetInternal;
+	TObjectPtr<class UPSDataAsset> ProgressionSystemDataAssetInternal;
 
 	/** Progression System component reference */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Component"))
-	TObjectPtr<class UProgressionSystemComponent> ProgressionSystemComponentInternal = nullptr;
+	TObjectPtr<class UPSHUDComponent> ProgressionSystemComponentInternal = nullptr;
 };

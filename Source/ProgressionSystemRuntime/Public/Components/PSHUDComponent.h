@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Data/PSTypes.h"
-#include "ProgressionSystemDataAsset.h"
+#include "Data/PSDataAsset.h"
 #include "Components/ActorComponent.h"
 #include "Structures/PlayerTag.h"
 //---
@@ -14,17 +14,17 @@
  */
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROGRESSIONSYSTEMRUNTIME_API UProgressionSystemComponent final : public UActorComponent
+class PROGRESSIONSYSTEMRUNTIME_API UPSHUDComponent final : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	/** Sets default values for this component's properties. */
-	UProgressionSystemComponent();
+	UPSHUDComponent();
 
 	/** Returns the Progression System data asset. */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	static const UProgressionSystemDataAsset* GetProgressionSystemDataAsset() { return &UProgressionSystemDataAsset::Get(); }
+	static const UPSDataAsset* GetProgressionSystemDataAsset() { return &UPSDataAsset::Get(); }
 
 	/** Returns current saved progression. */
 	UFUNCTION(BlueprintCallable, Category="C++")
@@ -51,7 +51,7 @@ public:
 protected:
 	/** Progression System data asset */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TObjectPtr<UProgressionSystemDataAsset> ProgressionSystemDataAssetInternal;
+	TObjectPtr<UPSDataAsset> ProgressionSystemDataAssetInternal;
 
 	/** Created Main Menu widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
@@ -127,4 +127,8 @@ protected:
 	/** Load game from save */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void LoadGameFromSave();
+
+	/** Set first element as current active */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void SetFirstElemetAsCurrent();
 };

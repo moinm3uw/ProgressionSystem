@@ -2,19 +2,19 @@
 
 #pragma once
 
-#include "ProgressionSystemDataAsset.generated.h"
+#include "PSDataAsset.generated.h"
 
 /**
  * Contains all progression assets used in the module 
  */
 UCLASS()
-class PROGRESSIONSYSTEMRUNTIME_API UProgressionSystemDataAsset : public UDataAsset
+class PROGRESSIONSYSTEMRUNTIME_API UPSDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
 	/** Returns the settings data asset. */
-	static const UProgressionSystemDataAsset& Get() { return *GetDefault<ThisClass>(); }
+	static const UPSDataAsset& Get() { return *GetDefault<ThisClass>(); }
 
 	/** Returns the Progression Data Table
 	 * @see UProgressionSystemDataAsset::ProgressionDataTableInternal */

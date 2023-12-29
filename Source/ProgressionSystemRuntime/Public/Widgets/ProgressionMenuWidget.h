@@ -46,7 +46,7 @@ protected:
 
 	/** Progression System data asset */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TObjectPtr<class UProgressionSystemDataAsset> ProgressionSystemDataAssetInternal = nullptr;
+	TObjectPtr<class UPSDataAsset> ProgressionSystemDataAssetInternal = nullptr;
 
 	/** Amount of Stars unlocked on a level */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Amount of Unlocked points debug"))
