@@ -28,7 +28,7 @@ public:
 
 	/** Returns current saved progression. */
 	UFUNCTION(BlueprintCallable, Category="C++")
-	FORCEINLINE FPSRowData GetSavedProgressionRowData() const { return SavedProgressionRowDataInternal; }
+	const FORCEINLINE FPSRowData& GetSavedProgressionRowData() const { return SavedProgressionRowDataInternal; }
 
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++")
