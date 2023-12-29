@@ -312,10 +312,7 @@ void UPSHUDComponent::OnCharacterPossessed(APawn* MyPawn)
 // Handle events when player type changes
 void UPSHUDComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Prev player tag: : %s"), *CurrentPlayerTagInternal.ToString());
 	CurrentPlayerTagInternal = PlayerTag;
-	UE_LOG(LogTemp, Warning, TEXT("isLevelLocked: %d"), SavedProgressionRowDataInternal.IsLevelLocked);
-	UE_LOG(LogTemp, Warning, TEXT("Current player tag: : %s"), *CurrentPlayerTagInternal.ToString());
 	UpdateProgressionWidgetForPlayer();
 }
 
@@ -358,7 +355,6 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 // by default overlay is always displayed 
 void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 {
-	UE_LOG(LogTemp, Warning, TEXT("isLevelLocked: %d"), IsLevelLocked);
 	if (IsLevelLocked)
 	{
 		// Level is locked show the blocking overlay
