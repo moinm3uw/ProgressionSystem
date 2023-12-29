@@ -14,7 +14,12 @@ USTRUCT(BlueprintType)
 struct FProgressionRowData : public FTableRowBase
 {
 	GENERATED_BODY()
+	
+	static const FProgressionRowData EmptyData;
 
+	/** Default constructor. */
+	FProgressionRowData() = default;
+	
 	/** Stores the value of the map for progression system component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	ELevelType Map = ELevelType::None;
