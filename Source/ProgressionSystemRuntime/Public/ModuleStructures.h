@@ -24,7 +24,7 @@ struct FProgressionRowData : public FTableRowBase
 	FPlayerTag Character = FPlayerTag::None;
 
 	/** Current progression for each level  */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	UPROPERTY()
 	int32 CurrentLevelProgression = 0;
 
 	/** Required about of points to unlock level  */
