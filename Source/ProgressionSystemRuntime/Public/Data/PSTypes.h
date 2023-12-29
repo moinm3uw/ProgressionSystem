@@ -11,14 +11,14 @@
  * Same structure will reflected in the save file. Initial load performed based on the data in the DT Table 
  */
 USTRUCT(BlueprintType)
-struct FProgressionRowData : public FTableRowBase
+struct FPSRowData : public FTableRowBase
 {
 	GENERATED_BODY()
 	
-	static const FProgressionRowData EmptyData;
+	static const FPSRowData EmptyData;
 
 	/** Default constructor. */
-	FProgressionRowData() = default;
+	FPSRowData() = default;
 	
 	/** Stores the value of the map for progression system component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")

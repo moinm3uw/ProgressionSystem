@@ -25,9 +25,9 @@ public:
 
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
-	FProgressionRowData SavedProgressionRowDataInternal = FProgressionRowData::EmptyData;
+	FPSRowData SavedProgressionRowDataInternal = FPSRowData::EmptyData;
 
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))
-	TMap<FName, FProgressionRowData> SavedProgressionRows;
+	TMap<FName, FPSRowData> SavedProgressionRows;
 };

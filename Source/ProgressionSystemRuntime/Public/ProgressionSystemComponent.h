@@ -28,7 +28,7 @@ public:
 
 	/** Returns current saved progression. */
 	UFUNCTION(BlueprintCallable, Category="C++")
-	FORCEINLINE FProgressionRowData GetSavedProgressionRowData() const { return SavedProgressionRowDataInternal; }
+	FORCEINLINE FPSRowData GetSavedProgressionRowData() const { return SavedProgressionRowDataInternal; }
 
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++")
@@ -67,7 +67,7 @@ protected:
 
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
-	FProgressionRowData SavedProgressionRowDataInternal = FProgressionRowData::EmptyData;
+	FPSRowData SavedProgressionRowDataInternal = FPSRowData::EmptyData;
 
 	/** The current selected player */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Player Tag"))

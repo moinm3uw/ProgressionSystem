@@ -3,4 +3,4 @@
 #include "Data/PSTypes.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSTypes)
-const FProgressionRowData FProgressionRowData::EmptyData = FProgressionRowData{};
+const FPSRowData FPSRowData::EmptyData = FPSRowData{};

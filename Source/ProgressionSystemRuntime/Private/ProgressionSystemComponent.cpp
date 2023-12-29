@@ -85,19 +85,18 @@ void UProgressionSystemComponent::LoadGameFromSave()
 	{
 		// Save file does not exist
 		// do initial load from data table
-		TMap<FName, FProgressionRowData> SavedProgressionRows;
+		TMap<FName, FPSRowData> SavedProgressionRows;
 		UMyDataTable::GetRows(*ProgressionDataTableInternal, SavedProgressionRows);
 		SaveGameInstanceInternal = Cast<UPSCSaveGame>(UGameplayStatics::CreateSaveGameObject(UPSCSaveGame::StaticClass()));
 
 		if (SaveGameInstanceInternal)
 		{
 			SaveGameInstanceInternal->SavedProgressionRows = SavedProgressionRows;
-			SaveDataAsync();
+			
 		}
 
 		// Create an iterator for the TMap
-		TMap<FName, FProgressionRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.
-			CreateIterator();
+		TMap<FName, FPSRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
 
 		// Check if the iterator is pointing to a valid position
 		if (Iterator)
@@ -105,6 +104,7 @@ void UProgressionSystemComponent::LoadGameFromSave()
 			// Access the key and value of the first element
 			SavedProgressionRowDataInternal = Iterator.Value();
 			SavedProgressionRowDataInternal.IsLevelLocked = false;
+			SaveCurrentGameProgression();
 		}
 		else
 		{
@@ -112,6 +112,7 @@ void UProgressionSystemComponent::LoadGameFromSave()
 			UE_LOG(LogTemp, Warning, TEXT("The TMap is empty."));
 		}
 	}
+	SaveDataAsync();
 	UpdateProgressionWidgetForPlayer();
 }
 
@@ -132,7 +133,7 @@ void UProgressionSystemComponent::SavePoints(ELevelType Map, FPlayerTag Characte
 int32 UProgressionSystemComponent::GetProgressionReward(ELevelType Map, FPlayerTag Character, EEndGameState EndGameState)
 {
 	FName CurrentProgressionRowName = GetProgressionRowName(Map, Character);
-	FProgressionRowData* ProgressionRowData = ProgressionDataTableInternal->FindRow<FProgressionRowData>(CurrentProgressionRowName, "Finding a needed row");
+	FPSRowData* ProgressionRowData = ProgressionDataTableInternal->FindRow<FPSRowData>(CurrentProgressionRowName, "Finding a needed row");
 	if (!ProgressionRowData)
 	{
 		return 0;
@@ -162,7 +163,7 @@ void UProgressionSystemComponent::SaveCurrentGameProgression()
 		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
 		{
 			FName Key = KeyValue.Key;
-			FProgressionRowData RowData = KeyValue.Value;
+			FPSRowData RowData = KeyValue.Value;
 
 			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character ==
 				CurrentPlayerTagInternal)
@@ -185,7 +186,7 @@ FName UProgressionSystemComponent::GetProgressionRowName(ELevelType Map, FPlayer
 	TArray<FName> RowNames = ProgressionDataTableInternal->GetRowNames();
 	for (auto RowName : RowNames)
 	{
-		FProgressionRowData* Row = ProgressionDataTableInternal->FindRow<FProgressionRowData>(RowName, "Finding progression row name");
+		FPSRowData* Row = ProgressionDataTableInternal->FindRow<FPSRowData>(RowName, "Finding progression row name");
 		if (Row)
 		{
 			if (Row->Map == Map && Row->Character == Character)
@@ -213,7 +214,7 @@ void UProgressionSystemComponent::NextLevelProgressionRowData()
 		}
 
 		// Find the iterator for the current key
-		TMap<FName, FProgressionRowData>::TIterator CurrentIterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
+		TMap<FName, FPSRowData>::TIterator CurrentIterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
 
 		// Iterate through the map until the specified key is found
 		while (CurrentIterator && CurrentIterator.Key() != Key)
@@ -314,7 +315,7 @@ void UProgressionSystemComponent::UpdateProgressionWidgetForPlayer()
 		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
 		{
 			FName Key = KeyValue.Key;
-			FProgressionRowData RowData = KeyValue.Value;
+			FPSRowData RowData = KeyValue.Value;
 
 			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == CurrentPlayerTagInternal)
 			{
