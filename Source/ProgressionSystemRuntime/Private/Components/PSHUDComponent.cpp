@@ -13,7 +13,7 @@
 #include "Widgets/ProgressionSaveWidget.h"
 #include "Data/PSTypes.h"
 #include "Data/PSSaveGameData.h"
-#include "PSCWorldSubsystem.h"
+#include "Data/PSWorldSubsystem.h"
 #include "Components/Image.h"
 #include "GameFramework/MyGameStateBase.h"
 #include "GameFramework/MyPlayerState.h"
@@ -69,7 +69,7 @@ void UPSHUDComponent::BeginPlay()
 	}
 
 	// Save reference of this component to the world subsystem
-	UPSCWorldSubsystem::Get().SetProgressionSystemComponent(this);
+	UPSWorldSubsystem::Get().SetProgressionSystemComponent(this);
 
 	LoadGameFromSave();
 }

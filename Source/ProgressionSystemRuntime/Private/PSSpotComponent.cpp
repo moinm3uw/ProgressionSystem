@@ -3,7 +3,7 @@
 #include "PSSpotComponent.h"
 
 #include "Components\PSHUDComponent.h"
-#include "PSCWorldSubsystem.h"
+#include "Data/PSWorldSubsystem.h"
 #include "Components/MySkeletalMeshComponent.h"
 #include "Controllers/MyPlayerController.h"
 #include "GameFramework/MyGameStateBase.h"
@@ -129,7 +129,7 @@ void UPSSpotComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 
 void UPSSpotComponent::ChangeSpotVisibilityStatus()
 {
-	MyProgressionSystemComponentInternal = UPSCWorldSubsystem::Get().GetProgressionSystemComponent();
+	MyProgressionSystemComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemComponent();
 
 	// Locks and unlocks the spot depends on the current level progression status
 	if (MyProgressionSystemComponentInternal != nullptr)
