@@ -63,7 +63,7 @@ protected:
 
 	/** Store the save game instance */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
-	TObjectPtr<class UPSCSaveGame> SaveGameInstanceInternal = nullptr;
+	TObjectPtr<class UPSSaveGameData> SaveGameInstanceInternal = nullptr;
 
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))

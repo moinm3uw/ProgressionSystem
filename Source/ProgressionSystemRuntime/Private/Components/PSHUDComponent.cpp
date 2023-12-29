@@ -12,7 +12,7 @@
 #include "Widgets/ProgressionMenuWidget.h"
 #include "Widgets/ProgressionSaveWidget.h"
 #include "Data/PSTypes.h"
-#include "PSCSaveGame.h"
+#include "Data/PSSaveGameData.h"
 #include "PSCWorldSubsystem.h"
 #include "Components/Image.h"
 #include "GameFramework/MyGameStateBase.h"
@@ -79,7 +79,7 @@ void UPSHUDComponent::LoadGameFromSave()
 	// Check if the save game file exists
 	if (UGameplayStatics::DoesSaveGameExist(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()))
 	{
-		SaveGameInstanceInternal = Cast<UPSCSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()));
+		SaveGameInstanceInternal = Cast<UPSSaveGameData>(UGameplayStatics::LoadGameFromSlot(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()));
 		
 	}
 	else
@@ -88,7 +88,7 @@ void UPSHUDComponent::LoadGameFromSave()
 		// do initial load from data table
 		TMap<FName, FPSRowData> SavedProgressionRows;
 		UMyDataTable::GetRows(*ProgressionDataTableInternal, SavedProgressionRows);
-		SaveGameInstanceInternal = Cast<UPSCSaveGame>(UGameplayStatics::CreateSaveGameObject(UPSCSaveGame::StaticClass()));
+		SaveGameInstanceInternal = Cast<UPSSaveGameData>(UGameplayStatics::CreateSaveGameObject(UPSSaveGameData::StaticClass()));
 
 		if (SaveGameInstanceInternal)
 		{
