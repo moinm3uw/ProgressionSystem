@@ -65,5 +65,5 @@ protected:
 
 	/** Current Progression  */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Progression Row Data"))
-	FProgressionRowData CurrentProgressionRowDataInternal;
+	FProgressionRowData CurrentProgressionRowDataInternal = FProgressionRowData::EmptyData;
 };
