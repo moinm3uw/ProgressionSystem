@@ -59,71 +59,14 @@ void UPSHUDComponent::BeginPlay()
 	{
 		HandleEndGameState(MyPlayerState);
 	}
-
-	// Listen events on player type changed and Character spawned
-	if (APlayerCharacter* MyPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
-	{
-		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
-	}
-	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
-	{
-		MyPC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnCharacterPossessed);
-	}
-
+	
+	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddUObject(this, &ThisClass::OnPlayerTypeChanged);
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetProgressionSystemComponent(this);
-
-	LoadGameFromSave();
-}
-
-void UPSHUDComponent::LoadGameFromSave()
-{
-	// Check if the save game file exists
-	if (UGameplayStatics::DoesSaveGameExist(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()))
-	{
-		SaveGameInstanceInternal = Cast<UPSSaveGameData>(UGameplayStatics::LoadGameFromSlot(SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex()));
-		
-	}
-	else
-	{
-		// Save file does not exist
-		// do initial load from data table
-		TMap<FName, FPSRowData> SavedProgressionRows;
-		UMyDataTable::GetRows(*ProgressionDataTableInternal, SavedProgressionRows);
-		SaveGameInstanceInternal = Cast<UPSSaveGameData>(UGameplayStatics::CreateSaveGameObject(UPSSaveGameData::StaticClass()));
-
-		if (SaveGameInstanceInternal)
-		{
-			SaveGameInstanceInternal->SavedProgressionRows = SavedProgressionRows;
-		}
-	}
-	SetFirstElemetAsCurrent();
-	SaveDataAsync();
+	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	SavedProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
+	
 	UpdateProgressionWidgetForPlayer();
-}
-
-void UPSHUDComponent::SetFirstElemetAsCurrent()
-{
-	if (SaveGameInstanceInternal)
-	{
-		// Create an iterator for the TMap
-		TMap<FName, FPSRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
-
-		// Check if the iterator is pointing to a valid position
-		if (Iterator)
-		{
-			// Access the key and value of the first element
-			SavedProgressionRowDataInternal = Iterator.Value();
-			SavedProgressionRowDataInternal.IsLevelLocked = false;
-			CurrentPlayerTagInternal = SavedProgressionRowDataInternal.Character;
-			SaveCurrentGameProgression();
-		}		
-		else
-		{
-			// The TMap is empty
-			UE_LOG(LogTemp, Warning, TEXT("The TMap is empty."));
-		}		
-	}
 }
 
 // Save the progression depends on EEndGameState
@@ -175,7 +118,7 @@ void UPSHUDComponent::SaveCurrentGameProgression()
 			FName Key = KeyValue.Key;
 			FPSRowData RowData = KeyValue.Value;
 
-			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == CurrentPlayerTagInternal)
+			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == SavedProgressionRowDataInternal.Character)
 			{
 				SaveGameInstanceInternal->SavedProgressionRows[Key] = SavedProgressionRowDataInternal;
 			}
@@ -266,7 +209,7 @@ void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 {
 	if (EndGameState != EEndGameState::None)
 	{
-		SavePoints(UMyBlueprintFunctionLibrary::GetLevelType(), CurrentPlayerTagInternal, EndGameState);
+		SavePoints(UMyBlueprintFunctionLibrary::GetLevelType(), SavedProgressionRowDataInternal.Character, EndGameState);
 	}
 }
 
@@ -296,23 +239,11 @@ void UPSHUDComponent::HandleEndGameState(AMyPlayerState* MyPlayerState)
 	MyPlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
-// Listen event whe Character Possessed 
-void UPSHUDComponent::OnCharacterPossessed(APawn* MyPawn)
-{
-	if (APlayerCharacter* MyPlayerCharacter = Cast<APlayerCharacter>(MyPawn))
-	{
-		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
-
-		//Unsubscribe to ignore null events call
-		AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController();
-		MyPC->GetOnNewPawnNotifier().RemoveAll(this);
-	}
-}
-
 // Handle events when player type changes
-void UPSHUDComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
+void UPSHUDComponent::OnPlayerTypeChanged(FPSRowData RowData)
 {
-	CurrentPlayerTagInternal = PlayerTag;
+	CurrentPlayerTagInternal = RowData.Character;
+	SavedProgressionRowDataInternal = RowData;
 	UpdateProgressionWidgetForPlayer();
 }
 
@@ -321,18 +252,6 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 {
 	if (SaveGameInstanceInternal)
 	{
-		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
-		{
-			FName Key = KeyValue.Key;
-			FPSRowData RowData = KeyValue.Value;
-
-			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == CurrentPlayerTagInternal)
-			{
-				SavedProgressionRowDataInternal = SaveGameInstanceInternal->SavedProgressionRows[Key];
-			}
-		}
-		SaveDataAsync();
-
 		// reset amount of start for a level
 		ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
 

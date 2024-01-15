@@ -27,29 +27,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	/** Called when the current game state was changed. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(ECurrentGameState CurrentGameState);
-
-	/** Called when the end game state was changed. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnEndGameStateChanged(EEndGameState EndGameState);
-
-	/** Is called to prepare the widget for Menu game state. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void HandleGameState(class AMyGameStateBase* MyGameState);
-
-	/** Is called to prepare the widget for handling end game state. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void HandleEndGameState(class AMyPlayerState* MyPlayerState);
-
-	/** Is called to handle character possession event */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnCharacterPossessed(class APawn* MyPawn);
-
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
+	void OnPlayerTypeChanged(FPSRowData RowData);
 
 	/** Locks the player spot when progression for level achieved */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta=(BlueprintProtected))

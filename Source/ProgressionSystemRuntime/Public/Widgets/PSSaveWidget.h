@@ -50,7 +50,7 @@ protected:
 	void OnConfirmationButtonPressed();
 
 	/** Progression System data asset */
-	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
+	UPROPERTY(BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
 	TSoftObjectPtr<class UPSDataAsset> ProgressionSystemDataAssetInternal;
 
 	/** Progression System component reference */

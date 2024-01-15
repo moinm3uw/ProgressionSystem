@@ -28,7 +28,7 @@ public:
 
 	/** Returns current saved progression. */
 	UFUNCTION(BlueprintCallable, Category="C++")
-	const FORCEINLINE FPSRowData& GetSavedProgressionRowData() const { return SavedProgressionRowDataInternal; }
+	const FORCEINLINE FPSRowData& GetSavedProgressionRowData() { return  SavedProgressionRowDataInternal; }
 
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++")
@@ -49,8 +49,9 @@ public:
 	* Protected properties
 	********************************************************************************************* */
 protected:
+
 	/** Progression System data asset */
-	UPROPERTY(Transient, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
+	UPROPERTY(BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
 	TSoftObjectPtr<UPSDataAsset> ProgressionSystemDataAssetInternal;
 
 	/** Created Main Menu widget. */
@@ -68,7 +69,7 @@ protected:
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
 	FPSRowData SavedProgressionRowDataInternal = FPSRowData::EmptyData;
-
+	
 	/** The current selected player */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Player Tag"))
 	FPlayerTag CurrentPlayerTagInternal = FPlayerTag::None;
@@ -108,13 +109,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void HandleEndGameState(class AMyPlayerState* MyPlayerState);
 
-	/** Is called to handle character possession event */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnCharacterPossessed(class APawn* MyPawn);
-
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
+	void OnPlayerTypeChanged(FPSRowData RowData);
 
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
@@ -123,12 +120,4 @@ protected:
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void DisplayLevelUIOverlay(bool IsLevelLocked);
-
-	/** Load game from save */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void LoadGameFromSave();
-
-	/** Set first element as current active */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void SetFirstElemetAsCurrent();
 };

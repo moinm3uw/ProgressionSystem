@@ -5,10 +5,6 @@
 #include "Components/PSHUDComponent.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Components/MySkeletalMeshComponent.h"
-#include "Controllers/MyPlayerController.h"
-#include "GameFramework/MyGameStateBase.h"
-#include "GameFramework/MyPlayerState.h"
-#include "LevelActors/PlayerCharacter.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
@@ -29,30 +25,13 @@ void UPSSpotComponent::BeginPlay()
 
 	PlayerSpotOnLevelInternal = GetMeshChecked();
 
-	// Listen states to spawn widgets
-	if (AMyGameStateBase* MyGameState = UMyBlueprintFunctionLibrary::GetMyGameState())
-	{
-		HandleGameState(MyGameState);
-	}
-	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
-	{
-		MyPC->OnGameStateCreated.AddUniqueDynamic(this, &ThisClass::HandleGameState);
-	}
+	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddUObject(this, &ThisClass::OnPlayerTypeChanged);
 
-	if (AMyPlayerState* MyPlayerState = UMyBlueprintFunctionLibrary::GetLocalPlayerState())
-	{
-		HandleEndGameState(MyPlayerState);
-	}
-
-	// Listen events on player type changed and Character spawned
-	if (APlayerCharacter* MyPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
-	{
-		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
-	}
-	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
-	{
-		MyPC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnCharacterPossessed);
-	}
+	MyProgressionSystemComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemComponent();
+	checkf(MyProgressionSystemComponentInternal, TEXT("ERROR: 'MyProgressionSystemComponentInterna is null'"));
+	CurrentProgressionRowDataInternal = MyProgressionSystemComponentInternal->GetSavedProgressionRowData();
+	
+	ChangeSpotVisibilityStatus();
 }
 
 UMySkeletalMeshComponent* UPSSpotComponent::GetMySkeletalMeshComponent() const
@@ -67,77 +46,24 @@ UMySkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
 	return *Mesh;
 }
 
-void UPSSpotComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
+void UPSSpotComponent::OnPlayerTypeChanged(FPSRowData RowData)
 {
-	if (CurrentGameState == ECurrentGameState::Menu)
-	{
-		// Locks and unlocks the spot depends on the current level progression status
-		ChangeSpotVisibilityStatus();
-	}
-}
-
-void UPSSpotComponent::OnEndGameStateChanged(EEndGameState EndGameState)
-{
-	if (EndGameState != EEndGameState::None)
-	{
-		// Locks and unlocks the spot depends on the current level progression status
-		ChangeSpotVisibilityStatus();
-	}
-}
-
-void UPSSpotComponent::HandleGameState(AMyGameStateBase* MyGameState)
-{
-	checkf(MyGameState, TEXT("ERROR: 'MyGameState' is null!"));
-
-	// Listen states to handle
-	MyGameState->OnGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnGameStateChanged);
-
-	if (MyGameState->GetCurrentGameState() == ECurrentGameState::Menu)
-	{
-		// Handle current game state initialized with delay
-		OnGameStateChanged(ECurrentGameState::Menu);
-	}
-	else
-	{
-		// Enter the game in Menu game state
-		MyGameState->ServerSetGameState(ECurrentGameState::Menu);
-	}
-}
-
-void UPSSpotComponent::HandleEndGameState(AMyPlayerState* MyPlayerState)
-{
-	checkf(MyPlayerState, TEXT("ERROR: 'MyGameState' is null!"));
-	MyPlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
-}
-
-void UPSSpotComponent::OnCharacterPossessed(APawn* MyPawn)
-{
-	if (APlayerCharacter* MyPlayerCharacter = Cast<APlayerCharacter>(MyPawn))
-	{
-		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
-
-		//Unsubscribe to ignore null events call
-		AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController();
-		MyPC->GetOnNewPawnNotifier().RemoveAll(this);
-	}
-}
-
-void UPSSpotComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
-{
+	CurrentProgressionRowDataInternal = RowData;
 	ChangeSpotVisibilityStatus();
 }
 
 void UPSSpotComponent::ChangeSpotVisibilityStatus()
 {
-	MyProgressionSystemComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemComponent();
-
 	// Locks and unlocks the spot depends on the current level progression status
-	if (MyProgressionSystemComponentInternal != nullptr)
-	{
+	
 		if (PlayerSpotOnLevelInternal)
 		{
-			CurrentProgressionRowDataInternal = MyProgressionSystemComponentInternal->GetSavedProgressionRowData();
-			PlayerSpotOnLevelInternal->SetActive(!CurrentProgressionRowDataInternal.IsLevelLocked);
+			if (CurrentProgressionRowDataInternal.IsLevelLocked)
+			{
+				PlayerSpotOnLevelInternal->SetActive(false);
+			} else if (CurrentProgressionRowDataInternal.IsLevelLocked == false)
+			{
+				PlayerSpotOnLevelInternal->SetActive(true);
+			}
 		}
-	}
 }

@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include "PSTypes.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PSWorldSubsystem.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, FPSRowData);
 /**
  * Implements the world subsystem to access different components in the module 
  */
@@ -18,6 +20,9 @@ public:
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
 
+	/* Delegate for informing row data changed */
+	FCurrentRowDataChanged OnCurrentRowDataChanged;
+	
 	/** Returns the data asset that contains all the assets of Progression System game feature.
 	 * @see UPSWorldSubsystem::PSDataAssetInternal. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
@@ -27,6 +32,15 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE class UPSHUDComponent* GetProgressionSystemComponent() const { return ProgressionSystemComponentInternal;	}
 
+	/** Returns a current row data */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE FPSRowData GetCurrentRowData() const { return SavedProgressionRowDataInternal; }
+
+	/** Returns a current save game instance */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE UPSSaveGameData* GetCurrentSaveGameData() const { return SaveGameInstanceInternal; }
+
+	/** Set the progression system component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent);
 
@@ -41,4 +55,44 @@ protected:
 	/** Progression System component reference*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Component"))
 	TObjectPtr<class UPSHUDComponent> ProgressionSystemComponentInternal = nullptr;
+
+	/** Store the current save game instance */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
+	TObjectPtr<class UPSSaveGameData> SaveGameInstanceInternal = nullptr;
+
+	/** The current Saved Progression of a player. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
+	FPSRowData SavedProgressionRowDataInternal = FPSRowData::EmptyData;
+
+	/** The Progression Data Table that is responsible for progression configuration. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Data Table"))
+	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
+	
+	/*********************************************************************************************
+	* Protected functions
+	********************************************************************************************* */
+protected:
+	
+	/** Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors */
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+
+	/** Is called to handle character possession event */
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnCharacterPossessed(class APawn* MyPawn);
+
+	/** Is called when a player has been changed */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
+
+	/** Load game from save */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void LoadGameFromSave();
+
+	/** Set first element as current active */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void SetFirstElemetAsCurrent();
+
+	/** Saves the progression to the local files */ 
+	UFUNCTION()
+	void SaveDataAsync();
 };
