@@ -44,10 +44,6 @@ protected:
 	 * May be called multiple times due to adding and removing from the hierarchy. */
 	virtual void NativeConstruct() override;
 
-	/** Progression System data asset */
-	UPROPERTY(BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TSoftObjectPtr<class UPSDataAsset> ProgressionSystemDataAssetInternal = nullptr;
-
 	/** Amount of Stars unlocked on a level */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Amount of Unlocked points debug"))
 	int32 AmountOfStarsUnlockedDebug = 0;

@@ -50,10 +50,6 @@ public:
 	********************************************************************************************* */
 protected:
 
-	/** Progression System data asset */
-	UPROPERTY(BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TSoftObjectPtr<UPSDataAsset> ProgressionSystemDataAssetInternal;
-
 	/** Created Main Menu widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
 	TObjectPtr<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;

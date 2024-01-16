@@ -23,9 +23,6 @@ void UPSSaveWidget::ConfigureWidgetText(FText endGameState, FText pointsGained, 
 void UPSSaveWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	ProgressionSystemDataAssetInternal = UPSWorldSubsystem::Get().GetPSDataAsset();
-	checkf(ProgressionSystemDataAssetInternal, TEXT("ERROR: 'ProgressionSystemDataAssetIntenral' is null'"));
 	
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);

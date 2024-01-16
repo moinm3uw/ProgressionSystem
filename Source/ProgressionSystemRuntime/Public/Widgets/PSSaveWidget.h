@@ -49,10 +49,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void OnConfirmationButtonPressed();
 
-	/** Progression System data asset */
-	UPROPERTY(BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TSoftObjectPtr<class UPSDataAsset> ProgressionSystemDataAssetInternal;
-
 	/** Progression System component reference */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression System Component"))
 	TObjectPtr<class UPSHUDComponent> ProgressionSystemComponentInternal = nullptr;

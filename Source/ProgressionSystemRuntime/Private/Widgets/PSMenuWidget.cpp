@@ -21,9 +21,9 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		for (int32 i = 0; i < AmountOfUnlockedPoints; i++)
 		{
 			UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-			if (ProgressionSystemDataAssetInternal)
+			if (UPSWorldSubsystem::Get().GetPSDataAsset())
 			{
-				ImageWidget->SetBrushFromTexture(ProgressionSystemDataAssetInternal->GetUnlockedProgressionIcon());	
+				ImageWidget->SetBrushFromTexture(UPSWorldSubsystem::Get().GetPSDataAsset()->GetUnlockedProgressionIcon());	
 			}
 			
 			// Load and set the image texture here using ImagePath or other methods
@@ -44,7 +44,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		for (int32 i = 0; i < AmountOfLockedPoints; i++)
 		{
 			UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-			ImageWidget->SetBrushFromTexture(ProgressionSystemDataAssetInternal->GetLockedProgressionIcon());
+			ImageWidget->SetBrushFromTexture(UPSWorldSubsystem::Get().GetPSDataAsset()->GetLockedProgressionIcon());
 			// Load and set the image texture here using ImagePath or other methods
 			HorizontalBox->AddChildToHorizontalBox(ImageWidget);
 			// Create the UHorizontalBoxSlot and assign it to the ImageWidget
@@ -71,9 +71,7 @@ void UPSMenuWidget::ClearImagesFromHorizontalBox()
 void UPSMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	ProgressionSystemDataAssetInternal = UPSWorldSubsystem::Get().GetPSDataAsset();
-	checkf(ProgressionSystemDataAssetInternal, TEXT("ERROR: 'ProgressionSystemDataAssetIntenral' is null'"));
+	
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);
 }

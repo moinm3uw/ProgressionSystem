@@ -41,10 +41,8 @@ void UPSHUDComponent::BeginPlay()
 
 	AMyHUD* MyHUD = Cast<AMyHUD>(GetOwner());
 	const AMyHUD& HUD = *MyHUD;
-	ProgressionSystemDataAssetInternal = UPSWorldSubsystem::Get().GetPSDataAsset();
-	checkf(ProgressionSystemDataAssetInternal, TEXT("ERROR: 'ProgressionSystemDataAssetIntenral' is null'"));
-	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(ProgressionSystemDataAssetInternal->GetProgressionMenuWidget(), true, 1);
-	ProgressionDataTableInternal = ProgressionSystemDataAssetInternal->GetProgressionDataTable();
+	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionMenuWidget(), true, 1);
+	ProgressionDataTableInternal = UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionDataTable();
 
 	// Listen states to spawn widgets
 	if (AMyGameStateBase* MyGameState = UMyBlueprintFunctionLibrary::GetMyGameState())
