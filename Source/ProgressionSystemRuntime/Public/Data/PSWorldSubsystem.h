@@ -45,7 +45,7 @@ public:
 	void SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent);
 
 protected:
-	/** Contains all the assets and tweaks of New Main Menu game feature.
+	/** Contains all the assets and tweaks of Progression System game feature.
 	 * Note: Since Subsystem is code-only, there is config property set in BasePSDataAssetInternal.ini.
 	 * Property is put to subsystem because its instance is created before any other object.
 	 * It can't be put to DevelopSettings class because it does work properly for MGF-modules. */
