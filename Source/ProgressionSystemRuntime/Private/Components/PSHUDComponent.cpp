@@ -9,8 +9,7 @@
 #include "ProgressionSystemRuntimeModule.h"
 #include "Blueprint/WidgetTree.h"
 #include "UI/MyHUD.h"
-#include "..\..\Public\Widgets\PSMenuWidget.h"
-#include "..\..\Public\Widgets\PSSaveWidget.h"
+#include "Widgets/PSMenuWidget.h"
 #include "Data/PSTypes.h"
 #include "Data/PSSaveGameData.h"
 #include "Data/PSWorldSubsystem.h"
@@ -18,7 +17,6 @@
 #include "GameFramework/MyGameStateBase.h"
 #include "GameFramework/MyPlayerState.h"
 #include "Kismet/GameplayStatics.h"
-#include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)

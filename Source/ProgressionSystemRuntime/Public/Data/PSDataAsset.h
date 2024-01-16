@@ -25,10 +25,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class UPSMenuWidget> GetProgressionMenuWidget() const { return ProgressionMenuWidgetInternal; }
 
-	/** Returns a progression save widget to be displayed in the end of game */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TSubclassOf<class UPSSaveWidget> GetProgressionSaveWidget() const { return ProgressionSaveWidgetInternal; }
-
 	/** Returns a locked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE UTexture2D* GetLockedProgressionIcon() const { return LockedProgressionIconInternal; }
@@ -41,10 +37,6 @@ protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
 	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
-
-	/**  Progression acquiring (adding, saving) widget */
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UPSSaveWidget> ProgressionSaveWidgetInternal = nullptr;
 
 	/** Main progression widget */
 	UPROPERTY(EditAnywhere)

@@ -54,10 +54,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
 	TObjectPtr<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
 
-	/** Created Save points widget. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Save Widget"))
-	TObjectPtr<class UPSSaveWidget> ProgressionSaveWidgetInternal = nullptr;
-
 	/** Store the save game instance */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
 	TObjectPtr<class UPSSaveGameData> SaveGameInstanceInternal = nullptr;
