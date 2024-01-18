@@ -120,12 +120,7 @@ void UPSHUDComponent::SaveCurrentGameProgression()
 			}
 		}
 	}
-	SaveDataAsync();
-}
-
-void UPSHUDComponent::SaveDataAsync()
-{
-	UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstanceInternal, SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex());
+	UPSWorldSubsystem::Get().SaveDataAsync();
 }
 
 FName UPSHUDComponent::GetProgressionRowName(ELevelType Map, FPlayerTag Character)
@@ -183,7 +178,7 @@ void UPSHUDComponent::NextLevelProgressionRowData()
 				FName NextProgressionName = CurrentIterator.Key();
 				SaveGameInstanceInternal->SavedProgressionRows[NextProgressionName].IsLevelLocked = false;
 
-				SaveDataAsync();
+				UPSWorldSubsystem::Get().SaveDataAsync();
 			}
 		}
 	}
