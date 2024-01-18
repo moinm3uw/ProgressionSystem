@@ -30,7 +30,7 @@ public:
 	
 	/** Returns a progression System component reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UPSHUDComponent* GetProgressionSystemComponent() const { return ProgressionSystemComponentInternal;	}
+	FORCEINLINE class UPSHUDComponent* GetProgressionSystemHUDComponent() const { return PSHUDComponentInternal;	}
 
 	/** Returns a current row data */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -53,8 +53,8 @@ protected:
 	TSoftObjectPtr<const class UPSDataAsset> PSDataAssetInternal;
 	
 	/** Progression System component reference*/
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Component"))
-	TObjectPtr<class UPSHUDComponent> ProgressionSystemComponentInternal = nullptr;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
+	TObjectPtr<class UPSHUDComponent> PSHUDComponentInternal = nullptr;
 
 	/** Store the current save game instance */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))

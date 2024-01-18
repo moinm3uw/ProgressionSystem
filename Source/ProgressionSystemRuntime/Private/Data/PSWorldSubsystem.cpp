@@ -43,7 +43,7 @@ const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 void UPSWorldSubsystem::SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent)
 {
 	checkf(MyProgressionSystemComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
-	ProgressionSystemComponentInternal = MyProgressionSystemComponent;
+	PSHUDComponentInternal = MyProgressionSystemComponent;
 }
 
 void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)

@@ -36,8 +36,8 @@ protected:
 	void ChangeSpotVisibilityStatus();
 
 	/** A Progression System Component */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "My Progression System Component"))
-	TObjectPtr<UPSHUDComponent> MyProgressionSystemComponentInternal = nullptr;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
+	TObjectPtr<UPSHUDComponent> PSHUDComponentInternal = nullptr;
 
 	/** A player skeletal mesh actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Player Spot On Level"))
