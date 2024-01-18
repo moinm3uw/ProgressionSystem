@@ -74,7 +74,7 @@ void UPSHUDComponent::SavePoints(ELevelType Map, FPlayerTag Character, EEndGameS
 	{
 		NextLevelProgressionRowData();
 	}
-
+	
 	SaveCurrentGameProgression();
 }
 
