@@ -30,7 +30,7 @@ public:
 
 	// Function to add images to the Horizontal Box
 	UFUNCTION(BlueprintCallable)
-	void AddImagesToHorizontalBox(int AmountOfUnlockedPoints, int AmountOfLockedPoints);
+	void AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints);
 
 	// Function to add images to the Horizontal Box
 	UFUNCTION(BlueprintCallable)
