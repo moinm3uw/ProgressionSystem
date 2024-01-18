@@ -13,14 +13,17 @@ public class ProgressionSystemRuntime : ModuleRules
 		PublicDependencyModuleNames.AddRange(new[]
 			{
 				"Core"
-				, "Bomber" // Is included in header files
 				, "UMG"
+				// Bomber modules
+				, "Bomber" // Is included in header files
 			}
 		);
 
 		PrivateDependencyModuleNames.AddRange(new[]
 			{
-				"CoreUObject", "Engine", "Slate", "SlateCore", "MyUtils" // Core
+				"CoreUObject", "Engine", "Slate", "SlateCore", // Core
+				// Bomber modules 
+				"MyUtils" 
 			}
 		);
 	}
