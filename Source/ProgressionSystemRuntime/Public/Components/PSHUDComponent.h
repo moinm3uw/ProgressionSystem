@@ -42,6 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SaveCurrentGameProgression();
 
+	/** Saves the data asynchronously to the save file */ 
 	UFUNCTION()
 	void SaveDataAsync();
 
