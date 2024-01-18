@@ -44,6 +44,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent);
 
+	/** Saves the progression to the local files */ 
+	UFUNCTION()
+	void SaveDataAsync();
+
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
 	 * Note: Since Subsystem is code-only, there is config property set in BasePSDataAssetInternal.ini.
@@ -92,7 +96,5 @@ protected:
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetFirstElemetAsCurrent();
 
-	/** Saves the progression to the local files */ 
-	UFUNCTION()
-	void SaveDataAsync();
+	
 };
