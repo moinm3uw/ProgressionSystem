@@ -69,7 +69,14 @@ void UPSHUDComponent::BeginPlay()
 void UPSHUDComponent::OnUnregister()
 {
 	Super::OnUnregister();
-	FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
+	
+	if (ProgressionMenuWidgetInternal)
+	{
+		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
+		ProgressionMenuWidgetInternal = nullptr;
+	}
+	
+	ProgressionMenuWidgetInternal = nullptr;
 	ProgressionDataTableInternal = nullptr;
 }
 
