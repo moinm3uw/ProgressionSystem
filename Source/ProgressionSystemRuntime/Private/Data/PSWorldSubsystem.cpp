@@ -73,6 +73,13 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	}
 }
 
+void UPSWorldSubsystem::Deinitialize()
+{
+	Super::Deinitialize();
+	PSHUDComponentInternal = nullptr;
+	ProgressionDataTableInternal = nullptr;
+}
+
 void UPSWorldSubsystem::OnCharacterPossessed(APawn* MyPawn)
 {
 	if (APlayerCharacter* MyPlayerCharacter = Cast<APlayerCharacter>(MyPawn))

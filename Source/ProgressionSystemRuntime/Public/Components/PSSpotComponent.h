@@ -27,6 +27,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	/** Clears all transient data created by this component. */
+	virtual void OnUnregister() override;
+
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPSRowData RowData);

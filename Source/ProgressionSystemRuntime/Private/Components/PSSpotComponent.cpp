@@ -34,6 +34,14 @@ void UPSSpotComponent::BeginPlay()
 	ChangeSpotVisibilityStatus();
 }
 
+void UPSSpotComponent::OnUnregister()
+{
+	Super::OnUnregister();
+	PSHUDComponentInternal = nullptr;
+	PlayerSpotOnLevelInternal = nullptr;
+	CurrentProgressionRowDataInternal = FPSRowData::EmptyData;
+}
+
 UMySkeletalMeshComponent* UPSSpotComponent::GetMySkeletalMeshComponent() const
 {
 	return GetOwner()->FindComponentByClass<UMySkeletalMeshComponent>();

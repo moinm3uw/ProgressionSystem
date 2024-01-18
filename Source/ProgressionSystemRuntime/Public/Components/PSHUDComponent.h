@@ -74,6 +74,9 @@ protected:
 	/** Called when the game starts. */
 	virtual void BeginPlay() override;
 
+	/** Clears all transient data created by this component. */
+	virtual void OnUnregister() override;
+
 	/** Returns a current progression row name */
 	UFUNCTION(BlueprintPure, Category="C++")
 	FName GetProgressionRowName(ELevelType Map, FPlayerTag Character);

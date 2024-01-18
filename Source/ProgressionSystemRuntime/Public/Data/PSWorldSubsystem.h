@@ -80,6 +80,9 @@ protected:
 	/** Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors */
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 
+	/** Clears all transient data created by this subsystem. */
+	virtual void Deinitialize() override;
+
 	/** Is called to handle character possession event */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnCharacterPossessed(class APawn* MyPawn);

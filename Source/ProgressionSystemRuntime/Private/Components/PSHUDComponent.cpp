@@ -18,6 +18,7 @@
 #include "GameFramework/MyPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "MyDataTable/MyDataTable.h"
+#include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
 
@@ -63,6 +64,13 @@ void UPSHUDComponent::BeginPlay()
 	SavedProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
 	
 	UpdateProgressionWidgetForPlayer();
+}
+
+void UPSHUDComponent::OnUnregister()
+{
+	Super::OnUnregister();
+	FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
+	ProgressionDataTableInternal = nullptr;
 }
 
 // Save the progression depends on EEndGameState
