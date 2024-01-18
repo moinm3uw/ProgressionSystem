@@ -23,5 +23,11 @@
 		}
 	],
 	"ExplicitlyLoaded": true,
-	"BuiltInInitialFeatureState": "Registered"
+	"BuiltInInitialFeatureState": "Registered",
+	"Plugins": [
+		{
+			"Name": "MyEditorUtils",
+			"Enabled": true
+		}
+	]
 }
