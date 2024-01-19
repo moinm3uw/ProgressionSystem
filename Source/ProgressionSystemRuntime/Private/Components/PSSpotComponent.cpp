@@ -54,7 +54,7 @@ UMySkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
 	return *Mesh;
 }
 
-void UPSSpotComponent::OnPlayerTypeChanged(FPSRowData RowData)
+void UPSSpotComponent::OnPlayerTypeChanged(const FPSRowData& RowData)
 {
 	CurrentProgressionRowDataInternal = RowData;
 	ChangeSpotVisibilityStatus();

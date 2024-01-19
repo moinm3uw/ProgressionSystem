@@ -245,7 +245,7 @@ void UPSHUDComponent::HandleEndGameState(AMyPlayerState* MyPlayerState)
 }
 
 // Handle events when player type changes
-void UPSHUDComponent::OnPlayerTypeChanged(FPSRowData RowData)
+void UPSHUDComponent::OnPlayerTypeChanged(const FPSRowData& RowData)
 {
 	CurrentPlayerTagInternal = RowData.Character;
 	SavedProgressionRowDataInternal = RowData;

@@ -14,7 +14,7 @@ UCLASS(BlueprintType, Blueprintable, Config = "ProgressionSystem", DefaultConfig
 class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
-	DECLARE_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, FPSRowData);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPSRowData&);
 public:
 	/** Returns this Subsystem, is checked and wil crash if can't be obtained.*/
 	static UPSWorldSubsystem& Get();

@@ -103,7 +103,7 @@ protected:
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(FPSRowData RowData);
+	void OnPlayerTypeChanged(const FPSRowData& RowData);
 
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))

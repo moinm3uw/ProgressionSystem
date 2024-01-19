@@ -108,6 +108,7 @@ void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 		}
 		SaveDataAsync();
 	}
+	
 	OnCurrentRowDataChanged.Broadcast(SavedProgressionRowDataInternal);
 }
 
