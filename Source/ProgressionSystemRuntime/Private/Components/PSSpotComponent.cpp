@@ -24,6 +24,7 @@ void UPSSpotComponent::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerSpotOnLevelInternal = GetMeshChecked();
+	checkf(PlayerSpotOnLevelInternal, TEXT("ERROR: 'PlayerSpotOnLevelInternal' is null"));
 
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 

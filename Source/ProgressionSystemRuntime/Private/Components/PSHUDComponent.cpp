@@ -41,7 +41,10 @@ void UPSHUDComponent::BeginPlay()
 	AMyHUD* MyHUD = Cast<AMyHUD>(GetOwner());
 	const AMyHUD& HUD = *MyHUD;
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionMenuWidget(), true, 1);
+	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	
 	ProgressionDataTableInternal = UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionDataTable();
+	checkf(ProgressionDataTableInternal, TEXT("ERROR: 'ProgressionDataTableInternal' is null"));
 
 	// Listen states to spawn widgets
 	if (AMyGameStateBase* MyGameState = UMyBlueprintFunctionLibrary::GetMyGameState())
@@ -61,6 +64,7 @@ void UPSHUDComponent::BeginPlay()
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetProgressionSystemComponent(this);
 	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 	SavedProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
 	
 	UpdateProgressionWidgetForPlayer();
@@ -170,6 +174,7 @@ void UPSHUDComponent::NextLevelProgressionRowData()
 			}
 		}
 
+		checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 		// Find the iterator for the current key
 		TMap<FName, FPSRowData>::TIterator CurrentIterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
 
@@ -201,6 +206,7 @@ void UPSHUDComponent::NextLevelProgressionRowData()
 // Listening game states changes events 
 void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 {
+	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 	// Show Progression Menu widget in Main Menu
 	ProgressionMenuWidgetInternal->SetVisibility(CurrentGameState == ECurrentGameState::Menu ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	if (CurrentGameState == ECurrentGameState::Menu)
@@ -257,6 +263,7 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 {
 	if (SaveGameInstanceInternal)
 	{
+		checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 		// reset amount of start for a level
 		ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
 
@@ -279,6 +286,7 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 // by default overlay is always displayed 
 void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 {
+	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 	if (IsLevelLocked)
 	{
 		// Level is locked show the blocking overlay

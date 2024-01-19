@@ -103,6 +103,5 @@ protected:
 	/** Set first element as current active */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetFirstElemetAsCurrent();
-
 	
 };

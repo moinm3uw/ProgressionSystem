@@ -15,6 +15,7 @@
 
 void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
 {
+	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
 	if (HorizontalBox)
 	{
 		// Loop to create and add images to the Horizontal Box for unlocked stars

@@ -124,6 +124,7 @@ void UPSWorldSubsystem::LoadGameFromSave()
 		// Save file does not exist
 		// do initial load from data table
 		TMap<FName, FPSRowData> SavedProgressionRows;
+		checkf(ProgressionDataTableInternal, TEXT("ERROR: 'ProgressionDataTableInternal' is null"));
 		UMyDataTable::GetRows(*ProgressionDataTableInternal, SavedProgressionRows);
 		SaveGameInstanceInternal = Cast<UPSSaveGameData>(UGameplayStatics::CreateSaveGameObject(UPSSaveGameData::StaticClass()));
 
