@@ -31,7 +31,7 @@ void UPSSpotComponent::BeginPlay()
 	PSHUDComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
 	checkf(PSHUDComponentInternal, TEXT("ERROR: 'MyProgressionSystemComponentInterna is null'"));
 	CurrentProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
-	
+
 	ChangeSpotVisibilityStatus();
 }
 
@@ -64,7 +64,6 @@ void UPSSpotComponent::OnPlayerTypeChanged(const FPSRowData& RowData)
 void UPSSpotComponent::ChangeSpotVisibilityStatus()
 {
 	// Locks and unlocks the spot depends on the current level progression status
-	
 	if (PlayerSpotOnLevelInternal)
 	{
 		PlayerSpotOnLevelInternal->SetActive(!CurrentProgressionRowDataInternal.IsLevelLocked);
