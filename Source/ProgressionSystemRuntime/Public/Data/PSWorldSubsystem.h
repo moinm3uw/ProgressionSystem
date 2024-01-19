@@ -75,7 +75,7 @@ protected:
 
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Data Table"))
-	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
+	TObjectPtr<const UDataTable> ProgressionDataTableInternal = nullptr;
 	
 	/*********************************************************************************************
 	* Protected functions
