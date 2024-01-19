@@ -43,12 +43,4 @@ protected:
 	/** Called after the underlying slate widget is constructed.
 	 * May be called multiple times due to adding and removing from the hierarchy. */
 	virtual void NativeConstruct() override;
-
-	/** Amount of Stars unlocked on a level */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Amount of Unlocked points debug"))
-	int32 AmountOfStarsUnlockedDebug = 0;
-
-	/** Amount of Stars locked on a level */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Amount of locked points debug"))
-	int32 AmountOfStarsLockedDebug = 0;
 };
