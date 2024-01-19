@@ -26,10 +26,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	static const UPSDataAsset* GetProgressionSystemDataAsset() { return &UPSDataAsset::Get(); }
 
-	/** Returns current saved progression. */
-	UFUNCTION(BlueprintCallable, Category="C++")
-	const FORCEINLINE FPSRowData& GetSavedProgressionRowData() { return  SavedProgressionRowDataInternal; }
-
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SavePoints(ELevelType Map, FPlayerTag Character, EEndGameState EndGameState);

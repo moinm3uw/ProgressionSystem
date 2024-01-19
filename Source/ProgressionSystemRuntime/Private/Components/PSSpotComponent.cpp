@@ -29,7 +29,7 @@ void UPSSpotComponent::BeginPlay()
 
 	PSHUDComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
 	checkf(PSHUDComponentInternal, TEXT("ERROR: 'MyProgressionSystemComponentInterna is null'"));
-	CurrentProgressionRowDataInternal = PSHUDComponentInternal->GetSavedProgressionRowData();
+	CurrentProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
 	
 	ChangeSpotVisibilityStatus();
 }
