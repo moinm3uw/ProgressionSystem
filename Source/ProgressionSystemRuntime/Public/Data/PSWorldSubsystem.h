@@ -39,7 +39,7 @@ public:
 
 	/** Returns a current row data */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE FPSRowData GetCurrentRowData() const { return SavedProgressionRowDataInternal; }
+	const FORCEINLINE FPSRowData GetCurrentRowData() { return SavedProgressionRowDataInternal; }
 
 	/** Returns a current save game instance */
 	UFUNCTION(BlueprintPure, Category = "C++")
