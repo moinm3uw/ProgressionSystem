@@ -65,14 +65,8 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus()
 {
 	// Locks and unlocks the spot depends on the current level progression status
 	
-		if (PlayerSpotOnLevelInternal)
-		{
-			if (CurrentProgressionRowDataInternal.IsLevelLocked)
-			{
-				PlayerSpotOnLevelInternal->SetActive(false);
-			} else if (CurrentProgressionRowDataInternal.IsLevelLocked == false)
-			{
-				PlayerSpotOnLevelInternal->SetActive(true);
-			}
-		}
+	if (PlayerSpotOnLevelInternal)
+	{
+		PlayerSpotOnLevelInternal->SetActive(!CurrentProgressionRowDataInternal.IsLevelLocked);
+	}
 }
