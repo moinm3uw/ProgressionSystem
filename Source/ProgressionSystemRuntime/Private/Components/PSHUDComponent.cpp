@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
-#include "Components\PSHUDComponent.h"
+#include "Components/PSHUDComponent.h"
 //---
 #include "Bomber.h"
 #include "Controllers/MyPlayerController.h"
@@ -42,7 +42,7 @@ void UPSHUDComponent::BeginPlay()
 	const AMyHUD& HUD = *MyHUD;
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionMenuWidget(), true, 1);
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
-	
+
 	ProgressionDataTableInternal = UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionDataTable();
 	checkf(ProgressionDataTableInternal, TEXT("ERROR: 'ProgressionDataTableInternal' is null"));
 
@@ -59,14 +59,14 @@ void UPSHUDComponent::BeginPlay()
 	{
 		HandleEndGameState(MyPlayerState);
 	}
-	
+
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetProgressionSystemComponent(this);
 	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
 	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 	SavedProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
-	
+
 	UpdateProgressionWidgetForPlayer();
 }
 
@@ -78,7 +78,7 @@ void UPSHUDComponent::OnUnregister()
 		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
 		ProgressionMenuWidgetInternal = nullptr;
 	}
-	
+
 	ProgressionMenuWidgetInternal = nullptr;
 	ProgressionDataTableInternal = nullptr;
 }
@@ -92,7 +92,7 @@ void UPSHUDComponent::SavePoints(ELevelType Map, FPlayerTag Character, EEndGameS
 	{
 		NextLevelProgressionRowData();
 	}
-	
+
 	SaveCurrentGameProgression();
 }
 

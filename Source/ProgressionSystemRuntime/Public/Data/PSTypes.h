@@ -14,12 +14,12 @@ USTRUCT(BlueprintType)
 struct FPSRowData : public FTableRowBase
 {
 	GENERATED_BODY()
-	
+
 	static const FPSRowData EmptyData;
 
 	/** Default constructor. */
 	FPSRowData() = default;
-	
+
 	/** Stores the value of the map for progression system component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	ELevelType Map = ELevelType::None;

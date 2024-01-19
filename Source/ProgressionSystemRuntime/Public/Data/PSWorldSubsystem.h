@@ -14,28 +14,27 @@ UCLASS(BlueprintType, Blueprintable, Config = "ProgressionSystem", DefaultConfig
 class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
-	
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPSRowData&, SavedProgressionRowDataInternal);
-	
+
 public:
 	/** Returns this Subsystem, is checked and wil crash if can't be obtained.*/
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
 
-	
-	
+
 	/* Delegate for informing row data changed */
 	UPROPERTY(BlueprintAssignable, Category = "C++")
 	FCurrentRowDataChanged OnCurrentRowDataChanged;
-	
+
 	/** Returns the data asset that contains all the assets of Progression System game feature.
 	 * @see UPSWorldSubsystem::PSDataAssetInternal. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
 	const class UPSDataAsset* GetPSDataAsset() const;
-	
+
 	/** Returns a progression System component reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UPSHUDComponent* GetProgressionSystemHUDComponent() const { return PSHUDComponentInternal;	}
+	FORCEINLINE class UPSHUDComponent* GetProgressionSystemHUDComponent() const { return PSHUDComponentInternal; }
 
 	/** Returns a current row data */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -49,7 +48,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent);
 
-	/** Saves the progression to the local files */ 
+	/** Saves the progression to the local files */
 	UFUNCTION()
 	void SaveDataAsync();
 
@@ -60,7 +59,7 @@ protected:
 	 * It can't be put to DevelopSettings class because it does work properly for MGF-modules. */
 	UPROPERTY(Config, VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
 	TSoftObjectPtr<const class UPSDataAsset> PSDataAssetInternal;
-	
+
 	/** Progression System component reference*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
 	TObjectPtr<class UPSHUDComponent> PSHUDComponentInternal = nullptr;
@@ -76,12 +75,11 @@ protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Data Table"))
 	TObjectPtr<const UDataTable> ProgressionDataTableInternal = nullptr;
-	
+
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */
 protected:
-	
 	/** Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors */
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 
@@ -103,5 +101,4 @@ protected:
 	/** Set first element as current active */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetFirstElemetAsCurrent();
-	
 };

@@ -42,7 +42,6 @@ public:
 	* Protected properties
 	********************************************************************************************* */
 protected:
-
 	/** Created Main Menu widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
 	TObjectPtr<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
@@ -54,7 +53,7 @@ protected:
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
 	FPSRowData SavedProgressionRowDataInternal = FPSRowData::EmptyData;
-	
+
 	/** The current selected player */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Player Tag"))
 	FPlayerTag CurrentPlayerTagInternal = FPlayerTag::None;

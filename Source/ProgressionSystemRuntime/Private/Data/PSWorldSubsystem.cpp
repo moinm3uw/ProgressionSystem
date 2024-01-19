@@ -49,7 +49,7 @@ void UPSWorldSubsystem::SetProgressionSystemComponent(UPSHUDComponent* MyProgres
 void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-	
+
 	// Listen events on player type changed and Character spawned
 	if (APlayerCharacter* MyPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
 	{
@@ -66,8 +66,9 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	if (PSDataAssetInternal)
 	{
 		ProgressionDataTableInternal = PSDataAssetInternal->GetProgressionDataTable();
-		LoadGameFromSave();	
-	} else
+		LoadGameFromSave();
+	}
+	else
 	{
 		UE_LOG(LogProgressionSystem, Warning, TEXT("PSDataAssetInternal null"))
 	}
@@ -108,7 +109,7 @@ void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 		}
 		SaveDataAsync();
 	}
-	
+
 	OnCurrentRowDataChanged.Broadcast(SavedProgressionRowDataInternal);
 }
 
@@ -150,7 +151,7 @@ void UPSWorldSubsystem::SetFirstElemetAsCurrent()
 			SavedProgressionRowDataInternal = Iterator.Value();
 			SavedProgressionRowDataInternal.IsLevelLocked = false;
 			Iterator.Value().IsLevelLocked = false;
-		}	
+		}
 	}
 	SaveDataAsync();
 }

@@ -24,9 +24,9 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 			UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
 			if (UPSWorldSubsystem::Get().GetPSDataAsset())
 			{
-				ImageWidget->SetBrushFromTexture(UPSWorldSubsystem::Get().GetPSDataAsset()->GetUnlockedProgressionIcon());	
+				ImageWidget->SetBrushFromTexture(UPSWorldSubsystem::Get().GetPSDataAsset()->GetUnlockedProgressionIcon());
 			}
-			
+
 			// Load and set the image texture here using ImagePath or other methods
 			HorizontalBox->AddChildToHorizontalBox(ImageWidget);
 
@@ -72,7 +72,7 @@ void UPSMenuWidget::ClearImagesFromHorizontalBox()
 void UPSMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);
 }
