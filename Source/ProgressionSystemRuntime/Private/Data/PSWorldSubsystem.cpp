@@ -144,18 +144,13 @@ void UPSWorldSubsystem::SetFirstElemetAsCurrent()
 		TMap<FName, FPSRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
 
 		// Check if the iterator is pointing to a valid position
-		if (Iterator)
+		if (ensureMsgf(Iterator, TEXT("Assert: The TMap is empty.")))
 		{
 			// Access the key and value of the first element
 			SavedProgressionRowDataInternal = Iterator.Value();
 			SavedProgressionRowDataInternal.IsLevelLocked = false;
 			Iterator.Value().IsLevelLocked = false;
-		}		
-		else
-		{
-			// The TMap is empty
-			UE_LOG(LogTemp, Warning, TEXT("The TMap is empty."));
-		}		
+		}	
 	}
 	SaveDataAsync();
 }
