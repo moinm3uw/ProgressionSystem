@@ -161,5 +161,6 @@ void UPSWorldSubsystem::SetFirstElemetAsCurrent()
 
 void UPSWorldSubsystem::SaveDataAsync()
 {
+	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstanceInternal, SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex());
 }
