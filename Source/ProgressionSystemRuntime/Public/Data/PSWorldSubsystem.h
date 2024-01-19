@@ -6,7 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "PSWorldSubsystem.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, FPSRowData);
+
 /**
  * Implements the world subsystem to access different components in the module 
  */
@@ -14,7 +14,7 @@ UCLASS(BlueprintType, Blueprintable, Config = "ProgressionSystem", DefaultConfig
 class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
-
+	DECLARE_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, FPSRowData);
 public:
 	/** Returns this Subsystem, is checked and wil crash if can't be obtained.*/
 	static UPSWorldSubsystem& Get();
