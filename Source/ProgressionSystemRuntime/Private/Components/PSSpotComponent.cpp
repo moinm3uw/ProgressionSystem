@@ -25,7 +25,7 @@ void UPSSpotComponent::BeginPlay()
 
 	PlayerSpotOnLevelInternal = GetMeshChecked();
 
-	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddUObject(this, &ThisClass::OnPlayerTypeChanged);
+	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 
 	PSHUDComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
 	checkf(PSHUDComponentInternal, TEXT("ERROR: 'MyProgressionSystemComponentInterna is null'"));

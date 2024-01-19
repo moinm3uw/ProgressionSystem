@@ -57,7 +57,7 @@ void UPSHUDComponent::BeginPlay()
 		HandleEndGameState(MyPlayerState);
 	}
 	
-	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddUObject(this, &ThisClass::OnPlayerTypeChanged);
+	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetProgressionSystemComponent(this);
 	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();

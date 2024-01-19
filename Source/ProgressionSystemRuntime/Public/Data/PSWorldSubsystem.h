@@ -14,13 +14,18 @@ UCLASS(BlueprintType, Blueprintable, Config = "ProgressionSystem", DefaultConfig
 class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
-	DECLARE_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPSRowData&);
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPSRowData&, SavedProgressionRowDataInternal);
+	
 public:
 	/** Returns this Subsystem, is checked and wil crash if can't be obtained.*/
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
 
+	
+	
 	/* Delegate for informing row data changed */
+	UPROPERTY(BlueprintAssignable, Category = "C++")
 	FCurrentRowDataChanged OnCurrentRowDataChanged;
 	
 	/** Returns the data asset that contains all the assets of Progression System game feature.
