@@ -6,7 +6,6 @@
 #include "Controllers/MyPlayerController.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 #include "Data/PSDataAsset.h"
-#include "ProgressionSystemRuntimeModule.h"
 #include "Blueprint/WidgetTree.h"
 #include "UI/MyHUD.h"
 #include "Widgets/PSMenuWidget.h"
@@ -16,7 +15,6 @@
 #include "Components/Image.h"
 #include "GameFramework/MyGameStateBase.h"
 #include "GameFramework/MyPlayerState.h"
-#include "Kismet/GameplayStatics.h"
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 

@@ -2,7 +2,6 @@
 
 #include "Data/PSWorldSubsystem.h"
 
-#include "ProgressionSystemRuntimeModule.h"
 #include "Controllers/MyPlayerController.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
