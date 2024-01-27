@@ -30,10 +30,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SavePoints(ELevelType Map, FPlayerTag Character, EEndGameState EndGameState);
 
-	/** Returns the endgame reward. */
-	UFUNCTION(BlueprintCallable, Category="C++")
-	int32 GetProgressionReward(ELevelType Map, FPlayerTag Character, EEndGameState EndGameState);
-
 	/** Saves the current progression. */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SaveCurrentGameProgression();
@@ -58,10 +54,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Player Tag"))
 	FPlayerTag CurrentPlayerTagInternal = FPlayerTag::None;
 
-	/** The Progression Data Table that is responsible for progression configuration. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Data Table"))
-	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
-
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */
@@ -71,10 +63,6 @@ protected:
 
 	/** Clears all transient data created by this component. */
 	virtual void OnUnregister() override;
-
-	/** Returns a current progression row name */
-	UFUNCTION(BlueprintPure, Category="C++")
-	FName GetProgressionRowName(ELevelType Map, FPlayerTag Character);
 
 	/** */
 	UFUNCTION(BlueprintCallable, Category="C++")

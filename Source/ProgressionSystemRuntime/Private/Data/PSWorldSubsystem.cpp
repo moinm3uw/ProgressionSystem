@@ -161,3 +161,19 @@ void UPSWorldSubsystem::SaveDataAsync()
 	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstanceInternal, SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex());
 }
+
+// Returns rewards from data table for each type of game endings 
+int32 UPSWorldSubsystem::GetProgressionReward(EEndGameState EndGameState)
+{
+	switch (EndGameState)
+	{
+	case EEndGameState::Win:
+		return SavedProgressionRowDataInternal.WinReward;
+	case EEndGameState::Draw:
+		return SavedProgressionRowDataInternal.DrawReward;
+	case EEndGameState::Lose:
+		return SavedProgressionRowDataInternal.LossReward;
+	default:
+		return 0;
+	}
+}

@@ -43,9 +43,6 @@ void UPSHUDComponent::BeginPlay()
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionMenuWidget(), true, 1);
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 
-	ProgressionDataTableInternal = UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionDataTable();
-	checkf(ProgressionDataTableInternal, TEXT("ERROR: 'ProgressionDataTableInternal' is null"));
-
 	// Listen states to spawn widgets
 	if (AMyGameStateBase* MyGameState = UMyBlueprintFunctionLibrary::GetMyGameState())
 	{
@@ -80,13 +77,12 @@ void UPSHUDComponent::OnUnregister()
 	}
 
 	ProgressionMenuWidgetInternal = nullptr;
-	ProgressionDataTableInternal = nullptr;
 }
 
 // Save the progression depends on EEndGameState
 void UPSHUDComponent::SavePoints(ELevelType Map, FPlayerTag Character, EEndGameState EndGameState)
 {
-	SavedProgressionRowDataInternal.CurrentLevelProgression += GetProgressionReward(Map, Character, EndGameState);
+	SavedProgressionRowDataInternal.CurrentLevelProgression += UPSWorldSubsystem::Get().GetProgressionReward(EndGameState);
 
 	if (SavedProgressionRowDataInternal.CurrentLevelProgression >= SavedProgressionRowDataInternal.PointsToUnlock)
 	{
@@ -94,29 +90,6 @@ void UPSHUDComponent::SavePoints(ELevelType Map, FPlayerTag Character, EEndGameS
 	}
 
 	SaveCurrentGameProgression();
-}
-
-// Returns rewards from data table for each type of game endings 
-int32 UPSHUDComponent::GetProgressionReward(ELevelType Map, FPlayerTag Character, EEndGameState EndGameState)
-{
-	FName CurrentProgressionRowName = GetProgressionRowName(Map, Character);
-	FPSRowData* ProgressionRowData = ProgressionDataTableInternal->FindRow<FPSRowData>(CurrentProgressionRowName, "Finding a needed row");
-	if (!ProgressionRowData)
-	{
-		return 0;
-	}
-
-	switch (EndGameState)
-	{
-	case EEndGameState::Win:
-		return ProgressionRowData->WinReward;
-	case EEndGameState::Draw:
-		return ProgressionRowData->DrawReward;
-	case EEndGameState::Lose:
-		return ProgressionRowData->LossReward;
-	default:
-		return 0;
-	}
 }
 
 // Finds current game progression and save to save file
@@ -139,24 +112,6 @@ void UPSHUDComponent::SaveCurrentGameProgression()
 		}
 	}
 	UPSWorldSubsystem::Get().SaveDataAsync();
-}
-
-FName UPSHUDComponent::GetProgressionRowName(ELevelType Map, FPlayerTag Character)
-{
-	FName CurrentProgressionRowName;
-	TArray<FName> RowNames = ProgressionDataTableInternal->GetRowNames();
-	for (auto RowName : RowNames)
-	{
-		FPSRowData* Row = ProgressionDataTableInternal->FindRow<FPSRowData>(RowName, "Finding progression row name");
-		if (Row)
-		{
-			if (Row->Map == Map && Row->Character == Character)
-			{
-				CurrentProgressionRowName = RowName;
-			}
-		}
-	}
-	return CurrentProgressionRowName;
 }
 
 // Find next item in the level from current. TMap represents levels in savefile 
