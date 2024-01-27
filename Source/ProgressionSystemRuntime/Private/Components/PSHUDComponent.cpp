@@ -36,8 +36,6 @@ void UPSHUDComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogProgressionSystem, Warning, TEXT("--- I'm running ---"));
-
 	AMyHUD* MyHUD = Cast<AMyHUD>(GetOwner());
 	const AMyHUD& HUD = *MyHUD;
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSWorldSubsystem::Get().GetPSDataAsset()->GetProgressionMenuWidget(), true, 1);
