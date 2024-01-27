@@ -63,14 +63,10 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	// requires to be executed to guarntee that data asset will be loaded from the ini file
 	// otherwise the data asset file will not be loaded at fresh (heaviest) load of UE
 	PSDataAssetInternal = GetPSDataAsset();
-	if (PSDataAssetInternal)
+	if (ensureMsgf(PSDataAssetInternal, TEXT("ASSERT: PSDataAssetInternal null")))
 	{
 		ProgressionDataTableInternal = PSDataAssetInternal->GetProgressionDataTable();
 		LoadGameFromSave();
-	}
-	else
-	{
-		UE_LOG(LogProgressionSystem, Warning, TEXT("PSDataAssetInternal null"))
 	}
 }
 
