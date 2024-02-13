@@ -43,7 +43,7 @@ public:
 
 	/** Set the progression system component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent);
+	void SetHUDComponent(UPSHUDComponent* MyHUDComponent);
 
 	/** Saves the progression to the local files */
 	UFUNCTION()

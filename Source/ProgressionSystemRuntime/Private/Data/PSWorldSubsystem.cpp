@@ -47,10 +47,10 @@ const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 	return PSDataAssetInternal.LoadSynchronous();
 }
 
-void UPSWorldSubsystem::SetProgressionSystemComponent(UPSHUDComponent* MyProgressionSystemComponent)
+void UPSWorldSubsystem::SetHUDComponent(UPSHUDComponent* MyHUDComponent)
 {
-	checkf(MyProgressionSystemComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
-	PSHUDComponentInternal = MyProgressionSystemComponent;
+	checkf(MyHUDComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
+	PSHUDComponentInternal = MyHUDComponent;
 }
 
 void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)

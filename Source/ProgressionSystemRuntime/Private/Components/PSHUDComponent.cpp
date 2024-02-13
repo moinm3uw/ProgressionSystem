@@ -55,7 +55,7 @@ void UPSHUDComponent::BeginPlay()
 
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 	// Save reference of this component to the world subsystem
-	UPSWorldSubsystem::Get().SetProgressionSystemComponent(this);
+	UPSWorldSubsystem::Get().SetHUDComponent(this);
 
 	UpdateProgressionWidgetForPlayer();
 }
