@@ -16,12 +16,13 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPSRowData&, SavedProgressionRowData);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPlayerTag, SavedProgressionRowData);
 
 	/** Returns this Subsystem, is checked and wil crash if can't be obtained.*/
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
 
+	const FPSRowData& GetCurrentRow() const;
 
 	/* Delegate for informing row data changed */
 	UPROPERTY(BlueprintAssignable, Category = "C++")

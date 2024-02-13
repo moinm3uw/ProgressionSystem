@@ -33,6 +33,14 @@ UPSWorldSubsystem& UPSWorldSubsystem::Get(const UObject& WorldContextObject)
 	return *ThisSubsystem;
 }
 
+const FPSRowData& UPSWorldSubsystem::GetCurrentRow() const
+{
+	const UPSSaveGameData* SaveGameInstance = GetCurrentSaveGameData();
+	checkf(SaveGameInstance, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
+
+	return SaveGameInstance->GetCurrentRow();
+}
+
 // Returns the data asset that contains all the assets of Progression System game feature
 const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 {
@@ -90,22 +98,8 @@ void UPSWorldSubsystem::OnCharacterPossessed(APawn* MyPawn)
 
 void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
-	if (SaveGameInstanceInternal)
-	{
-		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
-		{
-			FName Key = KeyValue.Key;
-			FPSRowData RowData = KeyValue.Value;
-
-			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == PlayerTag)
-			{
-				SavedProgressionRowDataInternal = SaveGameInstanceInternal->SavedProgressionRows[Key];
-			}
-		}
-		SaveDataAsync();
-	}
-
-	OnCurrentRowDataChanged.Broadcast(SavedProgressionRowDataInternal);
+	SaveGameInstanceInternal->SetRowByTag(PlayerTag);
+	OnCurrentRowDataChanged.Broadcast(PlayerTag);
 }
 
 void UPSWorldSubsystem::LoadGameFromSave()
@@ -126,27 +120,21 @@ void UPSWorldSubsystem::LoadGameFromSave()
 
 		if (SaveGameInstanceInternal)
 		{
-			SaveGameInstanceInternal->SavedProgressionRows = SavedProgressionRows;
+			SaveGameInstanceInternal->SetProgressionMap(SavedProgressionRows);
 		}
 	}
 	SetFirstElemetAsCurrent();
 }
 
+// Always set first levels as unlocked on begin play
 void UPSWorldSubsystem::SetFirstElemetAsCurrent()
 {
 	if (SaveGameInstanceInternal)
 	{
-		// Create an iterator for the TMap
-		TMap<FName, FPSRowData>::TIterator Iterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
-
-		// Check if the iterator is pointing to a valid position
-		if (ensureMsgf(Iterator, TEXT("Assert: The TMap is empty.")))
-		{
-			// Access the key and value of the first element
-			SavedProgressionRowDataInternal = Iterator.Value();
-			SavedProgressionRowDataInternal.IsLevelLocked = false;
-			Iterator.Value().IsLevelLocked = false;
-		}
+		constexpr int32 FirstElementIndex = 0;
+		SaveGameInstanceInternal->SetCurrentProgressionRowByIndex(FirstElementIndex);
+		const FName RowName = SaveGameInstanceInternal->GetCurrentRowName();
+		SaveGameInstanceInternal->UnlockLevelByName(RowName);
 	}
 	SaveDataAsync();
 }

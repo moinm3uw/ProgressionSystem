@@ -56,9 +56,6 @@ void UPSHUDComponent::BeginPlay()
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetProgressionSystemComponent(this);
-	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
-	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
-	SavedProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
 
 	UpdateProgressionWidgetForPlayer();
 }
@@ -76,82 +73,13 @@ void UPSHUDComponent::OnUnregister()
 }
 
 // Save the progression depends on EEndGameState
-void UPSHUDComponent::SavePoints(ELevelType Map, FPlayerTag Character, EEndGameState EndGameState)
+void UPSHUDComponent::SavePoints(EEndGameState EndGameState)
 {
-	SavedProgressionRowDataInternal.CurrentLevelProgression += UPSWorldSubsystem::Get().GetProgressionReward(EndGameState);
+	// @h4rdmol to move to Subsystem instead of hud
+	UPSSaveGameData* SaveGameInstance = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	checkf(SaveGameInstance, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 
-	if (SavedProgressionRowDataInternal.CurrentLevelProgression >= SavedProgressionRowDataInternal.PointsToUnlock)
-	{
-		NextLevelProgressionRowData();
-	}
-
-	SaveCurrentGameProgression();
-}
-
-// Finds current game progression and save to save file
-void UPSHUDComponent::SaveCurrentGameProgression()
-{
-	if (SaveGameInstanceInternal)
-	{
-		SaveGameInstanceInternal->SavedProgressionRowDataInternal = SavedProgressionRowDataInternal;
-
-		//find in Save current FProgressionRow struct and save
-		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
-		{
-			FName Key = KeyValue.Key;
-			FPSRowData RowData = KeyValue.Value;
-
-			if (RowData.Map == UMyBlueprintFunctionLibrary::GetLevelType() && RowData.Character == SavedProgressionRowDataInternal.Character)
-			{
-				SaveGameInstanceInternal->SavedProgressionRows[Key] = SavedProgressionRowDataInternal;
-			}
-		}
-	}
-	UPSWorldSubsystem::Get().SaveDataAsync();
-}
-
-// Find next item in the level from current. TMap represents levels in savefile 
-void UPSHUDComponent::NextLevelProgressionRowData()
-{
-	FName Key;
-
-	if (SaveGameInstanceInternal)
-	{
-		for (const auto& KeyValue : SaveGameInstanceInternal->SavedProgressionRows)
-		{
-			if (SavedProgressionRowDataInternal.Map == KeyValue.Value.Map && SavedProgressionRowDataInternal.Character == KeyValue.Value.Character)
-			{
-				Key = KeyValue.Key;
-			}
-		}
-
-		checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
-		// Find the iterator for the current key
-		TMap<FName, FPSRowData>::TIterator CurrentIterator = SaveGameInstanceInternal->SavedProgressionRows.CreateIterator();
-
-		// Iterate through the map until the specified key is found
-		while (CurrentIterator && CurrentIterator.Key() != Key)
-		{
-			++CurrentIterator;
-		}
-
-		// Check if the iterator is pointing to a valid position
-		if (CurrentIterator)
-		{
-			// Move to the next element
-			++CurrentIterator;
-
-			// Check if the iterator is pointing to a valid position (not at the end)
-			if (CurrentIterator)
-			{
-				// Access the key and value using the iterator
-				FName NextProgressionName = CurrentIterator.Key();
-				SaveGameInstanceInternal->SavedProgressionRows[NextProgressionName].IsLevelLocked = false;
-
-				UPSWorldSubsystem::Get().SaveDataAsync();
-			}
-		}
-	}
+	SaveGameInstance->SavePoints(EndGameState);
 }
 
 // Listening game states changes events 
@@ -171,7 +99,7 @@ void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 {
 	if (EndGameState != EEndGameState::None)
 	{
-		SavePoints(UMyBlueprintFunctionLibrary::GetLevelType(), SavedProgressionRowDataInternal.Character, EndGameState);
+		SavePoints(EndGameState);
 	}
 }
 
@@ -202,35 +130,32 @@ void UPSHUDComponent::HandleEndGameState(AMyPlayerState* MyPlayerState)
 }
 
 // Handle events when player type changes
-void UPSHUDComponent::OnPlayerTypeChanged(const FPSRowData& RowData)
+void UPSHUDComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
-	CurrentPlayerTagInternal = RowData.Character;
-	SavedProgressionRowDataInternal = RowData;
 	UpdateProgressionWidgetForPlayer();
 }
 
 // Refresh the main menu progression widget player 
 void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 {
-	if (SaveGameInstanceInternal)
-	{
-		checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
-		// reset amount of start for a level
-		ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
+	const FPSRowData& CurrentRowData = UPSWorldSubsystem::Get().GetCurrentRow();
+	// check if empty returned Row from GetCurrentRow 
+	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	// reset amount of start for a level
+	ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
 
-		//set updated amount of stars
-		if (SavedProgressionRowDataInternal.CurrentLevelProgression >= SavedProgressionRowDataInternal.PointsToUnlock)
-		{
-			// set required points (stars)  to achieve for a level  
-			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.PointsToUnlock, 0);
-		}
-		else
-		{
-			// Calculate the unlocked against locked points (stars) 
-			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(SavedProgressionRowDataInternal.CurrentLevelProgression, SavedProgressionRowDataInternal.PointsToUnlock - SavedProgressionRowDataInternal.CurrentLevelProgression); // Listen game state changes events 
-		}
-		DisplayLevelUIOverlay(SavedProgressionRowDataInternal.IsLevelLocked);
+	//set updated amount of stars
+	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)
+	{
+		// set required points (stars)  to achieve for a level  
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.PointsToUnlock, 0);
 	}
+	else
+	{
+		// Calculate the unlocked against locked points (stars) 
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression); // Listen game state changes events 
+	}
+	DisplayLevelUIOverlay(CurrentRowData.IsLevelLocked);
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level

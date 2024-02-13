@@ -49,6 +49,6 @@ struct FPSRowData : public FTableRowBase
 	int32 LossReward = 0;
 
 	/** Defines if level is locked or not */
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	bool IsLevelLocked = true;
 };

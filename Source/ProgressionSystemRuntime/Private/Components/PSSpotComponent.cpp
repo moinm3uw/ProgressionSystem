@@ -4,6 +4,7 @@
 
 #include "Components/PSHUDComponent.h"
 #include "Data/PSWorldSubsystem.h"
+#include "Data/PSSaveGameData.h"
 #include "Components/MySkeletalMeshComponent.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
@@ -30,7 +31,9 @@ void UPSSpotComponent::BeginPlay()
 
 	PSHUDComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
 	checkf(PSHUDComponentInternal, TEXT("ERROR: 'MyProgressionSystemComponentInterna is null'"));
-	CurrentProgressionRowDataInternal = UPSWorldSubsystem::Get().GetCurrentRowData();
+
+	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 
 	ChangeSpotVisibilityStatus();
 }
@@ -55,9 +58,8 @@ UMySkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
 	return *Mesh;
 }
 
-void UPSSpotComponent::OnPlayerTypeChanged(const FPSRowData& RowData)
+void UPSSpotComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
-	CurrentProgressionRowDataInternal = RowData;
 	ChangeSpotVisibilityStatus();
 }
 
@@ -66,6 +68,6 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus()
 	// Locks and unlocks the spot depends on the current level progression status
 	if (PlayerSpotOnLevelInternal)
 	{
-		PlayerSpotOnLevelInternal->SetActive(!CurrentProgressionRowDataInternal.IsLevelLocked);
+		PlayerSpotOnLevelInternal->SetActive(!SaveGameInstanceInternal->GetCurrentRow().IsLevelLocked);
 	}
 }

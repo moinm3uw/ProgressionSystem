@@ -32,7 +32,7 @@ protected:
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(const FPSRowData& RowData);
+	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
 
 	/** Locks the player spot when progression for level achieved */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta=(BlueprintProtected))
@@ -49,4 +49,8 @@ protected:
 	/** Current Progression  */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Progression Row Data"))
 	FPSRowData CurrentProgressionRowDataInternal = FPSRowData::EmptyData;
+
+	/** Store the save game instance */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
+	TObjectPtr<class UPSSaveGameData> SaveGameInstanceInternal = nullptr;
 };
