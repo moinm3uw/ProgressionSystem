@@ -72,7 +72,6 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	PSDataAssetInternal = GetPSDataAsset();
 	if (ensureMsgf(PSDataAssetInternal, TEXT("ASSERT: PSDataAssetInternal null")))
 	{
-		ProgressionDataTableInternal = PSDataAssetInternal->GetProgressionDataTable();
 		LoadGameFromSave();
 	}
 }
@@ -81,7 +80,6 @@ void UPSWorldSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
 	PSHUDComponentInternal = nullptr;
-	ProgressionDataTableInternal = nullptr;
 }
 
 void UPSWorldSubsystem::OnCharacterPossessed(APawn* MyPawn)
@@ -114,8 +112,9 @@ void UPSWorldSubsystem::LoadGameFromSave()
 		// Save file does not exist
 		// do initial load from data table
 		TMap<FName, FPSRowData> SavedProgressionRows;
-		checkf(ProgressionDataTableInternal, TEXT("ERROR: 'ProgressionDataTableInternal' is null"));
-		UMyDataTable::GetRows(*ProgressionDataTableInternal, SavedProgressionRows);
+		UDataTable* ProgressionDataTable = PSDataAssetInternal->GetProgressionDataTable();
+		checkf(ProgressionDataTable, TEXT("ERROR: 'ProgressionDataTableInternal' is null"));
+		UMyDataTable::GetRows(*ProgressionDataTable, SavedProgressionRows);
 		SaveGameInstanceInternal = Cast<UPSSaveGameData>(UGameplayStatics::CreateSaveGameObject(UPSSaveGameData::StaticClass()));
 
 		if (SaveGameInstanceInternal)

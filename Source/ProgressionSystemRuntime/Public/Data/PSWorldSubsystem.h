@@ -73,10 +73,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
 	FPSRowData SavedProgressionRowDataInternal = FPSRowData::EmptyData;
 
-	/** The Progression Data Table that is responsible for progression configuration. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Data Table"))
-	TObjectPtr<const UDataTable> ProgressionDataTableInternal = nullptr;
-
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */
