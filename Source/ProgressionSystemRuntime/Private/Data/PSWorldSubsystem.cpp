@@ -150,11 +150,11 @@ int32 UPSWorldSubsystem::GetProgressionReward(EEndGameState EndGameState)
 	switch (EndGameState)
 	{
 	case EEndGameState::Win:
-		return SavedProgressionRowDataInternal.WinReward;
+		return GetCurrentRow().WinReward;
 	case EEndGameState::Draw:
-		return SavedProgressionRowDataInternal.DrawReward;
+		return GetCurrentRow().DrawReward;
 	case EEndGameState::Lose:
-		return SavedProgressionRowDataInternal.LossReward;
+		return GetCurrentRow().LossReward;
 	default:
 		return 0;
 	}

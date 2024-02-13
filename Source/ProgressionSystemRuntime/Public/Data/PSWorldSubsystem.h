@@ -69,10 +69,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
 	TObjectPtr<class UPSSaveGameData> SaveGameInstanceInternal = nullptr;
 
-	/** The current Saved Progression of a player. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Row Data"))
-	FPSRowData SavedProgressionRowDataInternal = FPSRowData::EmptyData;
-
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */
