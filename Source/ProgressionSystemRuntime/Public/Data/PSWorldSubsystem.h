@@ -37,10 +37,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE class UPSHUDComponent* GetProgressionSystemHUDComponent() const { return PSHUDComponentInternal; }
 
-	/** Returns a current row data */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	const FORCEINLINE FPSRowData GetCurrentRowData() { return SavedProgressionRowDataInternal; }
-
 	/** Returns a current save game instance */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE UPSSaveGameData* GetCurrentSaveGameData() const { return SaveGameInstanceInternal; }
