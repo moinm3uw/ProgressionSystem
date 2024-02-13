@@ -22,10 +22,6 @@ public:
 	/** Sets default values for this component's properties. */
 	UPSHUDComponent();
 
-	/** Returns the Progression System data asset. */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	static const UPSDataAsset* GetProgressionSystemDataAsset() { return &UPSDataAsset::Get(); }
-
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SavePoints(EEndGameState EndGameState);
