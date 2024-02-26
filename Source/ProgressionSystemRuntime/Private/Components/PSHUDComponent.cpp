@@ -34,7 +34,7 @@ void UPSHUDComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AMyHUD* MyHUD = Cast<AMyHUD>(GetOwner());
+	AMyHUD* MyHUD = CastChecked<AMyHUD>(GetOwner());
 	const AMyHUD& HUD = *MyHUD;
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSDataAsset::Get().GetProgressionMenuWidget(), true, 1);
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
