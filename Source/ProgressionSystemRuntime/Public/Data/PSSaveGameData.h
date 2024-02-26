@@ -35,7 +35,7 @@ public:
 
 	/** Update the ProgressionRows map */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SetProgressionMap(const TMap<FName, FPSRowData> ProgressionRows);
+	void SetProgressionMap(const TMap<FName, FPSRowData>& ProgressionRows);
 
 	/** Get current progression row */
 	UFUNCTION(BlueprintPure, Category = "C++")

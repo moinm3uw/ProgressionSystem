@@ -40,7 +40,7 @@ void UPSSaveGameData::SetCurrentProgressionRowByIndex(int32 InIndex)
 	}
 }
 
-void UPSSaveGameData::SetProgressionMap(const TMap<FName, FPSRowData> ProgressionRows)
+void UPSSaveGameData::SetProgressionMap(const TMap<FName, FPSRowData>& ProgressionRows)
 {
 	if (ensureMsgf(!ProgressionRows.IsEmpty(), TEXT("ASSERT: ProgressionRows is empty")))
 	{
