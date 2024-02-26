@@ -14,7 +14,7 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSDataAsset : public UDataAsset
 
 public:
 	/** Returns the settings data asset. */
-	static const UPSDataAsset& Get() { return *GetDefault<ThisClass>(); }
+	static const UPSDataAsset& Get();
 
 	/** Returns the Progression Data Table
 	 * @see UProgressionSystemDataAsset::ProgressionDataTableInternal */

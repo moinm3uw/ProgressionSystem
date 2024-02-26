@@ -22,10 +22,8 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		for (int32 i = 0; i < AmountOfUnlockedPoints; i++)
 		{
 			UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-			if (UPSWorldSubsystem::Get().GetPSDataAsset())
-			{
-				ImageWidget->SetBrushFromTexture(UPSWorldSubsystem::Get().GetPSDataAsset()->GetUnlockedProgressionIcon());
-			}
+			UPSDataAsset::Get(); // performs checkif on get, so if null it will crash 
+			ImageWidget->SetBrushFromTexture(UPSDataAsset::Get().GetUnlockedProgressionIcon());
 
 			// Load and set the image texture here using ImagePath or other methods
 			HorizontalBox->AddChildToHorizontalBox(ImageWidget);
@@ -45,7 +43,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		for (int32 i = 0; i < AmountOfLockedPoints; i++)
 		{
 			UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-			ImageWidget->SetBrushFromTexture(UPSWorldSubsystem::Get().GetPSDataAsset()->GetLockedProgressionIcon());
+			ImageWidget->SetBrushFromTexture(UPSDataAsset::Get().GetLockedProgressionIcon());
 			// Load and set the image texture here using ImagePath or other methods
 			HorizontalBox->AddChildToHorizontalBox(ImageWidget);
 			// Create the UHorizontalBoxSlot and assign it to the ImageWidget
