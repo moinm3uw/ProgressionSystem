@@ -57,8 +57,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SavePoints(EEndGameState EndGameState);
 
-	UFUNCTION(BlueprintCallable, Category = "C++")
 	/** Unlocks the next level*/
+	UFUNCTION(BlueprintCallable, Category = "C++")
 	void NextLevelProgressionRowData();
 
 	/** Returns the endgame reward. */
