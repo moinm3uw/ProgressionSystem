@@ -70,5 +70,5 @@ protected:
 
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))
-	TMap<FName, FPSRowData> SavedProgressionRows;
+	TMap<FName, FPSRowData> SavedProgressionRowsInternal;
 };
