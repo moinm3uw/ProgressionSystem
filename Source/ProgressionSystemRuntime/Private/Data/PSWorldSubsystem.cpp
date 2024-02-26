@@ -67,7 +67,7 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 		MyPC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnCharacterPossessed);
 	}
 
-	// requires to be executed to guarntee that data asset will be loaded from the ini file
+	// #HACK requires to be executed to guarntee that data asset will be loaded from the ini file
 	// otherwise the data asset file will not be loaded at fresh (heaviest) load of UE
 	PSDataAssetInternal = GetPSDataAsset();
 	if (ensureMsgf(PSDataAssetInternal, TEXT("ASSERT: PSDataAssetInternal null")))
@@ -112,7 +112,7 @@ void UPSWorldSubsystem::LoadGameFromSave()
 		// Save file does not exist
 		// do initial load from data table
 		TMap<FName, FPSRowData> SavedProgressionRows;
-		UDataTable* ProgressionDataTable = PSDataAssetInternal->GetProgressionDataTable();
+		UDataTable* ProgressionDataTable = UPSDataAsset::Get().GetProgressionDataTable();
 		checkf(ProgressionDataTable, TEXT("ERROR: 'ProgressionDataTableInternal' is null"));
 		UMyDataTable::GetRows(*ProgressionDataTable, SavedProgressionRows);
 		SaveGameInstanceInternal = Cast<UPSSaveGameData>(UGameplayStatics::CreateSaveGameObject(UPSSaveGameData::StaticClass()));
