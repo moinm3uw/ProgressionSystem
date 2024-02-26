@@ -45,6 +45,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FName GetCurrentRowName() const { return CurrentRowName; }
 
+	UFUNCTION(BlueprintCallable, Category = "C++")
 	/** Set the current level by player tag*/
 	void SetRowByTag(FPlayerTag PlayerTag);
 
@@ -56,6 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SavePoints(EEndGameState EndGameState);
 
+	UFUNCTION(BlueprintCallable, Category = "C++")
 	/** Unlocks the next level*/
 	void NextLevelProgressionRowData();
 
