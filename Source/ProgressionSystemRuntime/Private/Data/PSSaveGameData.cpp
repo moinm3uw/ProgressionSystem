@@ -33,7 +33,7 @@ void UPSSaveGameData::SetCurrentProgressionRowByIndex(int32 InIndex)
 	{
 		if (Idx == InIndex)
 		{
-			CurrentRowName = It.Key;
+			CurrentRowNameInternal = It.Key;
 			break;
 		}
 		Idx++;
@@ -52,7 +52,7 @@ const FPSRowData& UPSSaveGameData::GetCurrentRow() const
 {
 	for (const auto& KeyValue : SavedProgressionRowsInternal)
 	{
-		if (KeyValue.Key == CurrentRowName)
+		if (KeyValue.Key == CurrentRowNameInternal)
 		{
 			return KeyValue.Value;
 		}
@@ -68,7 +68,7 @@ void UPSSaveGameData::SetRowByTag(FPlayerTag PlayerTag)
 
 		if (RowData.Character == PlayerTag)
 		{
-			CurrentRowName = KeyValue.Key;
+			CurrentRowNameInternal = KeyValue.Key;
 			break;
 		}
 	}
@@ -82,7 +82,7 @@ void UPSSaveGameData::UnlockLevelByName(FName RowName)
 
 void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 {
-	FPSRowData& CurrentRowRef = SavedProgressionRowsInternal[CurrentRowName];
+	FPSRowData& CurrentRowRef = SavedProgressionRowsInternal[CurrentRowNameInternal];
 	CurrentRowRef.CurrentLevelProgression += GetProgressionReward(EndGameState);
 
 	if (CurrentRowRef.CurrentLevelProgression >= CurrentRowRef.PointsToUnlock)
@@ -104,7 +104,7 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 			break;
 		}
 
-		if (KeyValue.Key == CurrentRowName)
+		if (KeyValue.Key == CurrentRowNameInternal)
 		{
 			bFound = true;
 		}
@@ -115,7 +115,7 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 // @h4rdmol - make function const 
 int32 UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
-	const FPSRowData& CurrentRow = SavedProgressionRowsInternal[CurrentRowName];
+	const FPSRowData& CurrentRow = SavedProgressionRowsInternal[CurrentRowNameInternal];
 
 	switch (EndGameState)
 	{

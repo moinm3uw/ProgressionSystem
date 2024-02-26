@@ -43,7 +43,7 @@ public:
 
 	/** Get current progression row */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE FName GetCurrentRowName() const { return CurrentRowName; }
+	FORCEINLINE FName GetCurrentRowName() const { return CurrentRowNameInternal; }
 
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	/** Set the current level by player tag*/
@@ -67,8 +67,8 @@ public:
 
 protected:
 	/** The current Index of Saved Progression. */
-	UPROPERTY()
-	FName CurrentRowName = NAME_None;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	FName CurrentRowNameInternal = NAME_None;
 
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))
