@@ -19,7 +19,7 @@ public:
 	/** Returns the Progression Data Table
 	 * @see UProgressionSystemDataAsset::ProgressionDataTableInternal */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE UDataTable* GetProgressionDataTable() const { return ProgressionDataTableInternal; }
+	const FORCEINLINE UDataTable* GetProgressionDataTable() const { return ProgressionDataTableInternal; }
 
 	/** Returns a progression menu widget to be displayed in the main menu*/
 	UFUNCTION(BlueprintPure, Category = "C++")
