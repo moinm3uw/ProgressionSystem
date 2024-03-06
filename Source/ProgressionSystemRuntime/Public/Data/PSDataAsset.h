@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #pragma once
-
+#include "Engine/DataAsset.h"
 #include "PSDataAsset.generated.h"
 
 /**
