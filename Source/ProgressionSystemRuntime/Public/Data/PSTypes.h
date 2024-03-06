@@ -4,6 +4,7 @@
 
 #include "Bomber.h"
 #include "Structures/PlayerTag.h"
+#include "Engine/DataTable.h"
 #include "PSTypes.generated.h"
 
 /**
