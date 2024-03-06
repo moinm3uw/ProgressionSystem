@@ -4,8 +4,6 @@
 
 #define LOCTEXT_NAMESPACE "FProgressionSystemRuntimeModule"
 
-DEFINE_LOG_CATEGORY(LogProgressionSystem);
-
 void FProgressionSystemRuntimeModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory;

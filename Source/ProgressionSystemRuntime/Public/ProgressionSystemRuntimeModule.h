@@ -4,9 +4,6 @@
 
 #include "Modules/ModuleInterface.h"
 
-/** Define Progression System log category. */
-PROGRESSIONSYSTEMRUNTIME_API DECLARE_LOG_CATEGORY_EXTERN(LogProgressionSystem, Log, All);
-
 class PROGRESSIONSYSTEMRUNTIME_API FProgressionSystemRuntimeModule : public IModuleInterface
 {
 public:
