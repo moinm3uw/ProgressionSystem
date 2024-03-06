@@ -39,7 +39,7 @@ public:
 
 	/** Returns a current save game instance */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE UPSSaveGameData* GetCurrentSaveGameData() const { return SaveGameInstanceInternal; }
+	FORCEINLINE class UPSSaveGameData* GetCurrentSaveGameData() const { return SaveGameInstanceInternal; }
 
 	/** Set the progression system component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
