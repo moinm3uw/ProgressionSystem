@@ -19,7 +19,7 @@ public:
 	/** Returns the Progression Data Table
 	 * @see UProgressionSystemDataAsset::ProgressionDataTableInternal */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	const FORCEINLINE UDataTable* GetProgressionDataTable() const { return ProgressionDataTableInternal; }
+	const FORCEINLINE class UDataTable* GetProgressionDataTable() const { return ProgressionDataTableInternal; }
 
 	/** Returns a progression menu widget to be displayed in the main menu*/
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -27,11 +27,11 @@ public:
 
 	/** Returns a locked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE UTexture2D* GetLockedProgressionIcon() const { return LockedProgressionIconInternal; }
+	FORCEINLINE class UTexture2D* GetLockedProgressionIcon() const { return LockedProgressionIconInternal; }
 
 	/** Returns a unlocked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE UTexture2D* GetUnlockedProgressionIcon() const { return UnlockedProgressionIconInternal; }
+	FORCEINLINE class UTexture2D* GetUnlockedProgressionIcon() const { return UnlockedProgressionIconInternal; }
 
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
