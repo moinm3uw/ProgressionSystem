@@ -45,8 +45,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FName GetCurrentRowName() const { return CurrentRowNameInternal; }
 
-	UFUNCTION(BlueprintCallable, Category = "C++")
 	/** Set the current level by player tag*/
+	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetRowByTag(FPlayerTag PlayerTag);
 
 	/** Unlock level by Index, used only for the first level */
