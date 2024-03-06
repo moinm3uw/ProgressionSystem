@@ -9,6 +9,8 @@
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/UtilsLibrary.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSWorldSubsystem)
