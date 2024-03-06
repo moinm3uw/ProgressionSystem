@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Data/PSTypes.h"
-#include "Data/PSDataAsset.h"
 #include "Components/ActorComponent.h"
 #include "Structures/PlayerTag.h"
 //---
