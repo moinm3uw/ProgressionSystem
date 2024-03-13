@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Data/PSTypes.h"
+#include "Components/ActorComponent.h"
 #include "PSSpotComponent.generated.h"
 
 /**
