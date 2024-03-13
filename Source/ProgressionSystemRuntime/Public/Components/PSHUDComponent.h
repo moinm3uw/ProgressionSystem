@@ -33,10 +33,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
 	TObjectPtr<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
 
-	/** The current selected player */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Player Tag"))
-	FPlayerTag CurrentPlayerTagInternal = FPlayerTag::None;
-
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */
