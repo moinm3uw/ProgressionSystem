@@ -67,7 +67,7 @@ public:
 
 protected:
 	/** The current Index of Saved Progression. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="C++", meta = (BlueprintProtected, DisplayName = "Current Row Name"))
 	FName CurrentRowNameInternal = NAME_None;
 
 	/** The current Saved Progression of a player. */
