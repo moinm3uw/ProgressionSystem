@@ -29,9 +29,6 @@ void UPSSpotComponent::BeginPlay()
 
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 
-	PSHUDComponentInternal = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
-	checkf(PSHUDComponentInternal, TEXT("ERROR: 'PSHUDComponentInternal is null'"));
-
 	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
 	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 
@@ -41,9 +38,7 @@ void UPSSpotComponent::BeginPlay()
 void UPSSpotComponent::OnUnregister()
 {
 	Super::OnUnregister();
-	PSHUDComponentInternal = nullptr;
 	PlayerSpotOnLevelInternal = nullptr;
-	CurrentProgressionRowDataInternal = FPSRowData::EmptyData;
 }
 
 UMySkeletalMeshComponent* UPSSpotComponent::GetMySkeletalMeshComponent() const

@@ -39,17 +39,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category= "C++", meta=(BlueprintProtected))
 	void ChangeSpotVisibilityStatus();
 
-	/** A Progression System Component */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
-	TObjectPtr<UPSHUDComponent> PSHUDComponentInternal = nullptr;
-
 	/** A player skeletal mesh actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Player Spot On Level"))
 	TObjectPtr<UMySkeletalMeshComponent> PlayerSpotOnLevelInternal = nullptr;
-
-	/** Current Progression  */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Progression Row Data"))
-	FPSRowData CurrentProgressionRowDataInternal = FPSRowData::EmptyData;
 
 	/** Store the save game instance */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
