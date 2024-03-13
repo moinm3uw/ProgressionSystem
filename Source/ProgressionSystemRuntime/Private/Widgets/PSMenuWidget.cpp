@@ -73,3 +73,11 @@ void UPSMenuWidget::NativeConstruct()
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);
 }
+
+void UPSMenuWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+	HorizontalBox = nullptr;
+	PSCBackgroundOverlay = nullptr;
+	PSCBackgroundIconLock = nullptr;
+}
