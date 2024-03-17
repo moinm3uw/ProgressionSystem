@@ -14,11 +14,15 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// Function to add images to the Horizontal Box
+	/**
+	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
+	 * @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
+	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
+	 */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected, BindWidget))
 	void AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints);
 
-	// Function to add images to the Horizontal Box
+	/** Removes all images from horizontal box */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected, BindWidget))
 	void ClearImagesFromHorizontalBox();
 
