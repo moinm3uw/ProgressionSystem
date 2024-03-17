@@ -25,7 +25,7 @@ public:
 	const FPSRowData& GetCurrentRow() const;
 
 	/* Delegate for informing row data changed */
-	UPROPERTY(BlueprintAssignable, Category = "C++")
+	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FCurrentRowDataChanged OnCurrentRowDataChanged;
 
 	/** Returns the data asset that contains all the assets of Progression System game feature.
