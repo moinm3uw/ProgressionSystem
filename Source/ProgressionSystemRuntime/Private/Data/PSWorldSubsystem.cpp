@@ -76,8 +76,6 @@ void UPSWorldSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
 	PSHUDComponentInternal = nullptr;
-	PSDataAssetInternal = nullptr;
-	SaveGameInstanceInternal = nullptr;
 }
 
 void UPSWorldSubsystem::OnCharacterPossessed(APawn* MyPawn)

@@ -77,7 +77,4 @@ void UPSMenuWidget::NativeConstruct()
 void UPSMenuWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
-	HorizontalBox = nullptr;
-	PSCBackgroundOverlay = nullptr;
-	PSCBackgroundIconLock = nullptr;
 }

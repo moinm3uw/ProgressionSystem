@@ -39,7 +39,6 @@ void UPSSpotComponent::OnUnregister()
 {
 	Super::OnUnregister();
 	PlayerSpotOnLevelInternal = nullptr;
-	SaveGameInstanceInternal = nullptr;
 }
 
 UMySkeletalMeshComponent* UPSSpotComponent::GetMySkeletalMeshComponent() const
