@@ -5,7 +5,6 @@
 #include "Blueprint/UserWidget.h"
 #include "PSMenuWidget.generated.h"
 
-
 /**
  * Widget to display the progression as stars in the main menu.
  */
