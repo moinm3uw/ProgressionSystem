@@ -12,6 +12,7 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
+// Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
 {
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
@@ -57,6 +58,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 	}
 }
 
+// Removes all images from horizontal box
 void UPSMenuWidget::ClearImagesFromHorizontalBox()
 {
 	if (HorizontalBox)
@@ -78,6 +80,7 @@ void UPSMenuWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
+// Sets the visibility of the background overlay and lock icon.
 void UPSMenuWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate)
 {
 	// Level is unlocked hide the blocking overlay

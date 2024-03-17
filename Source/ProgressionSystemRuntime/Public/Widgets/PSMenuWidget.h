@@ -26,7 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected, BindWidget))
 	void ClearImagesFromHorizontalBox();
 
-	/** Change the overlay visibility and it's icon */
+	/**
+	* Sets the visibility of the background overlay and lock icon.
+	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
+	*/
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected, BindWidget))
 	void SetOverlayVisibility(ESlateVisibility VisibilitySlate);
 
