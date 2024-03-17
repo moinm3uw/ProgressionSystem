@@ -7,51 +7,45 @@
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
+#include "Widgets/PSStarWidget.h"
 #include "Data/PSWorldSubsystem.h"
 //---
+
+#include "UI/MyHUD.h"
+#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
 {
+	AMyHUD* MyHUD = CastChecked<AMyHUD>(UMyBlueprintFunctionLibrary::GetMyHUD(this));
+	const AMyHUD& HUD = *MyHUD;
+
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
 	// Loop to create and add images to the Horizontal Box for unlocked stars
 	for (int32 i = 0; i < AmountOfUnlockedPoints; i++)
 	{
-		UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-		ImageWidget->SetBrushFromTexture(UPSDataAsset::Get().GetUnlockedProgressionIcon());
+		UPSStarWidget* PSStarWidget = HUD.CreateWidgetByClass<UPSStarWidget>(UPSDataAsset::Get().GetStarWidget(), false);
+		if (!ensureMsgf(PSStarWidget, TEXT("AttachStarWidget: Failed to create StarWidget")))
+		{
+			continue;
+		}
+		PSStarWidget->SetStarImage(UPSDataAsset::Get().GetUnlockedProgressionIcon());
 
 		// Load and set the image texture here using ImagePath or other methods
-		HorizontalBox->AddChildToHorizontalBox(ImageWidget);
-
-		// Create the UHorizontalBoxSlot and assign it to the ImageWidget
-		UHorizontalBoxSlot* HorizontalBoxSlot = Cast<UHorizontalBoxSlot>(ImageWidget->Slot);
-		if (HorizontalBoxSlot)
-		{
-			HorizontalBoxSlot->SetPadding(FMargin(20.0f, 10.0f, 20.0f, 10.0f));
-			HorizontalBoxSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-			HorizontalBoxSlot->SetHorizontalAlignment(HAlign_Fill);
-			HorizontalBoxSlot->SetVerticalAlignment(VAlign_Fill);
-		}
+		HorizontalBox->AddChildToHorizontalBox(PSStarWidget);
 	}
 
 	// Loop to create and add images to the Horizontal Box for unlocked stars
 	for (int32 i = 0; i < AmountOfLockedPoints; i++)
 	{
-		UImage* ImageWidget = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-		ImageWidget->SetBrushFromTexture(UPSDataAsset::Get().GetLockedProgressionIcon());
+		UPSStarWidget* PSStarWidget = HUD.CreateWidgetByClass<UPSStarWidget>(UPSDataAsset::Get().GetStarWidget(), false);
+		PSStarWidget->SetStarImage(UPSDataAsset::Get().GetLockedProgressionIcon());
+
+
 		// Load and set the image texture here using ImagePath or other methods
-		HorizontalBox->AddChildToHorizontalBox(ImageWidget);
-		// Create the UHorizontalBoxSlot and assign it to the ImageWidget
-		UHorizontalBoxSlot* HorizontalBoxSlot = Cast<UHorizontalBoxSlot>(ImageWidget->Slot);
-		if (HorizontalBoxSlot)
-		{
-			HorizontalBoxSlot->SetPadding(FMargin(20.0f, 10.0f, 20.0f, 10.0f));
-			HorizontalBoxSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-			HorizontalBoxSlot->SetHorizontalAlignment(HAlign_Fill);
-			HorizontalBoxSlot->SetVerticalAlignment(VAlign_Fill);
-		}
+		HorizontalBox->AddChildToHorizontalBox(PSStarWidget);
 	}
 }
 

@@ -33,6 +33,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE class UTexture2D* GetUnlockedProgressionIcon() const { return UnlockedProgressionIconInternal; }
 
+	/** Returns a unlocked progression icon reference */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE TSubclassOf<class UPSStarWidget> GetStarWidget() const { return StarWidgetInternal; }
+
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
@@ -41,6 +45,10 @@ protected:
 	/** Main progression widget */
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
+
+	/** Star icon widget */
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UPSStarWidget> StarWidgetInternal = nullptr;
 
 	/** Image for locked progression */
 	UPROPERTY(EditAnywhere)
