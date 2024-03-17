@@ -78,3 +78,10 @@ void UPSMenuWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
 }
+
+void UPSMenuWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate)
+{
+	// Level is unlocked hide the blocking overlay
+	PSCBackgroundOverlay->SetVisibility(VisibilitySlate);
+	PSCBackgroundIconLock->SetVisibility(VisibilitySlate);
+}

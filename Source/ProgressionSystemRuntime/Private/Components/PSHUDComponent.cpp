@@ -166,13 +166,11 @@ void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 	if (IsLevelLocked)
 	{
 		// Level is locked show the blocking overlay
-		ProgressionMenuWidgetInternal->PSCBackgroundOverlay->SetVisibility(ESlateVisibility::Visible);
-		ProgressionMenuWidgetInternal->PSCBackgroundIconLock->SetVisibility(ESlateVisibility::Visible);
+		ProgressionMenuWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
 		// Level is unlocked hide the blocking overlay
-		ProgressionMenuWidgetInternal->PSCBackgroundOverlay->SetVisibility(ESlateVisibility::Collapsed);
-		ProgressionMenuWidgetInternal->PSCBackgroundIconLock->SetVisibility(ESlateVisibility::Collapsed);
+		ProgressionMenuWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed);
 	}
 }
