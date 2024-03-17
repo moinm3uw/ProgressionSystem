@@ -4,7 +4,6 @@
 
 #include "Blueprint/UserWidget.h"
 #include "PSMenuWidget.generated.h"
-enum class ECurrentGameState : uint8;
 
 
 /**
