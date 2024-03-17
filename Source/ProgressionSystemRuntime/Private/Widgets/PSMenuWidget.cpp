@@ -2,14 +2,13 @@
 
 #include "Widgets/PSMenuWidget.h"
 //---
-
-//---
 #include "Data/PSDataAsset.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
 #include "Data/PSWorldSubsystem.h"
+//---
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
