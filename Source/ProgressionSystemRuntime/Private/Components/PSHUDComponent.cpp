@@ -90,7 +90,8 @@ void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 	ProgressionMenuWidgetInternal->SetVisibility(CurrentGameState == ECurrentGameState::Menu ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	if (CurrentGameState == ECurrentGameState::Menu)
 	{
-		UpdateProgressionWidgetForPlayer();
+		// temp hack. fix it later
+		//UpdateProgressionWidgetForPlayer();
 	}
 }
 
@@ -141,8 +142,9 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 	const FPSRowData& CurrentRowData = UPSWorldSubsystem::Get().GetCurrentRow();
 	// check if empty returned Row from GetCurrentRow 
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+
 	// reset amount of start for a level
-	ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
+	//ProgressionMenuWidgetInternal->ClearImagesFromHorizontalBox();
 
 	//set updated amount of stars
 	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)

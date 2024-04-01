@@ -12,10 +12,10 @@ public class ProgressionSystemRuntime : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new[]
 			{
-				"Core"
-				, "UMG"
+				"Core", "UMG"
 				// Bomber modules
-				, "Bomber" // Is included in header files
+				,
+				"Bomber" // Is included in header files
 			}
 		);
 
@@ -23,7 +23,7 @@ public class ProgressionSystemRuntime : ModuleRules
 			{
 				"CoreUObject", "Engine", "Slate", "SlateCore", // Core
 				// Bomber modules 
-				"MyUtils" 
+				"MyUtils", "PoolManager"
 			}
 		);
 	}

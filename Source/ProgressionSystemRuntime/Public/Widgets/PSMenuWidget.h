@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+#include "Structures/MapComponentsContainer.h"
 #include "PSMenuWidget.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	 * @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
 	 */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected, BindWidget))
+	UFUNCTION(BlueprintCallable, Category= "C++")
 	void AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints);
 
 	/** Removes all images from horizontal box */
@@ -48,6 +49,11 @@ protected:
 	// Background overlay lock icon
 	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> PSCBackgroundIconLock = nullptr;
+
+	/** Array of pool handlers which should be released */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Components"))
+	TArray<FPoolObjectHandle> PoolWidgetHandlers;
+
 
 	/** Called after the underlying slate widget is constructed.
 	 * May be called multiple times due to adding and removing from the hierarchy. */
