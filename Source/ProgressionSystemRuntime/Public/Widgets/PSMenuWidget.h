@@ -23,10 +23,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints);
 
-	/** Removes all images from horizontal box */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected, BindWidget))
-	void ClearImagesFromHorizontalBox();
-
 	/**
 	* Sets the visibility of the background overlay and lock icon.
 	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.

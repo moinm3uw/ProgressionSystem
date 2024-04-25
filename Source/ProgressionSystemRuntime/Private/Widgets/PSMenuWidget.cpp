@@ -12,7 +12,6 @@
 
 #include "PoolManagerSubsystem.h"
 #include "PoolManagerTypes.h"
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
@@ -20,6 +19,7 @@
 void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
 {
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
+
 	// Iterate it by handles to cancel spawning even if the widget is not spawned yet
 	for (const FPoolObjectHandle& Handle : PoolWidgetHandlers)
 	{
@@ -31,17 +31,23 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		FPoolObjectData ObjData = UPoolManagerSubsystem::Get().FindPoolObjectByHandle(Handle);
 		if (!ensureMsgf(ObjData.IsValid(), TEXT("ASSERT: [%i] %s:\n'ObjData' is not valid!"), __LINE__, *FString(__FUNCTION__)))
 		{
-			continue;
 		}
 
 		// Map component was not found, it could be not spawned, but in spawn request in queue
 		UPoolManagerSubsystem::Get().ReturnToPool(Handle);
 	}
-	ClearImagesFromHorizontalBox();
-	PoolWidgetHandlers.Empty();
-	checkf(PoolWidgetHandlers.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlers' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
 
 	TArray<FSpawnRequest> InOutRequestsUnlockedProgression;
+	TArray<FSpawnRequest> InOutRequestsLockedProgression;
+	
+	InOutRequestsUnlockedProgression.Empty();
+	checkf(InOutRequestsUnlockedProgression.IsEmpty(), TEXT("ERROR: [%i] %s:\n'InOutRequestsUnlockedProgression' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
+	
+	InOutRequestsLockedProgression.Empty();
+	checkf(InOutRequestsLockedProgression.IsEmpty(), TEXT("ERROR: [%i] %s:\n'InOutRequestsLockedProgression' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
+
+	PoolWidgetHandlers.Empty();
+	checkf(PoolWidgetHandlers.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlers' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
 	// Loop to create and add images to the Horizontal Box for unlocked stars
 	for (int32 i = 0; i < AmountOfUnlockedPoints; i++)
 	{
@@ -50,7 +56,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 	}
 
 	// --- Prepare spawn request
-	const FOnSpawnAllCallback OnCompletedUnlockedProgression = [this](const TArray<FPoolObjectData>& CreatedObjects)
+	const FOnSpawnAllCallback OnCompletedUnlockedProgression = [this,AmountOfUnlockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
 	{
 		// Setup spawned widget
 		for (const FPoolObjectData& CreatedObject : CreatedObjects)
@@ -60,9 +66,12 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 
 			SpawnedWidget.SetVisibility(ESlateVisibility::Visible);
 			SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetUnlockedProgressionIcon());
-			SpawnedWidget.InvalidateLayoutAndVolatility();
+
 			// Load and set the image texture here using ImagePath or other methods
-			HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
+			if (!HorizontalBox->HasChild(&SpawnedWidget))
+			{
+				HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
+			}
 		}
 	};
 
@@ -79,7 +88,6 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		PoolWidgetHandlers.AddUnique(It.Handle);
 	}
 
-	TArray<FSpawnRequest> InOutRequestsLockedProgression;
 	// Loop to create and add images to the Horizontal Box for unlocked stars
 	for (int32 i = 0; i < AmountOfLockedPoints; i++)
 	{
@@ -88,20 +96,34 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 	}
 
 	// --- Prepare spawn request
-	const FOnSpawnAllCallback OnCompletedLockedProgression = [this](const TArray<FPoolObjectData>& CreatedObjects)
+	const TWeakObjectPtr<ThisClass> WeakThis = this;
+	const FOnSpawnAllCallback OnCompletedLockedProgression = [WeakThis, AmountOfLockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
 	{
+		UPSMenuWidget* This = WeakThis.Get();
+		// @todo: 
+		//if (This)
+		//{
+		// #1 Create MyFunction
+		//This->MYFunction(CreatedObject.GetChecked<UPSStarWidget>(), a, b);
+		// void MYFunction(UPSTextWidget& SpawnedTXTWidget);
+
+		// #2 Merge two lambdas
+
+		// #3 remove requiests as class member: make it as local varaible
+		
 		// Setup spawned widget
 		for (const FPoolObjectData& CreatedObject : CreatedObjects)
 		{
 			UPSStarWidget& SpawnedWidget = CreatedObject.GetChecked<UPSStarWidget>();
 			checkf(&SpawnedWidget, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 
-			SpawnedWidget.SetVisibility(ESlateVisibility::Visible);
 			SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetLockedProgressionIcon());
-			SpawnedWidget.InvalidateLayoutAndVolatility();
 
 			// Load and set the image texture here using ImagePath or other methods
-			HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
+			if (!This->HorizontalBox->HasChild(&SpawnedWidget))
+			{
+				This->HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
+			}
 		}
 	};
 
@@ -116,15 +138,6 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 	{
 		checkf(It.Handle.IsValid(), TEXT("ERROR: [%i] %s:\n'Handle' is not valid!"), __LINE__, *FString(__FUNCTION__));
 		PoolWidgetHandlers.AddUnique(It.Handle);
-	}
-}
-
-// Removes all images from horizontal box
-void UPSMenuWidget::ClearImagesFromHorizontalBox()
-{
-	if (HorizontalBox)
-	{
-		HorizontalBox->ClearChildren();
 	}
 }
 

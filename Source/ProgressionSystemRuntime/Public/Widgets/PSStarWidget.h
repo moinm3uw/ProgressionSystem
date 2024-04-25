@@ -19,6 +19,7 @@ public:
 	* Updates the image used for the star display.
 	* @param Image The new image to set for the star.
 	*/
+	UFUNCTION()
 	void SetStarImage(UTexture2D* Image);
 
 protected:

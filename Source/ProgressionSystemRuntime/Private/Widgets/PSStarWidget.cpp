@@ -18,5 +18,4 @@ void UPSStarWidget::SetStarImage(UTexture2D* Image)
 void UPSStarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	StarImageInternal = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
 }
