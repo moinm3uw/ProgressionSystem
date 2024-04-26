@@ -37,104 +37,61 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		UPoolManagerSubsystem::Get().ReturnToPool(Handle);
 	}
 
-	TArray<FSpawnRequest> InOutRequestsUnlockedProgression;
-	TArray<FSpawnRequest> InOutRequestsLockedProgression;
-	
-	InOutRequestsUnlockedProgression.Empty();
-	checkf(InOutRequestsUnlockedProgression.IsEmpty(), TEXT("ERROR: [%i] %s:\n'InOutRequestsUnlockedProgression' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
-	
-	InOutRequestsLockedProgression.Empty();
-	checkf(InOutRequestsLockedProgression.IsEmpty(), TEXT("ERROR: [%i] %s:\n'InOutRequestsLockedProgression' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
-
 	PoolWidgetHandlers.Empty();
 	checkf(PoolWidgetHandlers.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlers' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
+
+	TArray<FSpawnRequest> InOutRequests;
+	InOutRequests.Empty();
+	checkf(InOutRequests.IsEmpty(), TEXT("ERROR: [%i] %s:\n'InOutRequests' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
+
+	int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
 	// Loop to create and add images to the Horizontal Box for unlocked stars
-	for (int32 i = 0; i < AmountOfUnlockedPoints; i++)
+	for (int32 i = 0; i < TotalRequests; i++)
 	{
-		FSpawnRequest& NewRequestRef = InOutRequestsUnlockedProgression.AddDefaulted_GetRef();
-		NewRequestRef.Class = UPSDataAsset::Get().GetStarWidget();
-	}
-
-	// --- Prepare spawn request
-	const FOnSpawnAllCallback OnCompletedUnlockedProgression = [this,AmountOfUnlockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
-	{
-		// Setup spawned widget
-		for (const FPoolObjectData& CreatedObject : CreatedObjects)
-		{
-			UPSStarWidget& SpawnedWidget = CreatedObject.GetChecked<UPSStarWidget>();
-			checkf(&SpawnedWidget, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
-
-			SpawnedWidget.SetVisibility(ESlateVisibility::Visible);
-			SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetUnlockedProgressionIcon());
-
-			// Load and set the image texture here using ImagePath or other methods
-			if (!HorizontalBox->HasChild(&SpawnedWidget))
-			{
-				HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
-			}
-		}
-	};
-
-	// --- Spawn widgets
-	if (!InOutRequestsUnlockedProgression.IsEmpty())
-	{
-		UPoolManagerSubsystem::Get().TakeFromPool(InOutRequestsUnlockedProgression, OnCompletedUnlockedProgression);
-	}
-
-	// --- Add handles if requested spawning, so they can be canceled if regenerate before spawning finished
-	for (const FSpawnRequest& It : InOutRequestsUnlockedProgression)
-	{
-		checkf(It.Handle.IsValid(), TEXT("ERROR: [%i] %s:\n'Handle' is not valid!"), __LINE__, *FString(__FUNCTION__));
-		PoolWidgetHandlers.AddUnique(It.Handle);
-	}
-
-	// Loop to create and add images to the Horizontal Box for unlocked stars
-	for (int32 i = 0; i < AmountOfLockedPoints; i++)
-	{
-		FSpawnRequest& NewRequestRef = InOutRequestsLockedProgression.AddDefaulted_GetRef();
-		NewRequestRef.Class = UPSDataAsset::Get().GetStarWidget();
+		FSpawnRequest& NewRequestRef = InOutRequests.AddDefaulted_GetRef();
+		TSubclassOf<UPSStarWidget> clss = UPSDataAsset::Get().GetStarWidget(); 
+		NewRequestRef.Class = clss;
 	}
 
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
-	const FOnSpawnAllCallback OnCompletedLockedProgression = [WeakThis, AmountOfLockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
+	const FOnSpawnAllCallback OnTakeFromPoolCompleted = [WeakThis, AmountOfUnlockedPoints, AmountOfLockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
 	{
 		UPSMenuWidget* This = WeakThis.Get();
 		// @todo: 
-		//if (This)
-		//{
-		// #1 Create MyFunction
-		//This->MYFunction(CreatedObject.GetChecked<UPSStarWidget>(), a, b);
-		// void MYFunction(UPSTextWidget& SpawnedTXTWidget);
-
-		// #2 Merge two lambdas
-
-		// #3 remove requiests as class member: make it as local varaible
-		
-		// Setup spawned widget
-		for (const FPoolObjectData& CreatedObject : CreatedObjects)
+		if (This)
 		{
-			UPSStarWidget& SpawnedWidget = CreatedObject.GetChecked<UPSStarWidget>();
-			checkf(&SpawnedWidget, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
-
-			SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetLockedProgressionIcon());
-
-			// Load and set the image texture here using ImagePath or other methods
-			if (!This->HorizontalBox->HasChild(&SpawnedWidget))
+			This->HorizontalBox->ClearChildren();
+			int32 CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
+			int32 CurrentAmountOfLocked = AmountOfLockedPoints;
+			// Setup spawned widget
+			for (const FPoolObjectData& CreatedObject : CreatedObjects)
 			{
-				This->HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
+				if (CurrentAmountOfUnlocked > 0)
+				{
+					// #1 Create MyFunction
+					This->UpdateStarImages(CreatedObject, 1, 0);
+					CurrentAmountOfUnlocked--;
+					continue;
+				}
+
+				if (CurrentAmountOfLocked > 0)
+				{
+					This->UpdateStarImages(CreatedObject, 0, 1);
+					CurrentAmountOfLocked--;
+				}
 			}
 		}
 	};
 
-	if (!InOutRequestsLockedProgression.IsEmpty())
+	if (!InOutRequests.IsEmpty())
 	{
 		// --- Spawn widgets
-		UPoolManagerSubsystem::Get().TakeFromPool(InOutRequestsLockedProgression, OnCompletedLockedProgression);
+		UPoolManagerSubsystem::Get().TakeFromPool(InOutRequests, OnTakeFromPoolCompleted);
 	}
 
 	// --- Add handles if requested spawning, so they can be canceled if regenerate before spawning finished
-	for (const FSpawnRequest& It : InOutRequestsLockedProgression)
+	for (const FSpawnRequest& It : InOutRequests)
 	{
 		checkf(It.Handle.IsValid(), TEXT("ERROR: [%i] %s:\n'Handle' is not valid!"), __LINE__, *FString(__FUNCTION__));
 		PoolWidgetHandlers.AddUnique(It.Handle);
@@ -160,4 +117,24 @@ void UPSMenuWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate)
 	// Level is unlocked hide the blocking overlay
 	PSCBackgroundOverlay->SetVisibility(VisibilitySlate);
 	PSCBackgroundIconLock->SetVisibility(VisibilitySlate);
+}
+
+void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, int32 AmountOfUnlockedStars, int32 AmountOfLockedStars)
+{
+	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();
+	checkf(&SpawnedWidget, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	if (AmountOfUnlockedStars > 0)
+	{
+		SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetUnlockedProgressionIcon());
+	}
+
+	if (AmountOfLockedStars > 0)
+	{
+		SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetLockedProgressionIcon());
+	}
+	// Load and set the image texture here using ImagePath or other methods
+	if (!HorizontalBox->HasChild(&SpawnedWidget))
+	{
+		HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
+	}
 }

@@ -33,7 +33,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE class UTexture2D* GetUnlockedProgressionIcon() const { return UnlockedProgressionIconInternal; }
 
-	/** Returns a unlocked progression icon reference */
+	/** Returns a star widget  */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class UPSStarWidget> GetStarWidget() const { return StarWidgetInternal; }
 

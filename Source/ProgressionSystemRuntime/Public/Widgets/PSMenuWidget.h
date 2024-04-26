@@ -50,10 +50,11 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Components"))
 	TArray<FPoolObjectHandle> PoolWidgetHandlers;
 
-
 	/** Called after the underlying slate widget is constructed.
 	 * May be called multiple times due to adding and removing from the hierarchy. */
 	virtual void NativeConstruct() override;
 
 	virtual void NativeDestruct() override;
+
+	void UpdateStarImages(const FPoolObjectData& CreatedData, int32 AmountOfUnlockedStars, int32 AmountOfLockedStars);
 };
