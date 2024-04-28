@@ -28,11 +28,6 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 			return;
 		}
 
-		FPoolObjectData ObjData = UPoolManagerSubsystem::Get().FindPoolObjectByHandle(Handle);
-		if (!ensureMsgf(ObjData.IsValid(), TEXT("ASSERT: [%i] %s:\n'ObjData' is not valid!"), __LINE__, *FString(__FUNCTION__)))
-		{
-		}
-
 		// Map component was not found, it could be not spawned, but in spawn request in queue
 		UPoolManagerSubsystem::Get().ReturnToPool(Handle);
 	}

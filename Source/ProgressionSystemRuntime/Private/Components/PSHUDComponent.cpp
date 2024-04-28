@@ -17,6 +17,7 @@
 #include "GameFramework/MyPlayerState.h"
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
+#include "Subsystems/GlobalEventsSubsystem.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
 
@@ -29,6 +30,11 @@ UPSHUDComponent::UPSHUDComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
+void UPSHUDComponent::OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID)
+{
+	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
+}
+
 // Called when the game starts
 void UPSHUDComponent::BeginPlay()
 {
@@ -39,19 +45,10 @@ void UPSHUDComponent::BeginPlay()
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSDataAsset::Get().GetProgressionMenuWidget(), true, 1);
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 
-	// Listen states to spawn widgets
-	if (AMyGameStateBase* MyGameState = UMyBlueprintFunctionLibrary::GetMyGameState())
-	{
-		HandleGameState(MyGameState);
-	}
-	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
-	{
-		MyPC->OnGameStateCreated.AddUniqueDynamic(this, &ThisClass::HandleGameState);
-	}
-	if (AMyPlayerState* MyPlayerState = UMyBlueprintFunctionLibrary::GetLocalPlayerState())
-	{
-		HandleEndGameState(MyPlayerState);
-	}
+	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
+
+	// Listen to handle input for each game state
+	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 	// Save reference of this component to the world subsystem
@@ -90,43 +87,18 @@ void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 	ProgressionMenuWidgetInternal->SetVisibility(CurrentGameState == ECurrentGameState::Menu ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	if (CurrentGameState == ECurrentGameState::Menu)
 	{
-		//UpdateProgressionWidgetForPlayer();
+		UpdateProgressionWidgetForPlayer();
 	}
 }
 
 // Listening end game states changes events (win, lose, draw) 
 void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 {
+	
 	if (EndGameState != EEndGameState::None)
 	{
 		SavePoints(EndGameState);
 	}
-}
-
-// Listen game state changes events 
-void UPSHUDComponent::HandleGameState(AMyGameStateBase* MyGameState)
-{
-	checkf(MyGameState, TEXT("ERROR: 'MyGameState' is null!"));
-
-	// Listen states to handle this widget behavior
-	MyGameState->OnGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnGameStateChanged);
-
-	if (MyGameState->GetCurrentGameState() == ECurrentGameState::Menu)
-	{
-		// Handle current game state initialized with delay
-		OnGameStateChanged(ECurrentGameState::Menu);
-	}
-	else
-	{
-		// Enter the game in Menu game state
-		MyGameState->ServerSetGameState(ECurrentGameState::Menu);
-	}
-}
-
-void UPSHUDComponent::HandleEndGameState(AMyPlayerState* MyPlayerState)
-{
-	checkf(MyPlayerState, TEXT("ERROR: 'MyGameState' is null!"));
-	MyPlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
 // Handle events when player type changes

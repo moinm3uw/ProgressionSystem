@@ -4,6 +4,7 @@
 
 #include "Data/PSTypes.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/MyPlayerState.h"
 #include "Structures/PlayerTag.h"
 //---
 #include "PSHUDComponent.generated.h"
@@ -25,6 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SavePoints(EEndGameState EndGameState);
 
+	/** Updates the progression menu widget when player changed */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void UpdateProgressionWidgetForPlayer();
+
 	/*********************************************************************************************
 	* Protected properties
 	********************************************************************************************* */
@@ -37,6 +42,9 @@ protected:
 	* Protected functions
 	********************************************************************************************* */
 protected:
+	UFUNCTION()
+	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
+
 	/** Called when the game starts. */
 	virtual void BeginPlay() override;
 
@@ -51,21 +59,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnEndGameStateChanged(EEndGameState EndGameState);
 
-	/** Is called to prepare the widget for Menu game state. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void HandleGameState(class AMyGameStateBase* MyGameState);
-
-	/** Is called to prepare the widget for handling end game state. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void HandleEndGameState(class AMyPlayerState* MyPlayerState);
-
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
-
-	/** Updates the progression menu widget when player changed */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void UpdateProgressionWidgetForPlayer();
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))

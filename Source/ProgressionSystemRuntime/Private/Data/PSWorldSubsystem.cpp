@@ -140,6 +140,27 @@ void UPSWorldSubsystem::SaveDataAsync()
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstanceInternal, SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex());
 }
 
+void UPSWorldSubsystem::ResetSaveGameData()
+{
+	const FString& SlotName = SaveGameInstanceInternal->GetSaveSlotName();
+	const int32 UserIndex = SaveGameInstanceInternal->GetSaveSlotIndex();
+
+	// Remove the data from the disk
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, UserIndex))
+	{
+		UGameplayStatics::DeleteGameInSlot(SlotName, UserIndex);
+	}
+
+	// Kill current save game object
+	if (IsValid(SaveGameInstanceInternal))
+	{
+		SaveGameInstanceInternal->ConditionalBeginDestroy();
+	}
+
+	// Re-load a new save game object. Load game from save creates a save file if there is no such
+	LoadGameFromSave();
+}
+
 // Returns rewards from data table for each type of game endings 
 int32 UPSWorldSubsystem::GetProgressionReward(EEndGameState EndGameState)
 {

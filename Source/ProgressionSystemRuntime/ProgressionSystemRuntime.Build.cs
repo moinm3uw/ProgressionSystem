@@ -23,7 +23,7 @@ public class ProgressionSystemRuntime : ModuleRules
 			{
 				"CoreUObject", "Engine", "Slate", "SlateCore", // Core
 				// Bomber modules 
-				"MyUtils", "PoolManager"
+				"MyUtils", "PoolManager", "MetaCheatManager"
 			}
 		);
 	}
