@@ -11,6 +11,7 @@
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSWorldSubsystem)
@@ -145,17 +146,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 	const FString& SlotName = SaveGameInstanceInternal->GetSaveSlotName();
 	const int32 UserIndex = SaveGameInstanceInternal->GetSaveSlotIndex();
 
-	// Remove the data from the disk
-	if (UGameplayStatics::DoesSaveGameExist(SlotName, UserIndex))
-	{
-		UGameplayStatics::DeleteGameInSlot(SlotName, UserIndex);
-	}
-
-	// Kill current save game object
-	if (IsValid(SaveGameInstanceInternal))
-	{
-		SaveGameInstanceInternal->ConditionalBeginDestroy();
-	}
+	UGameplayUtilsLibrary::ResetSaveGameData(SaveGameInstanceInternal, SlotName, UserIndex);
 
 	// Re-load a new save game object. Load game from save creates a save file if there is no such
 	LoadGameFromSave();
