@@ -61,6 +61,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void NextLevelProgressionRowData();
 
+	/** Unlocks all levels and set maximum allowed progression points */
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	void UnlockAllLevels();
+
 	/** Returns the endgame reward. */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	int32 GetProgressionReward(EEndGameState EndGameState);

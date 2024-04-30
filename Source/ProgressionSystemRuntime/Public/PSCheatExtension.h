@@ -16,6 +16,10 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSCheatExtension : public UMetaCheatManagerE
 public: 
 	/** Removes a save file of the Progression System (reset progression)  */
 	UFUNCTION(Exec, meta = (CheatName = "Bomber.Saves.Reset.ProgressionSystem"))
-	static void ResetNewMainMenuSaves();
+	static void ResetProgressionSystemSaves();
+	
+	/** Unlocks all levels of the Progression System (reset progression)  */
+	UFUNCTION(Exec, meta = (CheatName = "Bomber.Saves.Unlock.ProgressionSystem"))
+	static void UnlockAllLevels();
 	
 };

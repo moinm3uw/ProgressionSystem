@@ -49,9 +49,13 @@ public:
 	UFUNCTION()
 	void SaveDataAsync();
 
-	/** Removes all saved data of the Main Menu and creates new empty data. */
+	/** Removes all saved data of the Progression system and creates a new empty data */
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void ResetSaveGameData();
+
+	/** Unlocks all levels of the Progression System */
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	void UnlockAllLevels();
 
 	/** Returns the endgame reward. */
 	UFUNCTION(BlueprintCallable, Category="C++")

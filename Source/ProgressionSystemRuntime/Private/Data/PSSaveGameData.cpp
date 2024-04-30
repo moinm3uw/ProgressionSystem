@@ -112,6 +112,16 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 	// Ensure if FName is not found
 }
 
+// Unlocks all levels and set maximum allowed progression points
+void UPSSaveGameData::UnlockAllLevels()
+{
+	for (TTuple<FName, FPSRowData>& KeyValue : SavedProgressionRowsInternal)
+	{
+		UnlockLevelByName(KeyValue.Key);
+		KeyValue.Value.CurrentLevelProgression = KeyValue.Value.PointsToUnlock;
+	}
+}
+
 // @h4rdmol - make function const 
 int32 UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {

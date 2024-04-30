@@ -141,6 +141,7 @@ void UPSWorldSubsystem::SaveDataAsync()
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstanceInternal, SaveGameInstanceInternal->GetSaveSlotName(), SaveGameInstanceInternal->GetSaveSlotIndex());
 }
 
+// Removes all saved data of the Progression system and creates a new empty data
 void UPSWorldSubsystem::ResetSaveGameData()
 {
 	const FString& SlotName = SaveGameInstanceInternal->GetSaveSlotName();
@@ -150,6 +151,13 @@ void UPSWorldSubsystem::ResetSaveGameData()
 
 	// Re-load a new save game object. Load game from save creates a save file if there is no such
 	LoadGameFromSave();
+}
+
+// Unlocks all levels of the Progression System
+void UPSWorldSubsystem::UnlockAllLevels()
+{
+	SaveGameInstanceInternal->UnlockAllLevels();
+	SaveDataAsync();
 }
 
 // Returns rewards from data table for each type of game endings 
