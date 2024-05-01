@@ -42,6 +42,7 @@ protected:
 	* Protected functions
 	********************************************************************************************* */
 protected:
+	/** Subscribes to the end game state change notification on the player state. */
 	UFUNCTION()
 	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
 

@@ -30,8 +30,10 @@ UPSHUDComponent::UPSHUDComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
+// Subscribes to the end game state change notification on the player state.
 void UPSHUDComponent::OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID)
 {
+	// Ensure that PlayerState is not null before subscribing to the event
 	checkf(PlayerState, TEXT("ERROR: 'PlayerState' is null"));
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
