@@ -31,7 +31,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 		// Map component was not found, it could be not spawned, but in spawn request in queue
 		UPoolManagerSubsystem::Get().ReturnToPool(Handle);
 	}
-
+	
 	PoolWidgetHandlers.Empty();
 	checkf(PoolWidgetHandlers.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlers' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
 
@@ -44,8 +44,8 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 	for (int32 i = 0; i < TotalRequests; i++)
 	{
 		FSpawnRequest& NewRequestRef = InOutRequests.AddDefaulted_GetRef();
-		TSubclassOf<UPSStarWidget> clss = UPSDataAsset::Get().GetStarWidget(); 
-		NewRequestRef.Class = clss;
+		TSubclassOf<UPSStarWidget> StarWidgetClass = UPSDataAsset::Get().GetStarWidget(); 
+		NewRequestRef.Class = StarWidgetClass;
 	}
 
 	// --- Prepare spawn request
@@ -53,7 +53,6 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 	const FOnSpawnAllCallback OnTakeFromPoolCompleted = [WeakThis, AmountOfUnlockedPoints, AmountOfLockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
 	{
 		UPSMenuWidget* This = WeakThis.Get();
-		// @todo: 
 		if (This)
 		{
 			This->HorizontalBox->ClearChildren();

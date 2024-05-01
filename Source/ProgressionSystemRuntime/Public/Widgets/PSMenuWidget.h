@@ -55,6 +55,6 @@ protected:
 	virtual void NativeConstruct() override;
 
 	virtual void NativeDestruct() override;
-
+	
 	void UpdateStarImages(const FPoolObjectData& CreatedData, int32 AmountOfUnlockedStars, int32 AmountOfLockedStars);
 };
