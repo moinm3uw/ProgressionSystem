@@ -22,6 +22,7 @@ public:
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
 
+	/** Returns current row of progression system */
 	const FPSRowData& GetCurrentRow() const;
 
 	/* Delegate for informing row data changed */
@@ -95,7 +96,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
 
-	/** Load game from save */
+	/** Load game from save file or create a new one (does initial load from data table) */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void LoadGameFromSave();
 

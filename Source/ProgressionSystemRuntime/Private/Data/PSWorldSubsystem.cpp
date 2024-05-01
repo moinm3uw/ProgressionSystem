@@ -22,7 +22,7 @@ UPSWorldSubsystem& UPSWorldSubsystem::Get()
 	const UWorld* World = UUtilsLibrary::GetPlayWorld();
 	checkf(World, TEXT("%s: 'World' is null"), *FString(__FUNCTION__));
 	UPSWorldSubsystem* ThisSubsystem = World->GetSubsystem<ThisClass>();
-	checkf(ThisSubsystem, TEXT("%s: 'ProgressiorSubsystem' is null"), *FString(__FUNCTION__));
+	checkf(ThisSubsystem, TEXT("%s: 'ProgressionSubsystem' is null"), *FString(__FUNCTION__));
 	return *ThisSubsystem;
 }
 
@@ -32,10 +32,10 @@ UPSWorldSubsystem& UPSWorldSubsystem::Get(const UObject& WorldContextObject)
 	const UWorld* World = GEngine->GetWorldFromContextObjectChecked(&WorldContextObject);
 	checkf(World, TEXT("%s: 'World' is null"), *FString(__FUNCTION__));
 	UPSWorldSubsystem* ThisSubsystem = World->GetSubsystem<ThisClass>();
-	checkf(ThisSubsystem, TEXT("%s: 'ProgressiorSubsystem' is null"), *FString(__FUNCTION__));
+	checkf(ThisSubsystem, TEXT("%s: 'ProgressionSubsystem' is null"), *FString(__FUNCTION__));
 	return *ThisSubsystem;
 }
-
+// Returns current row of progression system
 const FPSRowData& UPSWorldSubsystem::GetCurrentRow() const
 {
 	const UPSSaveGameData* SaveGameInstance = GetCurrentSaveGameData();
@@ -50,12 +50,14 @@ const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 	return PSDataAssetInternal.LoadSynchronous();
 }
 
+// Set the progression system component
 void UPSWorldSubsystem::SetHUDComponent(UPSHUDComponent* MyHUDComponent)
 {
 	checkf(MyHUDComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
 	PSHUDComponentInternal = MyHUDComponent;
 }
 
+// Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
 void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
@@ -73,12 +75,14 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	LoadGameFromSave();
 }
 
+// Clears all transient data created by this subsystem
 void UPSWorldSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
 	PSHUDComponentInternal = nullptr;
 }
 
+// Is called to handle character possession event
 void UPSWorldSubsystem::OnCharacterPossessed(APawn* MyPawn)
 {
 	if (APlayerCharacter* MyPlayerCharacter = Cast<APlayerCharacter>(MyPawn))
@@ -91,12 +95,14 @@ void UPSWorldSubsystem::OnCharacterPossessed(APawn* MyPawn)
 	}
 }
 
+// Is called when a player has been changed
 void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
 	SaveGameInstanceInternal->SetRowByTag(PlayerTag);
 	OnCurrentRowDataChanged.Broadcast(PlayerTag);
 }
 
+// Load game from save file or create a new one (does initial load from data table)
 void UPSWorldSubsystem::LoadGameFromSave()
 {
 	// Check if the save game file exists
@@ -135,6 +141,7 @@ void UPSWorldSubsystem::SetFirstElemetAsCurrent()
 	SaveDataAsync();
 }
 
+// Saves the progression to the local files
 void UPSWorldSubsystem::SaveDataAsync()
 {
 	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
