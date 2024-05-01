@@ -66,46 +66,65 @@ const FPSRowData& UPSSaveGameData::GetCurrentRow() const
 	}
 	return FPSRowData::EmptyData;
 }
-
+// Sets the current row based on the provided player tag. The first row matching the tag becomes the current row.
 void UPSSaveGameData::SetRowByTag(FPlayerTag PlayerTag)
 {
 	for (const auto& KeyValue : SavedProgressionRowsInternal)
 	{
-		FPSRowData RowData = KeyValue.Value;
+		const FPSRowData& RowData = KeyValue.Value;
 
 		if (RowData.Character == PlayerTag)
 		{
 			CurrentRowNameInternal = KeyValue.Key;
-			break;
+			return;  // Exit immediately after finding the match
 		}
 	}
 }
 
+// Unlocks the level specified by RowName if it exists in the saved progression rows.
 void UPSSaveGameData::UnlockLevelByName(FName RowName)
 {
-	FPSRowData& CurrentRowRef = SavedProgressionRowsInternal[RowName];
-	CurrentRowRef.IsLevelLocked = false;
+	// Using the operator [] on a TMap like SavedProgressionRowsInternal[RowName] can inadvertently create a new entry in the map if RowName does not exist
+	// Check if the row exists to avoid inadvertently creating a new entry
+	if (SavedProgressionRowsInternal.Contains(RowName))
+	{
+		FPSRowData& CurrentRowRef = SavedProgressionRowsInternal[RowName];
+		CurrentRowRef.IsLevelLocked = false;
+	}
+	else
+	{
+		// Optionally log an error or handle the case where RowName does not exist
+		UE_LOG(LogTemp, Warning, TEXT("UnlockLevelByName: Row name '%s' not found in the progression rows."), *RowName.ToString());
+	}
 }
 
+// Updates the current level's progression based on the end game state and proceeds to the next level if unlocked.
 void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 {
-	FPSRowData& CurrentRowRef = SavedProgressionRowsInternal[CurrentRowNameInternal];
-	CurrentRowRef.CurrentLevelProgression += GetProgressionReward(EndGameState);
-
-	if (CurrentRowRef.CurrentLevelProgression >= CurrentRowRef.PointsToUnlock)
+	// Check if the current row exists in the map before attempting to update it
+	if (SavedProgressionRowsInternal.Contains(CurrentRowNameInternal))
 	{
-		NextLevelProgressionRowData();
+		FPSRowData& CurrentRowRef = SavedProgressionRowsInternal[CurrentRowNameInternal];
+		// Increase the current level's progression by the reward from the end game state
+		CurrentRowRef.CurrentLevelProgression += GetProgressionReward(EndGameState);
+
+		// Check if the current level progression has reached or surpassed the points needed to unlock
+		if (CurrentRowRef.CurrentLevelProgression >= CurrentRowRef.PointsToUnlock)
+		{
+			NextLevelProgressionRowData();  // Advance to the next level's progression data
+		}
+		UPSWorldSubsystem::Get().SaveDataAsync();  // Asynchronously save the updated data
 	}
-	UPSWorldSubsystem::Get().SaveDataAsync();
 }
 
+// Advances to the next level progression row and unlocks it, if available, after the current row.
 void UPSSaveGameData::NextLevelProgressionRowData()
 {
-	bool bFound = false;
+	bool bNextRowFound = false;
 
 	for (const TTuple<FName, FPSRowData>& KeyValue : SavedProgressionRowsInternal)
 	{
-		if (bFound)
+		if (bNextRowFound)
 		{
 			UnlockLevelByName(KeyValue.Key);
 			break;
@@ -113,10 +132,9 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 
 		if (KeyValue.Key == CurrentRowNameInternal)
 		{
-			bFound = true;
+			bNextRowFound = true;  // Indicate that the current row has been found
 		}
 	}
-	// Ensure if FName is not found
 }
 
 // Unlocks all levels and set maximum allowed progression points
@@ -129,9 +147,17 @@ void UPSSaveGameData::UnlockAllLevels()
 	}
 }
 
-// @h4rdmol - make function const 
+// @h4rdmol - make function const
+// Retrieves the progression reward based on the end game state for the current level.
 int32 UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
+	// Verify that the current row exists in the map to prevent creating a new entry
+	if (!SavedProgressionRowsInternal.Contains(CurrentRowNameInternal))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GetProgressionReward: CurrentRowName '%s' not found."), *CurrentRowNameInternal.ToString());
+		return 0;  // Return a default reward of 0 if the row does not exist
+	}
+	
 	const FPSRowData& CurrentRow = SavedProgressionRowsInternal[CurrentRowNameInternal];
 
 	switch (EndGameState)
@@ -143,6 +169,6 @@ int32 UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 	case EEndGameState::Lose:
 		return CurrentRow.LossReward;
 	default:
-		return 0;
+		return 0; // Return a default reward of 0 if the row does not exist
 	}
 }
