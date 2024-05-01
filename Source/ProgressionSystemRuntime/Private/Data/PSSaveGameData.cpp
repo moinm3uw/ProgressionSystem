@@ -7,12 +7,15 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveGameData)
 
+// Retrieves the name of the save slot, safely initializing the name statically to ensure thread safety and initialization order.
 const FString& UPSSaveGameData::GetSaveSlotName()
 {
+	// Using a function-static variable to avoid the static initialization order fiasco
 	static const FString SaveSlotName = StaticClass()->GetName();
 	return SaveSlotName;
 }
 
+// Retrieves the saved game progression row by index from internal saved rows. If the index is out of range, returns a static empty data object. 
 const FPSRowData& UPSSaveGameData::GetSavedProgressionRowByIndex(int32 Index) const
 {
 	int32 Idx = 0;
@@ -25,7 +28,8 @@ const FPSRowData& UPSSaveGameData::GetSavedProgressionRowByIndex(int32 Index) co
 	}
 	return FPSRowData::EmptyData;
 }
-
+// Sets the current progression row based on the provided index.
+// This updates the CurrentRowNameInternal to the FName corresponding to the InIndex in SavedProgressionRowsInternal.
 void UPSSaveGameData::SetCurrentProgressionRowByIndex(int32 InIndex)
 {
 	int32 Idx = 0;
@@ -34,12 +38,13 @@ void UPSSaveGameData::SetCurrentProgressionRowByIndex(int32 InIndex)
 		if (Idx == InIndex)
 		{
 			CurrentRowNameInternal = It.Key;
-			break;
+			return;; // Exit the function once the correct index is found
 		}
 		Idx++;
 	}
 }
 
+// Sets the progression map with a new set of progression rows. Ensures the new map is not empty before assignment.
 void UPSSaveGameData::SetProgressionMap(const TMap<FName, FPSRowData>& ProgressionRows)
 {
 	if (ensureMsgf(!ProgressionRows.IsEmpty(), TEXT("ASSERT: ProgressionRows is empty")))
@@ -47,10 +52,12 @@ void UPSSaveGameData::SetProgressionMap(const TMap<FName, FPSRowData>& Progressi
 		SavedProgressionRowsInternal = ProgressionRows;
 	}
 }
-
+// Retrieves the current row data based on the internally stored row name. Returns empty data if the row name isn't found.
 const FPSRowData& UPSSaveGameData::GetCurrentRow() const
 {
-	for (const auto& KeyValue : SavedProgressionRowsInternal)
+	static const FPSRowData EmptyData; // Ensure EmptyData is a static member to safely return it by reference
+	
+	for (const TTuple<FName, FPSRowData>& KeyValue : SavedProgressionRowsInternal)
 	{
 		if (KeyValue.Key == CurrentRowNameInternal)
 		{

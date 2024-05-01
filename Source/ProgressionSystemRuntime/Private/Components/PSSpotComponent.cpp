@@ -24,14 +24,16 @@ void UPSSpotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Ensure the component's mesh is properly assigned and not null.
 	PlayerSpotOnLevelInternal = GetMeshChecked();
-	checkf(PlayerSpotOnLevelInternal, TEXT("ERROR: 'PlayerSpotOnLevelInternal' is null"));
 
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 
+	// Ensure the save game data is properly loaded and not null.
 	SaveGameInstanceInternal = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
 	checkf(SaveGameInstanceInternal, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
 
+	// Update the visibility status of the spot based on current conditions or settings
 	ChangeSpotVisibilityStatus();
 }
 

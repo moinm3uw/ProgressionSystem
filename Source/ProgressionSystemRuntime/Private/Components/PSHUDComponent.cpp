@@ -48,18 +48,22 @@ void UPSHUDComponent::BeginPlay()
 	ProgressionMenuWidgetInternal = HUD.CreateWidgetByClass<UPSMenuWidget>(UPSDataAsset::Get().GetProgressionMenuWidget(), true, 1);
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 
+	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 
 	// Listen to handle input for each game state
 	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 
+	// Subscribe to the event notifying changes in player type
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
+
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetHUDComponent(this);
 
+	// Update the progression widget based on current player state
 	UpdateProgressionWidgetForPlayer();
 }
-
+// Called when the component is unregistered, used to clean up resources
 void UPSHUDComponent::OnUnregister()
 {
 	Super::OnUnregister();
@@ -68,8 +72,6 @@ void UPSHUDComponent::OnUnregister()
 		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
 		ProgressionMenuWidgetInternal = nullptr;
 	}
-
-	ProgressionMenuWidgetInternal = nullptr;
 }
 
 // Save the progression depends on EEndGameState
@@ -97,7 +99,6 @@ void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 // Listening end game states changes events (win, lose, draw) 
 void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 {
-	
 	if (EndGameState != EEndGameState::None)
 	{
 		SavePoints(EndGameState);
