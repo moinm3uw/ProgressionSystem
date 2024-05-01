@@ -32,6 +32,7 @@ UPSHUDComponent::UPSHUDComponent()
 
 void UPSHUDComponent::OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID)
 {
+	checkf(PlayerState, TEXT("ERROR: 'PlayerState' is null"));
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
