@@ -38,11 +38,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UHorizontalBox> HorizontalBox = nullptr;
 
-	// Background overlay for tint effect
+	/** Background overlay for tint effect */
 	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> PSCBackgroundOverlay = nullptr;
 
-	// Background overlay lock icon
+	/** Background overlay lock icon */
 	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> PSCBackgroundIconLock = nullptr;
 
@@ -55,6 +55,10 @@ protected:
 	virtual void NativeConstruct() override;
 
 	virtual void NativeDestruct() override;
-	
+	/** Updates star images icon to locked/unlocked according to input amounnt
+	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
+	 * @param AmountOfUnlockedStars Amount of icons to be switched to Unlocked stars.
+	 * @param AmountOfLockedStars Amount of icons to be switched to Locked stars.
+	 */
 	void UpdateStarImages(const FPoolObjectData& CreatedData, int32 AmountOfUnlockedStars, int32 AmountOfLockedStars);
 };

@@ -112,7 +112,7 @@ void UPSMenuWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate)
 	PSCBackgroundOverlay->SetVisibility(VisibilitySlate);
 	PSCBackgroundIconLock->SetVisibility(VisibilitySlate);
 }
-
+// Updates star images icon to locked/unlocked according to input amounnt
 void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, int32 AmountOfUnlockedStars, int32 AmountOfLockedStars)
 {
 	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();
