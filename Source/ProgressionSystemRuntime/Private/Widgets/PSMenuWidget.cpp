@@ -41,7 +41,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 
 	float TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
 	// Loop to create and add images to the Horizontal Box for unlocked stars
-	for (float i = 0; i < TotalRequests; i++)
+	for (int32 i = 0; i < TotalRequests; i++)
 	{
 		FSpawnRequest& NewRequestRef = InOutRequests.AddDefaulted_GetRef();
 		TSubclassOf<UPSStarWidget> StarWidgetClass = UPSDataAsset::Get().GetStarWidget(); 
