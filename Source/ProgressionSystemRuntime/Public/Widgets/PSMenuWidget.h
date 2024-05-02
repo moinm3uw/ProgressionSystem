@@ -21,7 +21,7 @@ public:
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints);
+	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints);
 
 	/**
 	* Sets the visibility of the background overlay and lock icon.
@@ -60,5 +60,5 @@ protected:
 	 * @param AmountOfUnlockedStars Amount of icons to be switched to Unlocked stars.
 	 * @param AmountOfLockedStars Amount of icons to be switched to Locked stars.
 	 */
-	void UpdateStarImages(const FPoolObjectData& CreatedData, int32 AmountOfUnlockedStars, int32 AmountOfLockedStars);
+	void UpdateStarImages(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars);
 };

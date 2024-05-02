@@ -60,7 +60,7 @@ public:
 
 	/** Returns the endgame reward. */
 	UFUNCTION(BlueprintCallable, Category="C++")
-	int32 GetProgressionReward(EEndGameState EndGameState);
+	float GetProgressionReward(EEndGameState EndGameState);
 
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.

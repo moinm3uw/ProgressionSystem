@@ -168,7 +168,7 @@ void UPSWorldSubsystem::UnlockAllLevels()
 }
 
 // Returns rewards from data table for each type of game endings 
-int32 UPSWorldSubsystem::GetProgressionReward(EEndGameState EndGameState)
+float UPSWorldSubsystem::GetProgressionReward(EEndGameState EndGameState)
 {
 	switch (EndGameState)
 	{
@@ -179,6 +179,6 @@ int32 UPSWorldSubsystem::GetProgressionReward(EEndGameState EndGameState)
 	case EEndGameState::Lose:
 		return GetCurrentRow().LossReward;
 	default:
-		return 0;
+		return 0.f;
 	}
 }

@@ -16,7 +16,7 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
-void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32 AmountOfLockedPoints)
+void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints)
 {
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
 
@@ -39,9 +39,9 @@ void UPSMenuWidget::AddImagesToHorizontalBox(int32 AmountOfUnlockedPoints, int32
 	InOutRequests.Empty();
 	checkf(InOutRequests.IsEmpty(), TEXT("ERROR: [%i] %s:\n'InOutRequests' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
 
-	int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
+	float TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
 	// Loop to create and add images to the Horizontal Box for unlocked stars
-	for (int32 i = 0; i < TotalRequests; i++)
+	for (float i = 0; i < TotalRequests; i++)
 	{
 		FSpawnRequest& NewRequestRef = InOutRequests.AddDefaulted_GetRef();
 		TSubclassOf<UPSStarWidget> StarWidgetClass = UPSDataAsset::Get().GetStarWidget(); 
@@ -113,7 +113,7 @@ void UPSMenuWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate)
 	PSCBackgroundIconLock->SetVisibility(VisibilitySlate);
 }
 // Updates star images icon to locked/unlocked according to input amounnt
-void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, int32 AmountOfUnlockedStars, int32 AmountOfLockedStars)
+void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars)
 {
 	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();
 	checkf(&SpawnedWidget, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));

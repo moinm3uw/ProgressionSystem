@@ -31,23 +31,23 @@ struct FPSRowData : public FTableRowBase
 
 	/** Current progression for each level  */
 	UPROPERTY()
-	int32 CurrentLevelProgression = 0;
+	float CurrentLevelProgression = 0.f;
 
 	/** Required about of points to unlock level  */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 PointsToUnlock = 0;
+	float PointsToUnlock = 0.f;
 
 	/** Amount of points to gain after win */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 WinReward = 0;
+	float WinReward = 0.f;
 
 	/** Amount of points to gain after draw */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 DrawReward = 0;
+	float DrawReward = 0.f;
 
 	/** Amount of points to gain after loss */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 LossReward = 0;
+	float LossReward = 0.f;
 
 	/** Defines if level is locked or not */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")

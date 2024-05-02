@@ -67,7 +67,7 @@ public:
 
 	/** Returns the endgame reward. */
 	UFUNCTION(BlueprintCallable, Category="C++")
-	int32 GetProgressionReward(EEndGameState EndGameState);
+	float GetProgressionReward(EEndGameState EndGameState);
 
 protected:
 	/** The current Index of Saved Progression. */
