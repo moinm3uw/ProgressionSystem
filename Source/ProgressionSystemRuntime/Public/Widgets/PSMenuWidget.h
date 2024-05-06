@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
-#include "Structures/MapComponentsContainer.h"
+#include "PoolManagerTypes.h"
 #include "PSMenuWidget.generated.h"
 
 /**
