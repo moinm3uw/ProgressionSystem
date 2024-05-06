@@ -12,6 +12,7 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
+#include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSWorldSubsystem)
@@ -62,15 +63,8 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	// Listen events on player type changed and Character spawned
-	if (APlayerCharacter* MyPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
-	{
-		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
-	}
-	else if (AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController())
-	{
-		MyPC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnCharacterPossessed);
-	}
+	// Subscribe events on player type changed and Character spawned
+	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::UPSWorldSubsystem::OnCharacterReady);
 
 	LoadGameFromSave();
 }
@@ -82,24 +76,16 @@ void UPSWorldSubsystem::Deinitialize()
 	PSHUDComponentInternal = nullptr;
 }
 
-// Is called to handle character possession event
-void UPSWorldSubsystem::OnCharacterPossessed(APawn* MyPawn)
-{
-	if (APlayerCharacter* MyPlayerCharacter = Cast<APlayerCharacter>(MyPawn))
-	{
-		MyPlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
-
-		//Unsubscribe to ignore null events call
-		AMyPlayerController* MyPC = UMyBlueprintFunctionLibrary::GetLocalPlayerController();
-		MyPC->GetOnNewPawnNotifier().RemoveAll(this);
-	}
-}
-
 // Is called when a player has been changed
 void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
 	SaveGameInstanceInternal->SetRowByTag(PlayerTag);
 	OnCurrentRowDataChanged.Broadcast(PlayerTag);
+}
+
+void UPSWorldSubsystem::OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID)
+{
+	PlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
 }
 
 // Load game from save file or create a new one (does initial load from data table)

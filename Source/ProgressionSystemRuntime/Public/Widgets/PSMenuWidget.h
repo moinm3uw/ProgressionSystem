@@ -24,6 +24,15 @@ public:
 	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints);
 
 	/**
+	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
+	* @param CreatedObjects - Handles of objects from Pool Manager
+	* @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
+	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
+	 */
+	UFUNCTION(BlueprintCallable, Category= "C++")
+	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints);
+
+	/**
 	* Sets the visibility of the background overlay and lock icon.
 	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
 	*/

@@ -30,32 +30,37 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 	{
 		if (UPSMenuWidget* This = WeakThis.Get())
 		{
-			This->HorizontalBox->ClearChildren();
-			int32 CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
-			int32 CurrentAmountOfLocked = AmountOfLockedPoints;
-			// Setup spawned widget
-			for (const FPoolObjectData& CreatedObject : CreatedObjects)
-			{
-				if (CurrentAmountOfUnlocked > 0)
-				{
-					// #1 Create MyFunction
-					This->UpdateStarImages(CreatedObject, 1, 0);
-					CurrentAmountOfUnlocked--;
-					continue;
-				}
-
-				if (CurrentAmountOfLocked > 0)
-				{
-					This->UpdateStarImages(CreatedObject, 0, 1);
-					CurrentAmountOfLocked--;
-				}
-			}
+			This->OnTakeFromPoolCompleted(CreatedObjects, AmountOfUnlockedPoints, AmountOfLockedPoints);
 		}
 	};
 	
 	// --- Spawn widgets
 	const int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
 	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlersInternal, UPSDataAsset::Get().GetStarWidget(), TotalRequests, OnTakeFromPoolCompleted);
+}
+
+void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints)
+{
+	HorizontalBox->ClearChildren();
+	int32 CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
+	int32 CurrentAmountOfLocked = AmountOfLockedPoints;
+	// Setup spawned widget
+	for (const FPoolObjectData& CreatedObject : CreatedObjects)
+	{
+		if (CurrentAmountOfUnlocked > 0)
+		{
+			// #1 Create MyFunction
+			UpdateStarImages(CreatedObject, 1, 0);
+			CurrentAmountOfUnlocked--;
+			continue;
+		}
+
+		if (CurrentAmountOfLocked > 0)
+		{
+			UpdateStarImages(CreatedObject, 0, 1);
+			CurrentAmountOfLocked--;
+		}
+	}
 }
 
 void UPSMenuWidget::NativeConstruct()
