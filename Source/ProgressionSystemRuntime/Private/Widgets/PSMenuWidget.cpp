@@ -20,40 +20,17 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 {
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
 
-	// Iterate it by handles to cancel spawning even if the widget is not spawned yet
-	for (const FPoolObjectHandle& Handle : PoolWidgetHandlers)
-	{
-		if (!ensureMsgf(Handle.IsValid(), TEXT("ASSERT: [%i] %s:\n'PoolObjectHandle' is not valid!"), __LINE__, *FString(__FUNCTION__)))
-		{
-			return;
-		}
-
-		// Map component was not found, it could be not spawned, but in spawn request in queue
-		UPoolManagerSubsystem::Get().ReturnToPool(Handle);
-	}
+	// Map component was not found, it could be not spawned, but in spawn request in queue
+	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlers);
 	
 	PoolWidgetHandlers.Empty();
 	checkf(PoolWidgetHandlers.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlers' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
-
-	TArray<FSpawnRequest> InOutRequests;
-	InOutRequests.Empty();
-	checkf(InOutRequests.IsEmpty(), TEXT("ERROR: [%i] %s:\n'InOutRequests' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
-
-	float TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
-	// Loop to create and add images to the Horizontal Box for unlocked stars
-	for (int32 i = 0; i < TotalRequests; i++)
-	{
-		FSpawnRequest& NewRequestRef = InOutRequests.AddDefaulted_GetRef();
-		TSubclassOf<UPSStarWidget> StarWidgetClass = UPSDataAsset::Get().GetStarWidget(); 
-		NewRequestRef.Class = StarWidgetClass;
-	}
-
+	
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
 	const FOnSpawnAllCallback OnTakeFromPoolCompleted = [WeakThis, AmountOfUnlockedPoints, AmountOfLockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
 	{
-		UPSMenuWidget* This = WeakThis.Get();
-		if (This)
+		if (UPSMenuWidget* This = WeakThis.Get())
 		{
 			This->HorizontalBox->ClearChildren();
 			int32 CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
@@ -77,19 +54,10 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 			}
 		}
 	};
-
-	if (!InOutRequests.IsEmpty())
-	{
-		// --- Spawn widgets
-		UPoolManagerSubsystem::Get().TakeFromPool(InOutRequests, OnTakeFromPoolCompleted);
-	}
-
-	// --- Add handles if requested spawning, so they can be canceled if regenerate before spawning finished
-	for (const FSpawnRequest& It : InOutRequests)
-	{
-		checkf(It.Handle.IsValid(), TEXT("ERROR: [%i] %s:\n'Handle' is not valid!"), __LINE__, *FString(__FUNCTION__));
-		PoolWidgetHandlers.AddUnique(It.Handle);
-	}
+	
+	// --- Spawn widgets
+	const int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
+	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlers, UPSDataAsset::Get().GetStarWidget(), TotalRequests, OnTakeFromPoolCompleted);
 }
 
 void UPSMenuWidget::NativeConstruct()
