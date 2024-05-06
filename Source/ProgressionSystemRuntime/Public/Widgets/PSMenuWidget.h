@@ -47,8 +47,8 @@ protected:
 	TObjectPtr<class UImage> PSCBackgroundIconLock = nullptr;
 
 	/** Array of pool handlers which should be released */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Components"))
-	TArray<FPoolObjectHandle> PoolWidgetHandlers;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Pool Widget Handlers"))
+	TArray<FPoolObjectHandle> PoolWidgetHandlersInternal;
 
 	/** Called after the underlying slate widget is constructed.
 	 * May be called multiple times due to adding and removing from the hierarchy. */

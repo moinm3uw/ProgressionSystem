@@ -21,10 +21,10 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
 
 	// Map component was not found, it could be not spawned, but in spawn request in queue
-	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlers);
+	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
 	
-	PoolWidgetHandlers.Empty();
-	checkf(PoolWidgetHandlers.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlers' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
+	PoolWidgetHandlersInternal.Empty();
+	checkf(PoolWidgetHandlersInternal.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlersInternal' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
 	
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
@@ -57,7 +57,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 	
 	// --- Spawn widgets
 	const int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
-	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlers, UPSDataAsset::Get().GetStarWidget(), TotalRequests, OnTakeFromPoolCompleted);
+	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlersInternal, UPSDataAsset::Get().GetStarWidget(), TotalRequests, OnTakeFromPoolCompleted);
 }
 
 void UPSMenuWidget::NativeConstruct()
