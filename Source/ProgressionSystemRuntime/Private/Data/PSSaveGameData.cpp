@@ -147,22 +147,17 @@ void UPSSaveGameData::UnlockAllLevels()
 float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
 	// Verify that the current row exists in the map to prevent creating a new entry
-	const FPSRowData* CurrentRowPtr = SavedProgressionRowsInternal.Find(CurrentRowNameInternal);
+	const FPSRowData& CurrentRowPtr = SavedProgressionRowsInternal.FindChecked(CurrentRowNameInternal);
 	checkf(&CurrentRowPtr, TEXT("ERROR: 'CurrentRowName' is null"));
-	
-	if (!CurrentRowPtr)
-	{
-		return 0.f;  // Return a default reward of 0.f if the row does not exist
-	}
 
 	switch (EndGameState)
 	{
 	case EEndGameState::Win:
-		return CurrentRowPtr->WinReward;
+		return CurrentRowPtr.WinReward;
 	case EEndGameState::Draw:
-		return CurrentRowPtr->DrawReward;
+		return CurrentRowPtr.DrawReward;
 	case EEndGameState::Lose:
-		return CurrentRowPtr->LossReward;
+		return CurrentRowPtr.LossReward;
 	default:
 		return 0.f; // Return a default reward of 0.f if the row does not exist
 	}
