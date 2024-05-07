@@ -34,6 +34,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlersInternal, UPSDataAsset::Get().GetStarWidget(), TotalRequests, OnTakeFromPoolCompleted);
 }
 
+// Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons
 void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints)
 {
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
@@ -59,17 +60,13 @@ void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& Creat
 	}
 }
 
+// Called after the underlying slate widget is constructed.
 void UPSMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);
-}
-
-void UPSMenuWidget::NativeDestruct()
-{
-	Super::NativeDestruct();
 }
 
 // Sets the visibility of the background overlay and lock icon.

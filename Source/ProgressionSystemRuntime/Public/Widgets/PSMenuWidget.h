@@ -62,8 +62,7 @@ protected:
 	/** Called after the underlying slate widget is constructed.
 	 * May be called multiple times due to adding and removing from the hierarchy. */
 	virtual void NativeConstruct() override;
-
-	virtual void NativeDestruct() override;
+	
 	/** Updates star images icon to locked/unlocked according to input amounnt
 	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
 	 * @param AmountOfUnlockedStars Amount of icons to be switched to Unlocked stars.
