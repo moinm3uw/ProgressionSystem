@@ -16,8 +16,6 @@
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints)
 {
-	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
-
 	// Map component was not found, it could be not spawned, but in spawn request in queue
 	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
 	
@@ -41,6 +39,7 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 
 void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints)
 {
+	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
 	HorizontalBox->ClearChildren();
 	int32 CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
 	int32 CurrentAmountOfLocked = AmountOfLockedPoints;
