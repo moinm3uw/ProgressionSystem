@@ -148,7 +148,6 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
 	// Verify that the current row exists in the map to prevent creating a new entry
 	const FPSRowData& CurrentRowPtr = SavedProgressionRowsInternal.FindChecked(CurrentRowNameInternal);
-	checkf(&CurrentRowPtr, TEXT("ERROR: 'CurrentRowName' is null"));
 
 	switch (EndGameState)
 	{

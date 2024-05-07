@@ -146,7 +146,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 	// Re-load a new save game object. Load game from save creates a save file if there is no such
 	LoadGameFromSave();
 	UPSHUDComponent* PSHUDComponent = GetProgressionSystemHUDComponent();
-	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
+	checkf(PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
 	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }
 
@@ -156,7 +156,7 @@ void UPSWorldSubsystem::UnlockAllLevels()
 	SaveGameInstanceInternal->UnlockAllLevels();
 	SaveDataAsync();
 	UPSHUDComponent* PSHUDComponent = GetProgressionSystemHUDComponent();
-	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
+	checkf(PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
 	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }
 

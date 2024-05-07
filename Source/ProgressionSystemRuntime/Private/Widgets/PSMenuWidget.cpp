@@ -80,7 +80,7 @@ void UPSMenuWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate)
 void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars)
 {
 	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();
-	checkf(&SpawnedWidget, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	
 	if (AmountOfUnlockedStars > 0)
 	{
 		SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetUnlockedProgressionIcon());
