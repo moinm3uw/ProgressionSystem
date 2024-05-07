@@ -7,6 +7,8 @@
 #include "Components/Image.h"
 //--
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PSStarWidget)
+
 // Updates the image used for the star display
 void UPSStarWidget::SetStarImage(UTexture2D* Image)
 {
