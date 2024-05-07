@@ -2,9 +2,9 @@
 
 
 #include "PSCheatExtension.h"
-
-#include "Components/PSHUDComponent.h"
 #include "Data/PSWorldSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(UPSCheatExtension)
 
 // Removes a save file of the Progression System (reset progression) 
 void UPSCheatExtension::ResetProgressionSystemSaves()
