@@ -35,7 +35,7 @@ public:
 
 	/** Returns a star widget  */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TSubclassOf<class UPSStarWidget> GetStarWidget() const { return StarWidgetInternal; }
+	FORCEINLINE TSubclassOf<class UPSStarWidget> GetStarWidgetClass() const { return StarWidgetInternal; }
 
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
