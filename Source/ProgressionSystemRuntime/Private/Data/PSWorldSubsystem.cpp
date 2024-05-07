@@ -3,7 +3,6 @@
 #include "Data/PSWorldSubsystem.h"
 
 #include "Components/PSHUDComponent.h"
-#include "Controllers/MyPlayerController.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
 #include "Kismet/GameplayStatics.h"
@@ -65,7 +64,7 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 
 	// Subscribe events on player type changed and Character spawned
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::UPSWorldSubsystem::OnCharacterReady);
+	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnCharacterReady);
 
 	LoadGameFromSave();
 }
