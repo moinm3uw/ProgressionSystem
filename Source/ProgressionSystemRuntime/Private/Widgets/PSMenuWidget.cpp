@@ -16,7 +16,7 @@
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints)
 {
-	// Map component was not found, it could be not spawned, but in spawn request in queue
+	//Return to Pool Manager the list of handles which is not needed (if there are any) 
 	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
 	
 	PoolWidgetHandlersInternal.Empty();
