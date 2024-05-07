@@ -27,7 +27,7 @@ public:
 	* Sets the visibility of the background overlay and lock icon.
 	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
 	*/
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected, BindWidget))
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetOverlayVisibility(ESlateVisibility VisibilitySlate);
 
 	/*********************************************************************************************
