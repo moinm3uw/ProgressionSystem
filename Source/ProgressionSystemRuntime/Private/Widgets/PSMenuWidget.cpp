@@ -19,9 +19,6 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 	//Return to Pool Manager the list of handles which is not needed (if there are any) 
 	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
 	
-	PoolWidgetHandlersInternal.Empty();
-	checkf(PoolWidgetHandlersInternal.IsEmpty(), TEXT("ERROR: [%i] %s:\n'PoolWidgetHandlersInternal' is not empty after removing all!"), __LINE__, *FString(__FUNCTION__));
-	
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
 	const FOnSpawnAllCallback OnTakeFromPoolCompleted = [WeakThis, AmountOfUnlockedPoints, AmountOfLockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
