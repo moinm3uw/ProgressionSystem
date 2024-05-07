@@ -91,11 +91,6 @@ void UPSSaveGameData::UnlockLevelByName(FName RowName)
 		FPSRowData& CurrentRowRef = SavedProgressionRowsInternal[RowName];
 		CurrentRowRef.IsLevelLocked = false;
 	}
-	else
-	{
-		// log an error for the case where RowName does not exist
-		UE_LOG(LogTemp, Warning, TEXT("UnlockLevelByName: Row name '%s' not found in the progression rows."), *RowName.ToString());
-	}
 }
 
 // Updates the current level's progression based on the end game state and proceeds to the next level if unlocked.
@@ -153,9 +148,10 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
 	// Verify that the current row exists in the map to prevent creating a new entry
 	const FPSRowData* CurrentRowPtr = SavedProgressionRowsInternal.Find(CurrentRowNameInternal);
+	checkf(&CurrentRowPtr, TEXT("ERROR: 'CurrentRowName' is null"));
+	
 	if (!CurrentRowPtr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("GetProgressionReward: CurrentRowName '%s' not found."), *CurrentRowNameInternal.ToString());
 		return 0.f;  // Return a default reward of 0.f if the row does not exist
 	}
 
