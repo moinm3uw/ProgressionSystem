@@ -68,5 +68,6 @@ protected:
 	 * @param AmountOfUnlockedStars Amount of icons to be switched to Unlocked stars.
 	 * @param AmountOfLockedStars Amount of icons to be switched to Locked stars.
 	 */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void UpdateStarImages(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars);
 };
