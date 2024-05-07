@@ -10,16 +10,10 @@
 void UPSCheatExtension::ResetProgressionSystemSaves()
 {
 	UPSWorldSubsystem::Get().ResetSaveGameData();
-	UPSHUDComponent* PSHUDComponent = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
-	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
-	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }
 
 // Unlocks all levels of the Progression System (reset progression)
 void UPSCheatExtension::UnlockAllLevels()
 {
 	UPSWorldSubsystem::Get().UnlockAllLevels();
-	UPSHUDComponent* PSHUDComponent = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
-	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
-	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }

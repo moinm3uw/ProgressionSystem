@@ -2,6 +2,7 @@
 
 #include "Data/PSWorldSubsystem.h"
 
+#include "Components/PSHUDComponent.h"
 #include "Controllers/MyPlayerController.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
@@ -144,6 +145,9 @@ void UPSWorldSubsystem::ResetSaveGameData()
 
 	// Re-load a new save game object. Load game from save creates a save file if there is no such
 	LoadGameFromSave();
+	UPSHUDComponent* PSHUDComponent = GetProgressionSystemHUDComponent();
+	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
+	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }
 
 // Unlocks all levels of the Progression System
@@ -151,6 +155,9 @@ void UPSWorldSubsystem::UnlockAllLevels()
 {
 	SaveGameInstanceInternal->UnlockAllLevels();
 	SaveDataAsync();
+	UPSHUDComponent* PSHUDComponent = GetProgressionSystemHUDComponent();
+	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
+	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }
 
 // Returns rewards from data table for each type of game endings 
