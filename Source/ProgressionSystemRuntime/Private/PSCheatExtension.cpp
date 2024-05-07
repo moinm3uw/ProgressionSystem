@@ -11,6 +11,7 @@ void UPSCheatExtension::ResetProgressionSystemSaves()
 {
 	UPSWorldSubsystem::Get().ResetSaveGameData();
 	UPSHUDComponent* PSHUDComponent = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
+	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
 	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }
 
@@ -19,5 +20,6 @@ void UPSCheatExtension::UnlockAllLevels()
 {
 	UPSWorldSubsystem::Get().UnlockAllLevels();
 	UPSHUDComponent* PSHUDComponent = UPSWorldSubsystem::Get().GetProgressionSystemHUDComponent();
+	checkf(&PSHUDComponent, TEXT("ERROR: 'PSHUDComponent' is null"));
 	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 }
