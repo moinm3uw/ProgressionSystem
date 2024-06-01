@@ -24,7 +24,7 @@ public:
 
 protected:
 	// Storing star image information for lock/unlocked icon
-	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
+	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> StarImageInternal = nullptr;
 
 	virtual void NativeConstruct() override;

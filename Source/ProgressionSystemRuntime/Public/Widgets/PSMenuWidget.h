@@ -35,15 +35,15 @@ public:
 	 ********************************************************************************************* */
 protected:
 	// Horizontal Box widget for storing stars
-	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
+	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UHorizontalBox> HorizontalBox = nullptr;
 
 	/** Background overlay for tint effect */
-	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
+	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> PSCBackgroundOverlay = nullptr;
 
 	/** Background overlay lock icon */
-	UPROPERTY(EditDefaultsOnly, Category = "C++", meta = (BlueprintProtected, BindWidget))
+	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> PSCBackgroundIconLock = nullptr;
 
 	/** Array of pool handlers which should be released */
