@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #include "ProgressionSystemRuntimeModule.h"
+#include "Modules/ModuleManager.h"
 
 #define LOCTEXT_NAMESPACE "FProgressionSystemRuntimeModule"
 
