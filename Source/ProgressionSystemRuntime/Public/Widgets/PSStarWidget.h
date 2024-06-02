@@ -31,10 +31,10 @@ public:
 
 protected:
 	// Storing star image information for lock/unlocked icon
-	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintReadWrite, BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> StarImageInternal = nullptr;
 
 	// Storing star progress bar icon to partially or fully fill progression 
-	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintReadWrite, BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UProgressBar> StarProgressBarInternal = nullptr;
 };
