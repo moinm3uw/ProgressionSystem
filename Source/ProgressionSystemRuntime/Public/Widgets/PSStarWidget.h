@@ -22,10 +22,19 @@ public:
 	UFUNCTION()
 	void SetStarImage(UTexture2D* Image);
 
+	/**
+	* Updates the star image progress bar to fill
+	* @param NewProgressValue new progress bar value to set.
+	*/
+	UFUNCTION()
+	void UpdateProgressionBarPercentage(float NewProgressValue);
+
 protected:
 	// Storing star image information for lock/unlocked icon
 	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> StarImageInternal = nullptr;
 
-	virtual void NativeConstruct() override;
+	// Storing star progress bar icon to partially or fully fill progression 
+	UPROPERTY(EditDefaultsOnly, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
+	TObjectPtr<class UProgressBar> StarProgressBarInternal = nullptr;
 };

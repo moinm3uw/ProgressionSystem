@@ -21,7 +21,7 @@ public:
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints);
+	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
 
 	/**
 	* Sets the visibility of the background overlay and lock icon.
@@ -61,7 +61,7 @@ protected:
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints);
+	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
 	
 	/** Updates star images icon to locked/unlocked according to input amounnt
 	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
@@ -70,4 +70,11 @@ protected:
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void UpdateStarImages(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars);
+
+	/** Updates Progress bar icon for unlocked icons
+	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
+	 * @param NewProgressBarValue percentage completion
+	 */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void UpdateStarProgressBarValue(const FPoolObjectData& CreatedData, float NewProgressBarValue);
 };

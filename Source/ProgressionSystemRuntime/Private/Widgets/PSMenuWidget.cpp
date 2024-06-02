@@ -14,18 +14,18 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
-void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints)
+void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
 {
 	//Return to Pool Manager the list of handles which is not needed (if there are any) 
 	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
 	
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
-	const FOnSpawnAllCallback OnTakeFromPoolCompleted = [WeakThis, AmountOfUnlockedPoints, AmountOfLockedPoints](const TArray<FPoolObjectData>& CreatedObjects)
+	const FOnSpawnAllCallback OnTakeFromPoolCompleted = [WeakThis, AmountOfUnlockedPoints, AmountOfLockedPoints, MaxLevelPoints](const TArray<FPoolObjectData>& CreatedObjects)
 	{
 		if (UPSMenuWidget* This = WeakThis.Get())
 		{
-			This->OnTakeFromPoolCompleted(CreatedObjects, AmountOfUnlockedPoints, AmountOfLockedPoints);
+			This->OnTakeFromPoolCompleted(CreatedObjects, AmountOfUnlockedPoints, AmountOfLockedPoints, MaxLevelPoints);
 		}
 	};
 	
@@ -35,12 +35,12 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 }
 
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons
-void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints)
+void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
 {
 	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
 	HorizontalBox->ClearChildren();
-	int32 CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
-	int32 CurrentAmountOfLocked = AmountOfLockedPoints;
+	float CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
+	float CurrentAmountOfLocked = AmountOfLockedPoints;
 	// Setup spawned widget
 	for (const FPoolObjectData& CreatedObject : CreatedObjects)
 	{
@@ -48,6 +48,11 @@ void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& Creat
 		{
 			// #1 Create MyFunction
 			UpdateStarImages(CreatedObject, 1, 0);
+			// more than 0 means that it's not an integer
+			if ((MaxLevelPoints - CurrentAmountOfUnlocked)  > 0)
+			{
+				UpdateStarProgressBarValue(CreatedObject, CurrentAmountOfUnlocked);
+			}
 			CurrentAmountOfUnlocked--;
 			continue;
 		}
@@ -84,6 +89,7 @@ void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, float A
 	if (AmountOfUnlockedStars > 0)
 	{
 		SpawnedWidget.SetStarImage(UPSDataAsset::Get().GetUnlockedProgressionIcon());
+		SpawnedWidget.UpdateProgressionBarPercentage(AmountOfUnlockedStars);
 	}
 
 	if (AmountOfLockedStars > 0)
@@ -94,5 +100,12 @@ void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, float A
 	if (!HorizontalBox->HasChild(&SpawnedWidget))
 	{
 		HorizontalBox->AddChildToHorizontalBox(&SpawnedWidget);
+		SpawnedWidget.UpdateProgressionBarPercentage(AmountOfUnlockedStars);
 	}
+}
+
+void UPSMenuWidget::UpdateStarProgressBarValue(const FPoolObjectData& CreatedData, float NewProgressBarValue)
+{
+	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();
+	SpawnedWidget.UpdateProgressionBarPercentage(NewProgressBarValue);
 }

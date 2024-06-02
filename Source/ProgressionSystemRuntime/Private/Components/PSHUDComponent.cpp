@@ -121,12 +121,12 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)
 	{
 		// set required points (stars)  to achieve for a level  
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.PointsToUnlock, 0);
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.PointsToUnlock, 0, CurrentRowData.PointsToUnlock);
 	}
 	else
 	{
 		// Calculate the unlocked against locked points (stars) 
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression); // Listen game state changes events 
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock); // Listen game state changes events 
 	}
 	DisplayLevelUIOverlay(CurrentRowData.IsLevelLocked);
 }

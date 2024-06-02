@@ -7,6 +7,8 @@
 #include "Components/Image.h"
 //--
 
+#include "Components/ProgressBar.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSStarWidget)
 
 // Updates the image used for the star display
@@ -17,7 +19,7 @@ void UPSStarWidget::SetStarImage(UTexture2D* Image)
 	StarImageInternal->SetBrushFromTexture(Image);
 }
 
-void UPSStarWidget::NativeConstruct()
+void UPSStarWidget::UpdateProgressionBarPercentage(float NewProgressValue)
 {
-	Super::NativeConstruct();
+	StarProgressBarInternal->SetPercent(NewProgressValue);
 }
