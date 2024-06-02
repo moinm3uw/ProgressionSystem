@@ -40,12 +40,9 @@ void UPSHUDComponent::OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32
 // Called when the game starts
 void UPSHUDComponent::BeginPlay()
 {
-	
 	Super::BeginPlay();
-	
-	UPSMenuWidget* MyMenuWidget = Cast<UPSMenuWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionMenuWidget(), true, 1));
-	ProgressionMenuWidgetInternal = MyMenuWidget;
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+
+	ProgressionMenuWidgetInternal = Cast<UPSMenuWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionMenuWidget(), true, 1));
 
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
@@ -62,6 +59,7 @@ void UPSHUDComponent::BeginPlay()
 	// Update the progression widget based on current player state
 	UpdateProgressionWidgetForPlayer();
 }
+
 // Called when the component is unregistered, used to clean up resources
 void UPSHUDComponent::OnUnregister()
 {
