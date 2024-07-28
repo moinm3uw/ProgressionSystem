@@ -10,6 +10,9 @@
 
 #include "PoolManagerSubsystem.h"
 #include "PoolManagerTypes.h"
+#include "Components/StaticMeshComponent.h"
+#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSMenuWidget)
 
@@ -104,6 +107,7 @@ void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, float A
 	}
 }
 
+// Updates Progress bar icon for unlocked icons 
 void UPSMenuWidget::UpdateStarProgressBarValue(const FPoolObjectData& CreatedData, float NewProgressBarValue)
 {
 	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();

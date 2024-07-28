@@ -37,6 +37,26 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class UPSStarWidget> GetStarWidgetClass() const { return StarWidgetInternal; }
 
+	/** Returns a star widget  */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE TSubclassOf<class AActor> GetStarActorClass() const { return StarActorClassInternal; }
+
+	/** Returns Material applied for locked progression material (star is empty) */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE class UMaterialInterface* GetLockedProgressionMaterial() const { return LockedProgressionMaterialInternal; }
+
+	/** Returns Material applied for unlocked progression material (star is fully filled) */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE class UMaterialInterface* GetUnlockedProgressionMaterial() const { return UnlockedProgressionMaterialInternal; }
+
+	/** Returns Material applied for dynamic progression material (star is filled partially depends on progression) */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE class UMaterialInterface* GetDynamicProgressionMaterial() const { return DynamicProgressionMaterialInternal; }
+
+	/** Returns progression difficulty multiplier */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE TMap<EGameDifficulty, float> GetProgressionDifficultyMultiplier() const { return ProgressionDifficultyMultiplierInternal; }
+
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
@@ -50,6 +70,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UPSStarWidget> StarWidgetInternal = nullptr;
 
+	/** Star icon widget */
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AActor> StarActorClassInternal = nullptr;
+
 	/** Image for locked progression */
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UTexture2D> LockedProgressionIconInternal = nullptr;
@@ -57,4 +81,20 @@ protected:
 	/** Image for unlocked progression */
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UTexture2D> UnlockedProgressionIconInternal = nullptr;
+
+	/** Material applied for locked progression material (star is empty) */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UMaterialInterface> LockedProgressionMaterialInternal = nullptr;
+
+	/** Material applied for unlocked progression material (star is fully filled) */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UMaterialInterface> UnlockedProgressionMaterialInternal = nullptr;
+
+	/** Material applied for dynamic progression material (star is filled partially depends on progression) */
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UMaterialInterface> DynamicProgressionMaterialInternal = nullptr;
+
+	/** The Progression difficulty multiplier. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Multiplier", ShowOnlyInnerProperties))
+	TMap<EGameDifficulty, float> ProgressionDifficultyMultiplierInternal;
 };

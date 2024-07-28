@@ -6,16 +6,14 @@ public class ProgressionSystemRuntime : ModuleRules
 {
 	public ProgressionSystemRuntime(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		CppStandard = CppStandardVersion.Latest;
+		CppStandard = CppStandardVersion.Latest; 
 		bEnableNonInlinedGenCppWarnings = true;
-
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicDependencyModuleNames.AddRange(new[]
 			{
 				"Core", "UMG"
 				// Bomber modules
-				,
-				"Bomber" // Is included in header files
+				, "Bomber" // Is included in header files
 			}
 		);
 
@@ -23,7 +21,9 @@ public class ProgressionSystemRuntime : ModuleRules
 			{
 				"CoreUObject", "Engine", "Slate", "SlateCore", // Core
 				// Bomber modules 
-				"MyUtils", "PoolManager", "MetaCheatManager"
+				"MyUtils" 
+				, "PoolManager" // Star and Widget Actors
+				, "MetaCheatManager" // PSCheatExtension
 			}
 		);
 	}

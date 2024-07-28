@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Data/PSTypes.h"
+#include "Bomber.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/MyPlayerState.h"
 #include "Structures/PlayerTag.h"
@@ -25,11 +25,11 @@ public:
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SavePoints(EEndGameState EndGameState);
-
+	
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void UpdateProgressionWidgetForPlayer();
-
+	
 	/*********************************************************************************************
 	* Protected properties
 	********************************************************************************************* */
@@ -38,6 +38,14 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
 	TObjectPtr<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
 
+	/** Current game state. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Game state"))
+	ECurrentGameState CurrentGameStateInternal = ECurrentGameState::None;
+	
+	/** Enabled Main Menu widget. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category="C++", meta = (BlueprintProtected, DisplayName = "Enable Main Menu Widget"))
+	bool PSMenuWidgetEnabledInternal = false;
+	
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */

@@ -87,6 +87,7 @@ void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
 	// Show Progression Menu widget in Main Menu
 	ProgressionMenuWidgetInternal->SetVisibility(CurrentGameState == ECurrentGameState::Menu ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	CurrentGameStateInternal = CurrentGameState;
 	if (CurrentGameState == ECurrentGameState::Menu)
 	{
 		UpdateProgressionWidgetForPlayer();
@@ -105,16 +106,17 @@ void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 // Handle events when player type changes
 void UPSHUDComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
-	UpdateProgressionWidgetForPlayer();
+		UpdateProgressionWidgetForPlayer();	
 }
 
 // Refresh the main menu progression widget player 
 void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 {
+	
 	const FPSRowData& CurrentRowData = UPSWorldSubsystem::Get().GetCurrentRow();
 	// check if empty returned Row from GetCurrentRow 
 	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
-
+	
 	//set updated amount of stars
 	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)
 	{
@@ -126,6 +128,18 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 		// Calculate the unlocked against locked points (stars) 
 		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock); // Listen game state changes events 
 	}
+
+	if (CurrentGameStateInternal == ECurrentGameState::Menu)
+	{
+		if (PSMenuWidgetEnabledInternal)
+		{
+			ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::Visible);	
+		} else
+		{
+			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(0,0,0);
+		}
+	}
+	
 	DisplayLevelUIOverlay(CurrentRowData.IsLevelLocked);
 }
 

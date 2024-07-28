@@ -29,6 +29,14 @@ struct FPSRowData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	FPlayerTag Character = FPlayerTag::None;
 
+	/** Transform of Stars above the character on a level */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	FTransform StarActorTransform = FTransform::Identity;
+
+	/** Offset between stars for stars above the character on a level */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	FVector OffsetBetweenStarActors = FVector::ZeroVector;
+
 	/** Current progression for each level  */
 	UPROPERTY()
 	float CurrentLevelProgression = 0.f;

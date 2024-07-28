@@ -152,11 +152,11 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 	switch (EndGameState)
 	{
 	case EEndGameState::Win:
-		return CurrentRowPtr.WinReward;
+		return CurrentRowPtr.WinReward * UPSWorldSubsystem::Get().GetDifficultyMultiplier();
 	case EEndGameState::Draw:
-		return CurrentRowPtr.DrawReward;
+		return CurrentRowPtr.DrawReward * UPSWorldSubsystem::Get().GetDifficultyMultiplier();
 	case EEndGameState::Lose:
-		return CurrentRowPtr.LossReward;
+		return CurrentRowPtr.LossReward * UPSWorldSubsystem::Get().GetDifficultyMultiplier();
 	default:
 		return 0.f; // Return a default reward of 0.f if the row does not exist
 	}

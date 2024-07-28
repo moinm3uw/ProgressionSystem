@@ -16,6 +16,8 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSSpotComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPSSpotComponent, UPSSpotComponent*, SpotComponent);
+
 	// Sets default values for this component's properties
 	UPSSpotComponent();
 
@@ -23,6 +25,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	class UMySkeletalMeshComponent* GetMySkeletalMeshComponent() const;
 	class UMySkeletalMeshComponent& GetMeshChecked() const;
+
+	/** Returns a Player's Spot On level (skeletal mesh component) */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE class UMySkeletalMeshComponent* GetPlayerSpotOnLevel() const { return PlayerSpotOnLevelInternal; }
+
+	/* Delegate for informing about loading spot component */
+	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
+	FPSSpotComponent OnSpotComponentReady;
 
 protected:
 	// Called when the game starts
@@ -34,6 +44,10 @@ protected:
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
+
+	/** Is called when a player has been changed */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID);
 
 	/** Locks the player spot when progression for level achieved */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta=(BlueprintProtected))

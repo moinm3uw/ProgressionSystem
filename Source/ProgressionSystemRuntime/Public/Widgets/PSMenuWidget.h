@@ -39,7 +39,7 @@ protected:
 	TObjectPtr<class UHorizontalBox> HorizontalBox = nullptr;
 
 	/** Background overlay for tint effect */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,  Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UImage> PSCBackgroundOverlay = nullptr;
 
 	/** Background overlay lock icon */
@@ -49,7 +49,7 @@ protected:
 	/** Array of pool handlers which should be released */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Pool Widget Handlers"))
 	TArray<FPoolObjectHandle> PoolWidgetHandlersInternal;
-
+	
 	/** Called after the underlying slate widget is constructed.
 	 * May be called multiple times due to adding and removing from the hierarchy. */
 	virtual void NativeConstruct() override;
@@ -62,6 +62,7 @@ protected:
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
+
 	
 	/** Updates star images icon to locked/unlocked according to input amounnt
 	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
