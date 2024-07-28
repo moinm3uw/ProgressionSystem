@@ -47,6 +47,3 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
 
 We hope you find this plugin useful and we look forward to your feedback and contributions.
 
-
-
-
