@@ -3,7 +3,6 @@
 #include "Components/PSHUDComponent.h"
 //---
 #include "Bomber.h"
-#include "Controllers/MyPlayerController.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 #include "Data/PSDataAsset.h"
 #include "Blueprint/WidgetTree.h"
@@ -11,10 +10,8 @@
 #include "Data/PSTypes.h"
 #include "Data/PSSaveGameData.h"
 #include "Data/PSWorldSubsystem.h"
-#include "Components/Image.h"
 #include "GameFramework/MyGameStateBase.h"
 #include "GameFramework/MyPlayerState.h"
-#include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 
@@ -90,6 +87,7 @@ void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 	CurrentGameStateInternal = CurrentGameState;
 	if (CurrentGameState == ECurrentGameState::Menu)
 	{
+		ProgressionMenuWidgetInternal->SetPadding(FMargin(0));
 		UpdateProgressionWidgetForPlayer();
 	}
 }
@@ -100,6 +98,11 @@ void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 	if (EndGameState != EEndGameState::None)
 	{
 		SavePoints(EndGameState);
+		// show the stars widget at the bottom.
+		ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::HitTestInvisible);
+		DisplayLevelUIOverlay(false); // isLevelLocked to show/hide the level blocking overlay with padlock icon at InGame state always level locked is false
+		ProgressionMenuWidgetInternal->SetPadding(FMargin(0, 800, 0, 0));
+		UpdateProgressionWidgetForPlayer();
 	}
 }
 
