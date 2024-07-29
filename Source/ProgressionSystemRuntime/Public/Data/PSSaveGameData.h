@@ -41,6 +41,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	const FPSRowData& GetCurrentRow() const;
 
+	/** Get previous progression row */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	const FPSRowData& GetPreviousRow() const;
+
 	/** Get current progression row */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FName GetCurrentRowName() const { return CurrentRowNameInternal; }

@@ -27,6 +27,9 @@ public:
 	/** Returns current row of progression system */
 	const FPSRowData& GetCurrentRow() const;
 
+	/** Returns previous row of progression system */
+	const FPSRowData& GetPreviousRow() const;
+
 	/* Delegate for informing row data changed */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FCurrentRowDataChanged OnCurrentRowDataChanged;
@@ -166,5 +169,9 @@ protected:
 	/** Called when the current game state was changed. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnGameStateChanged(ECurrentGameState CurrentGameState);
+
+	/** Checks if the current character is unlocked and the player is allowed to play, and if not allowed, sets the previous character. */
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void CheckAndSetCharacterUnlockStatus();
 	
 };

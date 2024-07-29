@@ -53,6 +53,15 @@ const FPSRowData& UPSWorldSubsystem::GetCurrentRow() const
 	return SaveGameInstance->GetCurrentRow();
 }
 
+// Returns previous row of progression system
+const FPSRowData& UPSWorldSubsystem::GetPreviousRow() const
+{
+	const UPSSaveGameData* SaveGameInstance = GetCurrentSaveGameData();
+	checkf(SaveGameInstance, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
+
+	return SaveGameInstance->GetPreviousRow();
+}
+
 // Returns the data asset that contains all the assets of Progression System game feature
 const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 {
@@ -122,6 +131,7 @@ void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 			PSSpotComponentInternal = SpotComponent;
 		}
 	}
+	CheckAndSetCharacterUnlockStatus();
 }
 
 void UPSWorldSubsystem::OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID)
@@ -236,7 +246,7 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 			CurrentAmountOfUnlocked--;
 			continue;
 		}
-		
+
 		if (CurrentAmountOfLocked > 0)
 		{
 			UpdateStarActor(CreatedObject, 0, 1);
@@ -301,11 +311,48 @@ void UPSWorldSubsystem::OnSpotComponentLoad(UPSSpotComponent* SpotComponent)
 // Called when the current game state was changed
 void UPSWorldSubsystem::OnGameStateChanged(ECurrentGameState CurrentGameState)
 {
-	// Show Progression Menu widget in Main Menu
-	if (CurrentGameState == ECurrentGameState::Menu)
+	switch (CurrentGameState)
 	{
+	case ECurrentGameState::Menu:
 		UpdateProgressionActorsForSpot();
+	case ECurrentGameState::GameStarting:
+		// Show Progression Menu widget in Main Menu
+		CheckAndSetCharacterUnlockStatus();
+	default: return;
 	}
+}
+
+// Checks if the current character is unlocked and the player is allowed to play
+// if not allowed, sets the previous character
+void UPSWorldSubsystem::CheckAndSetCharacterUnlockStatus()
+{
+	if (UMyBlueprintFunctionLibrary::GetMyGameState()->GetCurrentGameState() == ECurrentGameState::GameStarting)
+	{
+		const FPSRowData& CurrentRowData = GetCurrentRow();
+		if (CurrentRowData.IsLevelLocked)
+		{
+			APlayerCharacter* LocalPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+			if (!ensureMsgf(LocalPlayerCharacter, TEXT("ASSERT: 'LocalPlayerState' is not valid")))
+			{
+				return;
+			}
+
+			for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
+			{
+				if (SpotComponent->GetMeshChecked().GetPlayerTag() == GetPreviousRow().Character)
+				{
+					PSSpotComponentInternal = SpotComponent;
+					// Update the chosen player mesh on the level
+					const FCustomPlayerMeshData& CustomPlayerMeshData = PSSpotComponentInternal ? PSSpotComponentInternal->GetMeshChecked().GetCustomPlayerMeshData() : FCustomPlayerMeshData::Empty;
+					if (CustomPlayerMeshData.IsValid())
+					{
+						LocalPlayerCharacter->SetCustomPlayerMeshData(CustomPlayerMeshData);
+					}
+				}
+			}
+		}
+	}
+	
 }
 
 // Saves the progression to the local files

@@ -28,6 +28,7 @@ const FPSRowData& UPSSaveGameData::GetSavedProgressionRowByIndex(int32 Index) co
 	}
 	return FPSRowData::EmptyData;
 }
+
 // Sets the current progression row based on the provided index.
 // This updates the CurrentRowNameInternal to the FName corresponding to the InIndex in SavedProgressionRowsInternal.
 void UPSSaveGameData::SetCurrentProgressionRowByIndex(int32 InIndex)
@@ -52,11 +53,12 @@ void UPSSaveGameData::SetProgressionMap(const TMap<FName, FPSRowData>& Progressi
 		SavedProgressionRowsInternal = ProgressionRows;
 	}
 }
+
 // Retrieves the current row data based on the internally stored row name. Returns empty data if the row name isn't found.
 const FPSRowData& UPSSaveGameData::GetCurrentRow() const
 {
 	static const FPSRowData EmptyData; // Ensure EmptyData is a static member to safely return it by reference
-	
+
 	for (const TTuple<FName, FPSRowData>& KeyValue : SavedProgressionRowsInternal)
 	{
 		if (KeyValue.Key == CurrentRowNameInternal)
@@ -66,6 +68,24 @@ const FPSRowData& UPSSaveGameData::GetCurrentRow() const
 	}
 	return FPSRowData::EmptyData;
 }
+
+// Get previous progression row
+const FPSRowData& UPSSaveGameData::GetPreviousRow() const
+{
+	static const FPSRowData EmptyData; // Ensure EmptyData is a static member to safely return it by reference
+	const FPSRowData* PreviousRow = &EmptyData;
+
+	for (const TTuple<FName, FPSRowData>& KeyValue : SavedProgressionRowsInternal)
+	{
+		if (KeyValue.Key == CurrentRowNameInternal)
+		{
+			return *PreviousRow;
+		}
+		PreviousRow = &KeyValue.Value;
+	}
+	return EmptyData;
+}
+
 // Sets the current row based on the provided player tag. The first row matching the tag becomes the current row.
 void UPSSaveGameData::SetRowByTag(FPlayerTag PlayerTag)
 {
@@ -76,7 +96,7 @@ void UPSSaveGameData::SetRowByTag(FPlayerTag PlayerTag)
 		if (RowData.Character == PlayerTag)
 		{
 			CurrentRowNameInternal = KeyValue.Key;
-			return;  // Exit immediately after finding the match
+			return; // Exit immediately after finding the match
 		}
 	}
 }
@@ -106,9 +126,9 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 		// Check if the current level progression has reached or surpassed the points needed to unlock
 		if (CurrentRowRef.CurrentLevelProgression >= CurrentRowRef.PointsToUnlock)
 		{
-			NextLevelProgressionRowData();  // Advance to the next level's progression data
+			NextLevelProgressionRowData(); // Advance to the next level's progression data
 		}
-		UPSWorldSubsystem::Get().SaveDataAsync();  // Asynchronously save the updated data
+		UPSWorldSubsystem::Get().SaveDataAsync(); // Asynchronously save the updated data
 	}
 }
 
@@ -127,7 +147,7 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 
 		if (KeyValue.Key == CurrentRowNameInternal)
 		{
-			bNextRowFound = true;  // Indicate that the current row has been found
+			bNextRowFound = true; // Indicate that the current row has been found
 		}
 	}
 }
