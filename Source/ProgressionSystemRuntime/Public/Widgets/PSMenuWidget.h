@@ -23,13 +23,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
 
-	/**
-	* Sets the visibility of the background overlay and lock icon.
-	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
-	*/
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void SetOverlayVisibility(ESlateVisibility VisibilitySlate);
-
 	/*********************************************************************************************
 	 * Protected functions
 	 ********************************************************************************************* */
@@ -37,14 +30,6 @@ protected:
 	// Horizontal Box widget for storing stars
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
 	TObjectPtr<class UHorizontalBox> HorizontalBox = nullptr;
-
-	/** Background overlay for tint effect */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
-	TObjectPtr<class UImage> PSCBackgroundOverlay = nullptr;
-
-	/** Background overlay lock icon */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
-	TObjectPtr<class UImage> PSCBackgroundIconLock = nullptr;
 
 	/** Array of pool handlers which should be released */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Pool Widget Handlers"))

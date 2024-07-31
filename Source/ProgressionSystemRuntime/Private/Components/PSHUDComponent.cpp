@@ -14,6 +14,7 @@
 #include "GameFramework/MyPlayerState.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
+#include "Widgets/PSOverlayWidget.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
 
@@ -39,7 +40,9 @@ void UPSHUDComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ProgressionMenuWidgetInternal = Cast<UPSMenuWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionMenuWidget(), true, 1));
+	ProgressionMenuWidgetInternal = Cast<UPSMenuWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionMenuWidget(), true, -10));
+
+	ProgressionMenuOverlayWidgetInternal = Cast<UPSOverlayWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionOverlayWidget(), true, 1));
 
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
@@ -66,6 +69,11 @@ void UPSHUDComponent::OnUnregister()
 		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
 		ProgressionMenuWidgetInternal = nullptr;
 	}
+	if (ProgressionMenuOverlayWidgetInternal)
+	{
+		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuOverlayWidgetInternal);
+		ProgressionMenuOverlayWidgetInternal = nullptr;
+	}
 }
 
 // Save the progression depends on EEndGameState
@@ -81,14 +89,18 @@ void UPSHUDComponent::SavePoints(EEndGameState EndGameState)
 // Listening game states changes events 
 void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 {
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
-	// Show Progression Menu widget in Main Menu
-	ProgressionMenuWidgetInternal->SetVisibility(CurrentGameState == ECurrentGameState::Menu ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	CurrentGameStateInternal = CurrentGameState;
-	if (CurrentGameState == ECurrentGameState::Menu)
+	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+
+	switch (CurrentGameState)
 	{
-		ProgressionMenuWidgetInternal->SetPadding(FMargin(0));
+	case ECurrentGameState::GameStarting:
+		ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::Collapsed);
+
+	case ECurrentGameState::Menu:
 		UpdateProgressionWidgetForPlayer();
+
+	default: return;
 	}
 }
 
@@ -99,7 +111,7 @@ void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 	{
 		SavePoints(EndGameState);
 		// show the stars widget at the bottom.
-		ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::HitTestInvisible);
+		ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::Visible);
 		DisplayLevelUIOverlay(false); // isLevelLocked to show/hide the level blocking overlay with padlock icon at InGame state always level locked is false
 		ProgressionMenuWidgetInternal->SetPadding(FMargin(0, 800, 0, 0));
 		UpdateProgressionWidgetForPlayer();
@@ -133,6 +145,8 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 
 	if (CurrentGameStateInternal == ECurrentGameState::Menu)
 	{
+		ProgressionMenuWidgetInternal->SetPadding(FMargin(0));
+
 		if (PSMenuWidgetEnabledInternal)
 		{
 			ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::Visible);
@@ -154,11 +168,11 @@ void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 	if (IsLevelLocked)
 	{
 		// Level is locked show the blocking overlay
-		ProgressionMenuWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible);
+		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
 		// Level is unlocked hide the blocking overlay
-		ProgressionMenuWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed);
+		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed);
 	}
 }

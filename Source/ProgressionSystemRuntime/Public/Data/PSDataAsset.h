@@ -25,6 +25,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class UPSMenuWidget> GetProgressionMenuWidget() const { return ProgressionMenuWidgetInternal; }
 
+	/** Returns a progression overlay widget to be displayed in the main menu for locked levels */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE TSubclassOf<class UPSOverlayWidget> GetProgressionOverlayWidget() const { return ProgressionOverlayWidgetInternal; }
+
 	/** Returns a locked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE class UTexture2D* GetLockedProgressionIcon() const { return LockedProgressionIconInternal; }
@@ -65,6 +69,10 @@ protected:
 	/** Main progression widget */
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
+
+	/** Main Menu overlay widget */
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UPSOverlayWidget> ProgressionOverlayWidgetInternal = nullptr;
 
 	/** Star icon widget */
 	UPROPERTY(EditAnywhere)

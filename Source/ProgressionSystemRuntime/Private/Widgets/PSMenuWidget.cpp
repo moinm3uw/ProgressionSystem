@@ -76,14 +76,6 @@ void UPSMenuWidget::NativeConstruct()
 	// Hide this widget by default
 	SetVisibility(ESlateVisibility::Collapsed);
 }
-
-// Sets the visibility of the background overlay and lock icon.
-void UPSMenuWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate)
-{
-	// Level is unlocked hide the blocking overlay
-	PSCBackgroundOverlay->SetVisibility(VisibilitySlate);
-	PSCBackgroundIconLock->SetVisibility(VisibilitySlate);
-}
 // Updates star images icon to locked/unlocked according to input amounnt
 void UPSMenuWidget::UpdateStarImages(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars)
 {
