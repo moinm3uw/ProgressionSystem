@@ -9,6 +9,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
+#include "DataAssets/GameStateDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
@@ -95,16 +96,28 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	// Subscribe events on player type changed and Character spawned
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnCharacterReady);
+	const TArray<FName>& GameFeaturesToEnable = UGameStateDataAsset::Get().GetGameFeaturesToEnable();
+	for (const FName GameFeatureName : GameFeaturesToEnable)
+	{
+		if (GameFeatureName.IsNone())
+		{
+			continue;
+		}
 
-	// Listen to handle input for each game state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+		if (GameFeatureName == "ProgressionSystem")
+		{
+			// Subscribe events on player type changed and Character spawned
+			BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnCharacterReady);
 
-	LoadGameFromSave();
+			// Listen to handle input for each game state
+			BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 
-	StarDynamicProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
-	checkf(StarDynamicProgressMaterial, TEXT("ERROR: 'StarDynamicProgressMaterial' is null"));
+			LoadGameFromSave();
+
+			StarDynamicProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
+			checkf(StarDynamicProgressMaterial, TEXT("ERROR: 'StarDynamicProgressMaterial' is null"));
+		}
+	}
 }
 
 // Clears all transient data created by this subsystem
@@ -352,7 +365,6 @@ void UPSWorldSubsystem::CheckAndSetCharacterUnlockStatus()
 			}
 		}
 	}
-	
 }
 
 // Saves the progression to the local files
