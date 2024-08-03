@@ -26,7 +26,15 @@
 	"BuiltInInitialFeatureState": "Registered",
 	"Plugins": [
 		{
-			"Name": "MyEditorUtils",
+			"Name": "MyEditorUtils",  
+			"Enabled": true
+		},
+		{
+			"Name": "PoolManager", 
+			"Enabled": true
+		},
+		{
+			"Name": "MetaCheatManager",
 			"Enabled": true
 		}
 	]
