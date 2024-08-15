@@ -13,9 +13,10 @@
 // Updates the image used for the star display
 void UPSStarWidget::SetStarImage(UTexture2D* Image)
 {
-	checkf(Image, TEXT("ERROR: 'Image' is null"));
-
-	StarImageInternal->SetBrushFromTexture(Image);
+	if (ensureMsgf(Image, TEXT("ASSERT: [%i] %s:\n'Image' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	{
+		StarImageInternal->SetBrushFromTexture(Image);
+	}
 }
 
 void UPSStarWidget::UpdateProgressionBarPercentage(float NewProgressValue)
