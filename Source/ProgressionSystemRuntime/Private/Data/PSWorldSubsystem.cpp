@@ -54,6 +54,22 @@ const FPSRowData& UPSWorldSubsystem::GetCurrentRow() const
 	return SaveGameInstance->GetCurrentRow();
 }
 
+// Set current row of progression system by tag
+void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
+{
+	// check if current row is similar
+	if (GetCurrentRow().Character == NewRowPlayerTag)
+	{
+		return;
+	}
+
+	UPSSaveGameData* SaveGameInstance = GetCurrentSaveGameData();
+	checkf(SaveGameInstance, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
+
+	SaveGameInstance->SetRowByTag(NewRowPlayerTag);
+	OnCurrentRowDataChanged.Broadcast(NewRowPlayerTag);
+}
+
 // Returns previous row of progression system
 const FPSRowData& UPSWorldSubsystem::GetPreviousRow() const
 {
@@ -87,7 +103,7 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MyHUDComponent)
 void UPSWorldSubsystem::SetCurrentSpotComponent(UPSSpotComponent* MyHUDComponent)
 {
 	checkf(MyHUDComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
-	PSSpotComponentInternal = MyHUDComponent;
+	PSCurrentSpotComponentInternal = MyHUDComponent;
 	UpdateProgressionActorsForSpot();
 }
 
@@ -125,7 +141,7 @@ void UPSWorldSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
 	PSHUDComponentInternal = nullptr;
-	PSSpotComponentInternal = nullptr;
+	PSCurrentSpotComponentInternal = nullptr;
 	SaveGameInstanceInternal = nullptr;
 	SpawnedStarActorsInternal.Empty();
 	StarDynamicProgressMaterial = nullptr;
@@ -134,17 +150,15 @@ void UPSWorldSubsystem::Deinitialize()
 // Is called when a player has been changed
 void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
-	SaveGameInstanceInternal->SetRowByTag(PlayerTag);
-	OnCurrentRowDataChanged.Broadcast(PlayerTag);
+	SetCurrentRowByTag(PlayerTag);
 
 	for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
 	{
 		if (SpotComponent->GetMeshChecked().GetPlayerTag() == PlayerTag)
 		{
-			PSSpotComponentInternal = SpotComponent;
+			PSCurrentSpotComponentInternal = SpotComponent;
 		}
 	}
-	CheckAndSetCharacterUnlockStatus();
 }
 
 void UPSWorldSubsystem::OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID)
@@ -316,7 +330,7 @@ void UPSWorldSubsystem::OnSpotComponentLoad(UPSSpotComponent* SpotComponent)
 {
 	if (SpotComponent)
 	{
-		PSSpotComponentInternal = SpotComponent;
+		PSCurrentSpotComponentInternal = SpotComponent;
 		UpdateProgressionActorsForSpot();
 	}
 }
@@ -327,43 +341,14 @@ void UPSWorldSubsystem::OnGameStateChanged(ECurrentGameState CurrentGameState)
 	switch (CurrentGameState)
 	{
 	case ECurrentGameState::Menu:
+	// refresh 3D Stars actors
 		UpdateProgressionActorsForSpot();
+		break;
 	case ECurrentGameState::GameStarting:
 		// Show Progression Menu widget in Main Menu
-		CheckAndSetCharacterUnlockStatus();
-	default: return;
-	}
-}
-
-// Checks if the current character is unlocked and the player is allowed to play
-// if not allowed, sets the previous character
-void UPSWorldSubsystem::CheckAndSetCharacterUnlockStatus()
-{
-	if (UMyBlueprintFunctionLibrary::GetMyGameState()->GetCurrentGameState() == ECurrentGameState::GameStarting)
-	{
-		const FPSRowData& CurrentRowData = GetCurrentRow();
-		if (CurrentRowData.IsLevelLocked)
-		{
-			APlayerCharacter* LocalPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-			if (!ensureMsgf(LocalPlayerCharacter, TEXT("ASSERT: 'LocalPlayerState' is not valid")))
-			{
-				return;
-			}
-
-			for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
-			{
-				if (SpotComponent->GetMeshChecked().GetPlayerTag() == GetPreviousRow().Character)
-				{
-					PSSpotComponentInternal = SpotComponent;
-					// Update the chosen player mesh on the level
-					const FCustomPlayerMeshData& CustomPlayerMeshData = PSSpotComponentInternal ? PSSpotComponentInternal->GetMeshChecked().GetCustomPlayerMeshData() : FCustomPlayerMeshData::Empty;
-					if (CustomPlayerMeshData.IsValid())
-					{
-						LocalPlayerCharacter->SetCustomPlayerMeshData(CustomPlayerMeshData);
-					}
-				}
-			}
-		}
+		break;
+	default:
+		return;
 	}
 }
 
