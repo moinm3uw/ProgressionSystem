@@ -27,6 +27,10 @@ public:
 	/** Returns current row of progression system */
 	const FPSRowData& GetCurrentRow() const;
 
+	/** Set current row of progression system by tag*/
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	void SetCurrentRowByTag(FPlayerTag NewRowPlayerTag);
+
 	/** Returns previous row of progression system */
 	const FPSRowData& GetPreviousRow() const;
 
@@ -87,13 +91,13 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
 	TObjectPtr<class UPSHUDComponent> PSHUDComponentInternal = nullptr;
 
-	/** Progression System Spot Component reference*/
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
+	/** Progression System Array of Spot Components */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
 	TArray<class UPSSpotComponent*> PSSpotComponentArrayInternal;
 
 	/** Progression System Spot Component reference*/
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
-	TObjectPtr<class UPSSpotComponent> PSSpotComponentInternal = nullptr;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Component"))
+	TObjectPtr<class UPSSpotComponent> PSCurrentSpotComponentInternal = nullptr;
 
 	/** Store the current save game instance */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
@@ -169,9 +173,5 @@ protected:
 	/** Called when the current game state was changed. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnGameStateChanged(ECurrentGameState CurrentGameState);
-
-	/** Checks if the current character is unlocked and the player is allowed to play, and if not allowed, sets the previous character. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void CheckAndSetCharacterUnlockStatus();
 	
 };
