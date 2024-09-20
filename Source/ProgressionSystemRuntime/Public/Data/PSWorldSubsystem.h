@@ -74,7 +74,7 @@ public:
 	/** Unlocks all levels of the Progression System */
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void UnlockAllLevels();
-	
+
 	/** Returns difficultyMultiplier */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	float GetDifficultyMultiplier();
@@ -114,7 +114,7 @@ protected:
 	/** Store the material for dynamic progress materil fill for a star actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Dynamic Progress Material"))
 	TObjectPtr<UMaterialInstanceDynamic> StarDynamicProgressMaterial = nullptr;
-	
+
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */
@@ -125,13 +125,17 @@ protected:
 	/** Clears all transient data created by this subsystem. */
 	virtual void Deinitialize() override;
 
+	/** Is called when a player character is ready */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID);
+
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
 
-	/** Is called when a player character is ready */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID);
+	/** Called when the current game state was changed. */
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnGameStateChanged(ECurrentGameState CurrentGameState);
 
 	/** Load game from save file or create a new one (does initial load from data table) */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
@@ -147,8 +151,8 @@ protected:
 
 	/** Spawn/add the stars actors for a spot */
 	UFUNCTION(Blueprintable, Category="C++", meta=(BlueprintProtected))
-	void AddProgressionStarActors(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
-	
+	void AddProgressionStarActors();
+
 	/**
 	 * Dynamically adds Star actors which representing unlocked and locked progression above the character
 	 * @param CreatedObjects - Handles of objects from Pool Manager
@@ -156,7 +160,7 @@ protected:
 	 * @param AmountOfLockedPoints The number of stars (locked-stars as actors) to be added on top of the character
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
+	void OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects);
 
 	/** Updates star actor to locked/unlocked according to input amounnt
 	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
@@ -169,9 +173,4 @@ protected:
 	/** Triggers when a spot is loaded */
 	UFUNCTION(Blueprintable, Category="C++", meta=(BlueprintProtected))
 	void OnSpotComponentLoad(UPSSpotComponent* SpotComponent);
-
-	/** Called when the current game state was changed. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(ECurrentGameState CurrentGameState);
-	
 };
