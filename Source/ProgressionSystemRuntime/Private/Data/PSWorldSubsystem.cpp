@@ -54,6 +54,22 @@ const FPSRowData& UPSWorldSubsystem::GetCurrentRow() const
 	return SaveGameInstance->GetCurrentRow();
 }
 
+// Set current row of progression system by tag
+void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
+{
+	// check if current row is similar
+	if (GetCurrentRow().Character == NewRowPlayerTag)
+	{
+		return;
+	}
+
+	UPSSaveGameData* SaveGameInstance = GetCurrentSaveGameData();
+	checkf(SaveGameInstance, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
+
+	SaveGameInstance->SetRowByTag(NewRowPlayerTag);
+	OnCurrentRowDataChanged.Broadcast(NewRowPlayerTag);
+}
+
 // Returns previous row of progression system
 const FPSRowData& UPSWorldSubsystem::GetPreviousRow() const
 {
@@ -87,7 +103,7 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MyHUDComponent)
 void UPSWorldSubsystem::SetCurrentSpotComponent(UPSSpotComponent* MyHUDComponent)
 {
 	checkf(MyHUDComponent, TEXT("%s: My progression system component is null"), *FString(__FUNCTION__));
-	PSSpotComponentInternal = MyHUDComponent;
+	PSCurrentSpotComponentInternal = MyHUDComponent;
 	UpdateProgressionActorsForSpot();
 }
 
@@ -125,31 +141,48 @@ void UPSWorldSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
 	PSHUDComponentInternal = nullptr;
-	PSSpotComponentInternal = nullptr;
+	PSCurrentSpotComponentInternal = nullptr;
 	SaveGameInstanceInternal = nullptr;
 	SpawnedStarActorsInternal.Empty();
 	StarDynamicProgressMaterial = nullptr;
 }
 
+// Is called when a player character is ready
+void UPSWorldSubsystem::OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID)
+{
+	PlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
+}
+
 // Is called when a player has been changed
 void UPSWorldSubsystem::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 {
-	SaveGameInstanceInternal->SetRowByTag(PlayerTag);
-	OnCurrentRowDataChanged.Broadcast(PlayerTag);
+	SetCurrentRowByTag(PlayerTag);
 
 	for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
 	{
 		if (SpotComponent->GetMeshChecked().GetPlayerTag() == PlayerTag)
 		{
-			PSSpotComponentInternal = SpotComponent;
+			PSCurrentSpotComponentInternal = SpotComponent;
+			UpdateProgressionActorsForSpot();
 		}
 	}
-	CheckAndSetCharacterUnlockStatus();
 }
 
-void UPSWorldSubsystem::OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID)
+// Called when the current game state was changed
+void UPSWorldSubsystem::OnGameStateChanged(ECurrentGameState CurrentGameState)
 {
-	PlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
+	switch (CurrentGameState)
+	{
+	case ECurrentGameState::Menu:
+		// refresh 3D Stars actors
+		UpdateProgressionActorsForSpot();
+		break;
+	case ECurrentGameState::GameStarting:
+		// Show Progression Menu widget in Main Menu
+		break;
+	default:
+		return;
+	}
 }
 
 // Load game from save file or create a new one (does initial load from data table)
@@ -194,52 +227,54 @@ void UPSWorldSubsystem::SetFirstElemetAsCurrent()
 // Updates the stars actors for a spot
 void UPSWorldSubsystem::UpdateProgressionActorsForSpot()
 {
-	const FPSRowData& CurrentRowData = GetCurrentRow();
-
-	//set updated amount of stars
-	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)
-	{
-		// set required points (stars)  to achieve for a level  
-		AddProgressionStarActors(CurrentRowData.PointsToUnlock, 0, CurrentRowData.PointsToUnlock);
-	}
-	else
-	{
-		// Calculate the unlocked against locked points (stars) 
-		AddProgressionStarActors(CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock); // Listen game state changes events 
-	}
+	AddProgressionStarActors();
 }
 
 // Spawn/add the stars actors for a spot
-void UPSWorldSubsystem::AddProgressionStarActors(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
+void UPSWorldSubsystem::AddProgressionStarActors()
 {
-	SpawnedStarActorsInternal.Empty();
+	const FPSRowData& CurrentRowData = GetCurrentRow();
 	//Return to Pool Manager the list of handles which is not needed (if there are any) 
 	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
 	SpawnedStarActorsInternal.Empty();
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
-	const FOnSpawnAllCallback OnTakeActorsFromPoolCompleted = [WeakThis, AmountOfUnlockedPoints, AmountOfLockedPoints, MaxLevelPoints](const TArray<FPoolObjectData>& CreatedObjects)
+	const FOnSpawnAllCallback OnTakeActorsFromPoolCompleted = [WeakThis](const TArray<FPoolObjectData>& CreatedObjects)
 	{
 		if (UPSWorldSubsystem* This = WeakThis.Get())
 		{
-			This->OnTakeActorsFromPoolCompleted(CreatedObjects, AmountOfUnlockedPoints, AmountOfLockedPoints, MaxLevelPoints);
+			This->OnTakeActorsFromPoolCompleted(CreatedObjects);
 		}
 	};
 
 	// --- Spawn actors
-	const int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
-	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolActorHandlersInternal, UPSDataAsset::Get().GetStarActorClass(), TotalRequests, OnTakeActorsFromPoolCompleted);
+	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolActorHandlersInternal, UPSDataAsset::Get().GetStarActorClass(), CurrentRowData.PointsToUnlock, OnTakeActorsFromPoolCompleted, ESpawnRequestPriority::High);
 }
 
 // Dynamically adds Star actors which representing unlocked and locked progression above the character
-void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
+void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects)
 {
-	// remove CurrentAmountOfUnlocked, CurrentAmountOfLocked use AmountOfUnlockedPoints, AmountOfLockedPoints from function
-	float CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
-	float CurrentAmountOfLocked = AmountOfLockedPoints;
+	const FPSRowData& CurrentRowData = GetCurrentRow();
+
+	float CurrentAmountOfUnlocked = 0;
+	float CurrentAmountOfLocked = 0;
+
+	//set updated amount of stars
+	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)
+	{
+		// set required points (stars)  to achieve for a level  
+		CurrentAmountOfUnlocked = CurrentRowData.PointsToUnlock;
+		CurrentAmountOfLocked = 0;
+	}
+	else
+	{
+		// Calculate the unlocked against locked points (stars) 
+		CurrentAmountOfUnlocked = CurrentRowData.CurrentLevelProgression;
+		CurrentAmountOfLocked = CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression;
+	}
+
 	float integerPart;
 	float fractionalPart;
-
 	// Setup spawned widget
 	for (const FPoolObjectData& CreatedObject : CreatedObjects)
 	{
@@ -278,15 +313,10 @@ void UPSWorldSubsystem::UpdateStarActor(const FPoolObjectData& CreatedData, floa
 
 	SpawnedStarActorsInternal.Add(&SpawnedActor);
 
-	//SpawnedActor.SetActorScale3D(CurrentRowData.StarActorTransform.GetScale3D());
 	SpawnedActor.SetActorTransform(CurrentRowData.StarActorTransform);
 	// if the actor is the first element it set initial position
 	// from the initial position there is a distance between stars 
-	if (SpawnedStarActorsInternal.Num() == 1)
-	{
-		//SpawnedActor.SetActorTransform(CurrentRowData.StarActorTransform);
-	}
-	else if (SpawnedStarActorsInternal.Num() > 1)
+	if (SpawnedStarActorsInternal.Num() > 1)
 	{
 		SpawnedActor.SetActorLocation(SpawnedStarActorsInternal[SpawnedStarActorsInternal.Num() - 2]->GetActorLocation() + CurrentRowData.OffsetBetweenStarActors);
 	}
@@ -316,54 +346,7 @@ void UPSWorldSubsystem::OnSpotComponentLoad(UPSSpotComponent* SpotComponent)
 {
 	if (SpotComponent)
 	{
-		PSSpotComponentInternal = SpotComponent;
-		UpdateProgressionActorsForSpot();
-	}
-}
-
-// Called when the current game state was changed
-void UPSWorldSubsystem::OnGameStateChanged(ECurrentGameState CurrentGameState)
-{
-	switch (CurrentGameState)
-	{
-	case ECurrentGameState::Menu:
-		UpdateProgressionActorsForSpot();
-	case ECurrentGameState::GameStarting:
-		// Show Progression Menu widget in Main Menu
-		CheckAndSetCharacterUnlockStatus();
-	default: return;
-	}
-}
-
-// Checks if the current character is unlocked and the player is allowed to play
-// if not allowed, sets the previous character
-void UPSWorldSubsystem::CheckAndSetCharacterUnlockStatus()
-{
-	if (UMyBlueprintFunctionLibrary::GetMyGameState()->GetCurrentGameState() == ECurrentGameState::GameStarting)
-	{
-		const FPSRowData& CurrentRowData = GetCurrentRow();
-		if (CurrentRowData.IsLevelLocked)
-		{
-			APlayerCharacter* LocalPlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-			if (!ensureMsgf(LocalPlayerCharacter, TEXT("ASSERT: 'LocalPlayerState' is not valid")))
-			{
-				return;
-			}
-
-			for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
-			{
-				if (SpotComponent->GetMeshChecked().GetPlayerTag() == GetPreviousRow().Character)
-				{
-					PSSpotComponentInternal = SpotComponent;
-					// Update the chosen player mesh on the level
-					const FCustomPlayerMeshData& CustomPlayerMeshData = PSSpotComponentInternal ? PSSpotComponentInternal->GetMeshChecked().GetCustomPlayerMeshData() : FCustomPlayerMeshData::Empty;
-					if (CustomPlayerMeshData.IsValid())
-					{
-						LocalPlayerCharacter->SetCustomPlayerMeshData(CustomPlayerMeshData);
-					}
-				}
-			}
-		}
+		PSCurrentSpotComponentInternal = SpotComponent;
 	}
 }
 

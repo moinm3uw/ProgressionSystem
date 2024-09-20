@@ -60,4 +60,12 @@ struct FPSRowData : public FTableRowBase
 	/** Defines if level is locked or not */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	bool IsLevelLocked = true;
+
+	/** Defines the star animations for each character called when in-game cinematic played */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	TObjectPtr<class UCurveTable> HideStarsAnimation = nullptr;
+
+	/** Defines the star animations for each character called when in-game cinematic played */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	TObjectPtr<class UCurveTable> MenuStarsAnimation = nullptr;
 };
