@@ -64,4 +64,8 @@ struct FPSRowData : public FTableRowBase
 	/** Defines the star animations for each character called when in-game cinematic played */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	TObjectPtr<class UCurveTable> HideStarsAnimation = nullptr;
+
+	/** Defines the star animations for each character called when in-game cinematic played */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	TObjectPtr<class UCurveTable> MenuStarsAnimation = nullptr;
 };

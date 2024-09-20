@@ -8,6 +8,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "PSWorldSubsystem.generated.h"
 
+enum class ECurrentGameState : uint8;
 
 /**
  * Implements the world subsystem to access different components in the module 
@@ -53,15 +54,15 @@ public:
 
 	/** Set the progression system component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SetHUDComponent(UPSHUDComponent* MyHUDComponent);
+	void SetHUDComponent(class UPSHUDComponent* MyHUDComponent);
 
 	/** Set the progression system spot component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void RegisterSpotComponent(UPSSpotComponent* MyHUDComponent);
+	void RegisterSpotComponent(class UPSSpotComponent* MyHUDComponent);
 
 	/** Set the progression system spot component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SetCurrentSpotComponent(UPSSpotComponent* MyHUDComponent);
+	void SetCurrentSpotComponent(class UPSSpotComponent* MyHUDComponent);
 
 	/** Saves the progression to the local files */
 	UFUNCTION()
@@ -127,7 +128,7 @@ protected:
 
 	/** Is called when a player character is ready */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID);
+	void OnCharacterReady(class APlayerCharacter* PlayerCharacter, int32 CharacterID);
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
@@ -172,5 +173,5 @@ protected:
 
 	/** Triggers when a spot is loaded */
 	UFUNCTION(Blueprintable, Category="C++", meta=(BlueprintProtected))
-	void OnSpotComponentLoad(UPSSpotComponent* SpotComponent);
+	void OnSpotComponentLoad(class UPSSpotComponent* SpotComponent);
 };
