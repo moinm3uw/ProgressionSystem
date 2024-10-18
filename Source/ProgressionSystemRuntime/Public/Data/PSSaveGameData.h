@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Data/PSTypes.h"
-#include "Templates/Tuple.h"
 #include "GameFramework/SaveGame.h"
 #include "PSSaveGameData.generated.h"
 
@@ -25,33 +24,17 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	static int32 GetSaveSlotIndex() { return 0; }
 
+	/** Returns the Slot Index of the save slot. */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE TMap<FName, FPSSaveToDiskData>& GetProgressionSettingsRowDataInternal() { return ProgressionSettingsRowDataInternal; }
+
 	/** Returns the ProgressionRow by Index */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	const FPSRowData& GetSavedProgressionRowByIndex(int32 Index) const;
-
-	/** Set element by index */
-	UFUNCTION(BlueprintCallable, Category= "C++")
-	void SetCurrentProgressionRowByIndex(int32 InIndex);
+	FName GetSavedProgressionRowByIndex(int32 Index) const;
 
 	/** Update the ProgressionRows map */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SetProgressionMap(const TMap<FName, FPSRowData>& ProgressionRows);
-
-	/** Get current progression row */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	const FPSRowData& GetCurrentRow() const;
-
-	/** Get previous progression row */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	const FPSRowData& GetPreviousRow() const;
-
-	/** Get current progression row */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE FName GetCurrentRowName() const { return CurrentRowNameInternal; }
-
-	/** Set the current level by player tag*/
-	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SetRowByTag(FPlayerTag PlayerTag);
+	void SetProgressionMap(FName RowName, const FPSSaveToDiskData& ProgressionRows);
 
 	/** Unlock level by Index, used only for the first level */
 	UFUNCTION(BlueprintCallable, Category = "C++")
@@ -73,12 +56,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="C++")
 	float GetProgressionReward(EEndGameState EndGameState);
 
+	/** Returns the current save to disk data by name. */
+	UFUNCTION(BlueprintCallable, Category="C++")
+	FPSSaveToDiskData& GetSaveToDiskDataByName (FName CurrentRowName);
+
 protected:
-	/** The current Index of Saved Progression. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="C++", meta = (BlueprintProtected, DisplayName = "Current Row Name"))
-	FName CurrentRowNameInternal = NAME_None;
 
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))
-	TMap<FName, FPSRowData> SavedProgressionRowsInternal;
+	TMap<FName, FPSSaveToDiskData> ProgressionSettingsRowDataInternal;
 };

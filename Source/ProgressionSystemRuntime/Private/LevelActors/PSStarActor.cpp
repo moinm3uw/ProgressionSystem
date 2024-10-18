@@ -88,8 +88,8 @@ void APSStarActor::OnAnyCinematicStarted(const UObject* LevelSequence, const UOb
 // Hiding stars with animation in main menu when cinematic is start to play
 void APSStarActor::TryPlayHideStarAnimation()
 {
-	const FPSRowData& CurrentRow = UPSWorldSubsystem::Get().GetCurrentRow();
-	const bool bIsFinished = !TryPlayStarAnimation(StartTimeHideStarsInternal, CurrentRow.HideStarsAnimation);
+	const FPSRowData& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const bool bIsFinished = !TryPlayStarAnimation(StartTimeHideStarsInternal, CurrentProgressionSettingsRow.HideStarsAnimation);
 	if (bIsFinished)
 	{
 		StartTimeHideStarsInternal = 0.f;
@@ -100,8 +100,8 @@ void APSStarActor::TryPlayHideStarAnimation()
 // Menu stars with animation in main menu idle 
 void APSStarActor::TryPlayMenuStarAnimation()
 {
-	const FPSRowData& CurrentRow = UPSWorldSubsystem::Get().GetCurrentRow();
-	const bool bIsFinished = !TryPlayStarAnimation(StartTimeMenuStarsInternal, CurrentRow.MenuStarsAnimation);
+	const FPSRowData& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const bool bIsFinished = !TryPlayStarAnimation(StartTimeMenuStarsInternal, CurrentProgressionSettingsRow.MenuStarsAnimation);
 	if (bIsFinished)
 	{
 		StartTimeMenuStarsInternal = GetWorld()->GetTimeSeconds();

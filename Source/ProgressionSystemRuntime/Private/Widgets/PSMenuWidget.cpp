@@ -40,7 +40,10 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons
 void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
 {
-	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
+	if (!ensureMsgf(HorizontalBox, TEXT("ASSERT: [%i] %hs:\n'HorizontalBox' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 	HorizontalBox->ClearChildren();
 	float CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
 	float CurrentAmountOfLocked = AmountOfLockedPoints;

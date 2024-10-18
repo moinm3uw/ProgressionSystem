@@ -47,7 +47,7 @@ protected:
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID);
+	void OnCharacterReady(class APlayerCharacter* PlayerCharacter, int32 CharacterID);
 
 	/** Locks the player spot when progression for level achieved */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta=(BlueprintProtected))

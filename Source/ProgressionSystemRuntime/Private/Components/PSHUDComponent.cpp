@@ -31,7 +31,10 @@ UPSHUDComponent::UPSHUDComponent()
 void UPSHUDComponent::OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID)
 {
 	// Ensure that PlayerState is not null before subscribing to the event
-	checkf(PlayerState, TEXT("ERROR: 'PlayerState' is null"));
+	if (!ensureMsgf(PlayerState, TEXT("ASSERT: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
@@ -80,17 +83,23 @@ void UPSHUDComponent::OnUnregister()
 void UPSHUDComponent::SavePoints(EEndGameState EndGameState)
 {
 	// @h4rdmol to move to Subsystem instead of hud
-	UPSSaveGameData* SaveGameInstance = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
-	checkf(SaveGameInstance, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
-
-	SaveGameInstance->SavePoints(EndGameState);
+	const UPSSaveGameData* SaveGameInstance = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	if (!ensureMsgf(SaveGameInstance, TEXT("ASSERT: [%i] %hs:\n'SaveGameInstance' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	UPSSaveGameData* SaveGameData = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	SaveGameData->SavePoints(EndGameState);
 }
 
 // Listening game states changes events 
 void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 {
 	CurrentGameStateInternal = CurrentGameState;
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 
 	switch (CurrentGameState)
 	{
@@ -127,20 +136,24 @@ void UPSHUDComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 // Refresh the main menu progression widget player 
 void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 {
-	const FPSRowData& CurrentRowData = UPSWorldSubsystem::Get().GetCurrentRow();
-	// check if empty returned Row from GetCurrentRow 
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
+	const FPSRowData& CurrenProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	// check if empty returned Row from GetCurrentRow
+	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 
 	//set updated amount of stars
-	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)
+	if (CurrenSaveToDiskDataRow.CurrentLevelProgression >= CurrenProgressionSettingsRow.PointsToUnlock)
 	{
 		// set required points (stars)  to achieve for a level  
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.PointsToUnlock, 0, CurrentRowData.PointsToUnlock);
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrenProgressionSettingsRow.PointsToUnlock, 0, CurrenProgressionSettingsRow.PointsToUnlock);
 	}
 	else
 	{
 		// Calculate the unlocked against locked points (stars) 
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock); // Listen game state changes events 
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
 	}
 
 	if (CurrentGameStateInternal == ECurrentGameState::Menu)
@@ -157,14 +170,17 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 		}
 	}
 
-	DisplayLevelUIOverlay(CurrentRowData.IsLevelLocked);
+	DisplayLevelUIOverlay(CurrenSaveToDiskDataRow.IsLevelLocked);
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
 // by default overlay is always displayed 
 void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 {
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 	if (IsLevelLocked)
 	{
 		// Level is locked show the blocking overlay
