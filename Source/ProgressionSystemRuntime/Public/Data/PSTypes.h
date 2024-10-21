@@ -85,3 +85,18 @@ struct FPSSaveToDiskData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	bool IsLevelLocked = true;
 };
+
+
+/**
+ * Represents the state of the overlay widget fade animation played in the menu.
+ */
+UENUM(BlueprintType, DisplayName = "Overlay Widget Fade Animation State")
+enum class EPSOverlayWidgetFadeState : uint8
+{
+	///< Is not in the Menu
+	None,
+	///< Fade-it animation
+	FadeIn,
+	///< Fade-out animation 
+	FadeOut,
+};

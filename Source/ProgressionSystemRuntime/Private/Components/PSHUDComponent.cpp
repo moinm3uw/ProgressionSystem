@@ -181,14 +181,16 @@ void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 	{
 		return;
 	}
+
+	constexpr bool bShouldPlayFadeAnimation = true;
 	if (IsLevelLocked)
 	{
 		// Level is locked show the blocking overlay
-		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible);
+		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible, bShouldPlayFadeAnimation);
 	}
 	else
 	{
 		// Level is unlocked hide the blocking overlay
-		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed);
+		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
 	}
 }

@@ -61,6 +61,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TMap<EGameDifficulty, float> GetProgressionDifficultyMultiplier() const { return ProgressionDifficultyMultiplierInternal; }
 
+	/** Returns the duration of fade-in/fade-out overlay animation in the main menu when cinematic started */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE float GetOverlayFadeDuration() const { return FadeDurationInternal; }
+
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
@@ -105,4 +109,8 @@ protected:
 	/** The Progression difficulty multiplier. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Multiplier", ShowOnlyInnerProperties))
 	TMap<EGameDifficulty, float> ProgressionDifficultyMultiplierInternal;
+
+	/** Stores the duration of fade-in/fade-out overlay animation in the main menu when cinematic started */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Fade duration"))
+	float FadeDurationInternal = 1.0f;
 };
