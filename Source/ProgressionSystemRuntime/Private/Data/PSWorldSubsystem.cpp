@@ -17,6 +17,7 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/MyGameStateBase.h"
+#include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "Subsystems/GameDifficultySubsystem.h"
@@ -173,7 +174,6 @@ void UPSWorldSubsystem::Deinitialize()
 	PSHUDComponentInternal = nullptr;
 	PSCurrentSpotComponentInternal = nullptr;
 	SaveGameDataInternal = nullptr;
-	SpawnedStarActorsInternal.Empty();
 	ProgressionSettingsDataInternal.Empty();
 	StarDynamicProgressMaterial = nullptr;
 }
@@ -275,7 +275,6 @@ void UPSWorldSubsystem::AddProgressionStarActors()
 	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
 	//Return to Pool Manager the list of handles which is not needed (if there are any) 
 	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
-	SpawnedStarActorsInternal.Empty();
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
 	const FOnSpawnAllCallback OnTakeActorsFromPoolCompleted = [WeakThis](const TArray<FPoolObjectData>& CreatedObjects)
@@ -296,90 +295,30 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
 	const FPSSaveToDiskData& CurrentSaveToDiskRowData = GetCurrentSaveToDiskRowByName();
 
-	float CurrentAmountOfUnlocked;
-	float CurrentAmountOfLocked;
+	float CurrentAmountOfUnlocked = CurrentSaveToDiskRowData.CurrentLevelProgression;
 
-	//set updated amount of stars
-	if (CurrentSaveToDiskRowData.CurrentLevelProgression >= CurrentSettingsRowData.PointsToUnlock)
-	{
-		// set required points (stars)  to achieve for a level  
-		CurrentAmountOfUnlocked = CurrentSettingsRowData.PointsToUnlock;
-		CurrentAmountOfLocked = 0;
-	}
-	else
-	{
-		// Calculate the unlocked against locked points (stars) 
-		CurrentAmountOfUnlocked = CurrentSaveToDiskRowData.CurrentLevelProgression;
-		CurrentAmountOfLocked = CurrentSettingsRowData.PointsToUnlock - CurrentSaveToDiskRowData.CurrentLevelProgression;
-	}
+	FVector PreviousActorLocation;
 
-	float integerPart;
 	// Setup spawned widget
 	for (const FPoolObjectData& CreatedObject : CreatedObjects)
 	{
+		APSStarActor& SpawnedActor = CreatedObject.GetChecked<APSStarActor>();
+
+		float StarAmount = FMath::Clamp(CurrentAmountOfUnlocked, 0.0f, 1.0f);
 		if (CurrentAmountOfUnlocked > 0)
 		{
-			float fractionalPart = modff(CurrentAmountOfUnlocked, &integerPart);
-			// check if it has a fractional part and if there is no more fully achieved stars 
-			if (fractionalPart < 1.0f && CurrentAmountOfUnlocked < 1.0f)
-			{
-				UpdateStarActor(CreatedObject, fractionalPart, 0);
-			}
-			else
-			{
-				UpdateStarActor(CreatedObject, 1, 0);
-			}
-
-			CurrentAmountOfUnlocked--;
-			continue;
-		}
-
-		if (CurrentAmountOfLocked > 0)
-		{
-			UpdateStarActor(CreatedObject, 0, 1);
-			CurrentAmountOfLocked--;
-		}
-	}
-}
-
-// Updates star actor to locked/unlocked according to input amount
-void UPSWorldSubsystem::UpdateStarActor(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars)
-{
-	AActor& SpawnedActor = CreatedData.GetChecked<AActor>();
-	UStaticMeshComponent* MeshComponent = SpawnedActor.FindComponentByClass<UStaticMeshComponent>();
-	if (!ensureMsgf(MeshComponent, TEXT("ASSERT: [%i] %s:\n'MeshComponent' is not valid!"), __LINE__, *FString(__FUNCTION__)))
-	{
-		return;
-	}
-	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
-
-	SpawnedStarActorsInternal.Add(&SpawnedActor);
-
-	SpawnedActor.SetActorTransform(CurrentSettingsRowData.StarActorTransform);
-	// if the actor is the first element it set initial position
-	// from the initial position there is a distance between stars 
-	if (SpawnedStarActorsInternal.Num() > 1)
-	{
-		SpawnedActor.SetActorLocation(SpawnedStarActorsInternal[SpawnedStarActorsInternal.Num() - 2]->GetActorLocation() + CurrentSettingsRowData.OffsetBetweenStarActors);
-	}
-
-	if (AmountOfUnlockedStars > 0) //unlocked stars
-	{
-		if (AmountOfUnlockedStars > 0 && AmountOfUnlockedStars < 1) // dynamic 
-		{
-			MeshComponent->SetMaterial(0, StarDynamicProgressMaterial);
-			StarDynamicProgressMaterial->SetScalarParameterValue(TEXT("Percentage2"), AmountOfUnlockedStars / 3);
+			constexpr bool bIsStarLocked = false;
+			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, StarAmount, bIsStarLocked);
 		}
 		else
 		{
-			MeshComponent->SetMaterial(0, UPSDataAsset::Get().GetUnlockedProgressionMaterial());
+			constexpr bool bIsStarLocked = true;
+			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, 1, bIsStarLocked);
 		}
-		return;
-	}
+		CurrentAmountOfUnlocked -= StarAmount;
 
-	if (AmountOfLockedStars > 0) //locked stars
-	{
-		MeshComponent->SetMaterial(0, UPSDataAsset::Get().GetLockedProgressionMaterial());
+		SpawnedActor.OnInitialized(PreviousActorLocation);
+		PreviousActorLocation = SpawnedActor.GetActorLocation();
 	}
 }
 

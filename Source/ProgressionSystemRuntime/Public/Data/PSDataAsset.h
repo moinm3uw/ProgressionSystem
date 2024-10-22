@@ -65,6 +65,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE float GetOverlayFadeDuration() const { return FadeDurationInternal; }
 
+	/** Star Material Slot name to change the dynamic fill-in based on the progression */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE FName GetStarMaterialSlotName() const { return StarMaterialSlotNameInternal; }
+
+	/** Returns temp value to tweak the stars with bad UV  to look as expected. Could not be 0 */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE float GetStarMaterialFractionalDivisor() const { return StarMaterialFractionalDivisorInternal; }
+
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
@@ -112,5 +120,14 @@ protected:
 
 	/** Stores the duration of fade-in/fade-out overlay animation in the main menu when cinematic started */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Fade duration"))
-	float FadeDurationInternal = 1.0f;
+	float FadeDurationInternal = 1.0;
+
+	/** Star Material Slot name to change the dynamic fill-in based on the progression */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Material Slot Name"))
+	FName StarMaterialSlotNameInternal = NAME_None;
+
+	/** Temporary used to tweak the stars with bad UV  to look as expected
+	 * Since it's a divisor couldn't be 0 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Material Fractional Divisor Temporary"))
+	float StarMaterialFractionalDivisorInternal = 1.f;
 };

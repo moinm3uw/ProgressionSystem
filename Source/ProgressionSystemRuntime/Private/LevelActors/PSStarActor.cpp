@@ -6,6 +6,7 @@
 #include "PoolManagerSubsystem.h"
 #include "Components/StaticMeshComponent.h"
 #include "Controllers/MyPlayerController.h"
+#include "Data/PSDataAsset.h"
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Engine/World.h"
@@ -23,6 +24,8 @@ APSStarActor::APSStarActor()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	StarMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StarMesh"));
+	RootComponent = StarMeshComponent;
 }
 
 // Called when the game starts or when spawned
@@ -138,4 +141,48 @@ void APSStarActor::SetStartTimeMenuStars()
 	check(World);
 
 	StartTimeMenuStarsInternal = World->GetTimeSeconds();
+}
+
+//  Is get called when a Star actor is initialized
+void APSStarActor::OnInitialized(const FVector& PreviousActorLocation)
+{
+	const FPSRowData& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	FTransform DesiredTransform = CurrentProgressionSettingsRow.StarActorTransform;
+
+	// set offset from previous if it's not first
+	// if the PreviousActorTransform is empty this means it is a first element and set init transform
+	if (!PreviousActorLocation.Equals(FVector::ZeroVector))
+	{
+		DesiredTransform.SetLocation(PreviousActorLocation + CurrentProgressionSettingsRow.OffsetBetweenStarActors);
+	}
+
+	SetActorTransform(DesiredTransform);
+}
+
+//  Updates star actors Mesh material to the Locked Star, Unlocked or partially achieved
+void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, bool bIsLockedStar)
+{
+	if (!ensureMsgf(StarDynamicProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicProgressMaterial' is not valid!"), __LINE__, __FUNCTION__)
+		|| !ensureMsgf(StarMeshComponent, TEXT("ASSERT: [%i] %hs:\n'StarMeshComponent' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return; // Early return if pointers are invalid
+	}
+
+	// locked stars
+	if (bIsLockedStar)
+	{
+		StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetLockedProgressionMaterial());
+		return;
+	}
+
+	// unlocked stars with fractional part
+	if (AmountOfStars > 0 && AmountOfStars < 1)
+	{
+		StarMeshComponent->SetMaterial(0, StarDynamicProgressMaterial);
+		StarDynamicProgressMaterial->SetScalarParameterValue(UPSDataAsset::Get().GetStarMaterialSlotName(), AmountOfStars / UPSDataAsset::Get().GetStarMaterialFractionalDivisor()); // StarMaterialFractionalDivisor is hardcoded value to 3 to tweak bad UV to simulate it's working
+		return; // Early return for fractional stars
+	}
+
+	// unlocked stars
+	StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetUnlockedProgressionMaterial());
 }

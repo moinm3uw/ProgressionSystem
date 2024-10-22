@@ -58,10 +58,9 @@ public:
 
 	/** Returns the current save to disk data by name. */
 	UFUNCTION(BlueprintCallable, Category="C++")
-	FPSSaveToDiskData& GetSaveToDiskDataByName (FName CurrentRowName);
+	FPSSaveToDiskData& GetSaveToDiskDataByName(FName CurrentRowName);
 
 protected:
-
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))
 	TMap<FName, FPSSaveToDiskData> ProgressionSettingsRowDataInternal;
