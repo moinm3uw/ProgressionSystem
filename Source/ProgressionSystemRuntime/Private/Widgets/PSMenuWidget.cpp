@@ -34,6 +34,11 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 	
 	// --- Spawn widgets
 	const int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
+	if (TotalRequests == 0)
+	{
+		// no items to request nothing to add
+		return;
+	}
 	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlersInternal, UPSDataAsset::Get().GetStarWidgetClass(), TotalRequests, OnTakeFromPoolCompleted);
 }
 

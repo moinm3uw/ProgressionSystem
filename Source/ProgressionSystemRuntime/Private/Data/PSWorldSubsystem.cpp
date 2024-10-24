@@ -292,7 +292,6 @@ void UPSWorldSubsystem::AddProgressionStarActors()
 // Dynamically adds Star actors which representing unlocked and locked progression above the character
 void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects)
 {
-	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
 	const FPSSaveToDiskData& CurrentSaveToDiskRowData = GetCurrentSaveToDiskRowByName();
 
 	float CurrentAmountOfUnlocked = CurrentSaveToDiskRowData.CurrentLevelProgression;
