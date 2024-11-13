@@ -9,6 +9,7 @@
 #include "PSWorldSubsystem.generated.h"
 
 enum class ECurrentGameState : uint8;
+enum class EPSStarActorState : uint8;
 
 /**
  * Implements the world subsystem to access different components in the module 

@@ -44,7 +44,7 @@ public:
 	 * @param bIsLockedStar Defines whether a star is locked or unlocked
 	 */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, bool bIsLockedStar);
+	void UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState);
 
 protected:
 	// Called when the game starts or when spawned

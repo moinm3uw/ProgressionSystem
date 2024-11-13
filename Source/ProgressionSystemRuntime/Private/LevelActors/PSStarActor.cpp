@@ -160,7 +160,7 @@ void APSStarActor::OnInitialized(const FVector& PreviousActorLocation)
 }
 
 //  Updates star actors Mesh material to the Locked Star, Unlocked or partially achieved
-void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, bool bIsLockedStar)
+void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState)
 {
 	if (!ensureMsgf(StarDynamicProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicProgressMaterial' is not valid!"), __LINE__, __FUNCTION__)
 		|| !ensureMsgf(StarMeshComponent, TEXT("ASSERT: [%i] %hs:\n'StarMeshComponent' is not valid!"), __LINE__, __FUNCTION__))
@@ -169,7 +169,7 @@ void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDyn
 	}
 
 	// locked stars
-	if (bIsLockedStar)
+	if (StarActorState == EPSStarActorState::Locked)
 	{
 		StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetLockedProgressionMaterial());
 		return;
@@ -183,6 +183,6 @@ void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDyn
 		return; // Early return for fractional stars
 	}
 
-	// unlocked stars
+	// unlocked stars EPSStarActorState::Unlocked
 	StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetUnlockedProgressionMaterial());
 }

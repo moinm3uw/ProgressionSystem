@@ -306,14 +306,13 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 		float StarAmount = FMath::Clamp(CurrentAmountOfUnlocked, 0.0f, 1.0f);
 		if (CurrentAmountOfUnlocked > 0)
 		{
-			constexpr bool bIsStarLocked = false;
-			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, StarAmount, bIsStarLocked);
+			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, StarAmount, EPSStarActorState::Unlocked);
 		}
 		else
 		{
-			constexpr bool bIsStarLocked = true;
-			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, 1, bIsStarLocked);
+			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, 1, EPSStarActorState::Locked);
 		}
+
 		CurrentAmountOfUnlocked -= StarAmount;
 
 		SpawnedActor.OnInitialized(PreviousActorLocation);

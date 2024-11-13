@@ -100,3 +100,17 @@ enum class EPSOverlayWidgetFadeState : uint8
 	///< Fade-out animation 
 	FadeOut,
 };
+
+/**
+ * Represents the state of the stars states displayed in the main menu
+ */
+UENUM(BlueprintType, DisplayName = "Overlay Widget Fade Animation State")
+enum class EPSStarActorState : uint8
+{
+	///< Is not defined
+	None,
+	///< Star is locked
+	Locked,
+	///< Star is unlocked 
+	Unlocked,
+};
