@@ -15,6 +15,11 @@ void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bo
 {
 	if (!bShouldPlayFadeAnimation)
 	{
+		if (PSCOverlay)
+		{
+			// reset render opacity
+			PSCOverlay->SetRenderOpacity(1.0f);
+		}
 		SetOverlayItemsVisibility(VisibilitySlate);
 		return;
 	}

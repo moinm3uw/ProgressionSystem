@@ -14,6 +14,7 @@
 #include "GameFramework/MyPlayerState.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
+#include "UI/SettingsWidget.h"
 #include "Widgets/PSOverlayWidget.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
@@ -182,15 +183,18 @@ void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 		return;
 	}
 
-	constexpr bool bShouldPlayFadeAnimation = true;
-	if (IsLevelLocked)
+	if (USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
 	{
-		// Level is locked show the blocking overlay
-		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible, bShouldPlayFadeAnimation);
-	}
-	else
-	{
-		// Level is unlocked hide the blocking overlay
-		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
+		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
+		if (IsLevelLocked)
+		{
+			// Level is locked show the blocking overlay
+			ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible, bShouldPlayFadeAnimation);
+		}
+		else
+		{
+			// Level is unlocked hide the blocking overlay
+			ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
+		}	
 	}
 }
