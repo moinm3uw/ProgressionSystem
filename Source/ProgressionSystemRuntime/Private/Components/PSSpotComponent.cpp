@@ -23,11 +23,9 @@ UPSSpotComponent::UPSSpotComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
-// Called when the game starts
-void UPSSpotComponent::BeginPlay()
+// Called when progression module ready
+void UPSSpotComponent::OnInitialized_Implementation()
 {
-	Super::BeginPlay();
-
 	// Ensure the component's mesh is properly assigned and not null.
 	PlayerSpotOnLevelInternal = GetMeshChecked();
 
@@ -39,6 +37,13 @@ void UPSSpotComponent::BeginPlay()
 
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().RegisterSpotComponent(this);
+}
+
+// Called when the game starts
+void UPSSpotComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	UPSWorldSubsystem::Get().OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
 }
 
 // Clears all transient data created by this component.
@@ -63,7 +68,7 @@ UMySkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
 }
 
 // Is called when a player has been changed
-void UPSSpotComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
+void UPSSpotComponent::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
 	UMySkeletalMeshComponent& Mesh = GetMeshChecked();
 	if (Mesh.GetPlayerTag() == PlayerTag)
@@ -77,7 +82,7 @@ void UPSSpotComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 }
 
 //  Is called when a player has been changed 
-void UPSSpotComponent::OnCharacterReady(APlayerCharacter* PlayerCharacter, int32 CharacterID)
+void UPSSpotComponent::OnCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
 {
 	if (PlayerCharacter->GetPlayerTag() == GetMeshChecked().GetPlayerTag())
 	{

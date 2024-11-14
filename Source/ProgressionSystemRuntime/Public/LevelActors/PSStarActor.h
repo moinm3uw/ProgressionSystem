@@ -66,15 +66,15 @@ protected:
 	float StartTimeMenuStarsInternal = 0.0f;
 
 	/** When a local character load finished */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnLocalCharacterReady(class APlayerCharacter* Character, int32 CharacterID);
 
 	/** Called when the current game state was changed */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnGameStateChanged(ECurrentGameState GameState);
 
 	/** Is called when any cinematic started to play in the main menu */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void OnAnyCinematicStarted(const UObject* LevelSequence, const UObject* FromInstigator);
 
 	/** Hiding stars with animation in main menu when cinematic is start to play */

@@ -21,6 +21,7 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPlayerTag, SavedProgressionRowData);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnInitialize);
 
 	/** Returns this Subsystem, is checked and will crash if it can't be obtained.*/
 	static UPSWorldSubsystem& Get();
@@ -36,6 +37,10 @@ public:
 	/* Delegate for informing row data changed */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FCurrentRowDataChanged OnCurrentRowDataChanged;
+
+	/* Delegate for informing save game file is loaded/created if empty */
+	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
+	FPSOnInitialize OnInitialize;
 
 	/** Returns the data asset that contains all the assets of Progression System game feature.
 	 * @see UPSWorldSubsystem::PSDataAssetInternal. */
@@ -139,6 +144,11 @@ protected:
 	* Protected functions
 	********************************************************************************************* */
 protected:
+	/** Called when progression module ready
+	 * Once the save file is loaded it activates the functionality of this class */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnInitialized();
+	
 	/** Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors */
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 
@@ -146,15 +156,15 @@ protected:
 	virtual void Deinitialize() override;
 
 	/** Is called when a player character is ready */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnCharacterReady(class APlayerCharacter* PlayerCharacter, int32 CharacterID);
 
 	/** Is called when a player has been changed */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
 
 	/** Called when the current game state was changed. */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnGameStateChanged(ECurrentGameState CurrentGameState);
 
 	/** Load game from save file or create a new one (does initial load from data table) */
@@ -181,6 +191,10 @@ protected:
 	void OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects);
 
 	/** Triggers when a spot is loaded */
-	UFUNCTION(Blueprintable, Category="C++", meta=(BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, Blueprintable, Category="C++", meta=(BlueprintProtected))
 	void OnSpotComponentLoad(class UPSSpotComponent* SpotComponent);
+
+	/** Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnAsyncLoadGameFromSlotCompleted(const FString& SlotName, int32 UserIndex, class USaveGame* SaveGame);
 };
