@@ -14,6 +14,7 @@ public class ProgressionSystemRuntime : ModuleRules
 				"Core", "UMG"
 				// Bomber modules
 				, "Bomber" // Is included in header files
+				, "SettingsWidgetConstructor" // SettingWidgetConstructor
 			}
 		);
 

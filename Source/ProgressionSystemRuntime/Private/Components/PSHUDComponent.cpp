@@ -14,6 +14,7 @@
 #include "GameFramework/MyPlayerState.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
+#include "UI/SettingsWidget.h"
 #include "Widgets/PSOverlayWidget.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
@@ -27,19 +28,9 @@ UPSHUDComponent::UPSHUDComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
-// Subscribes to the end game state change notification on the player state.
-void UPSHUDComponent::OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID)
+// Called when main save game file is loaded
+void UPSHUDComponent::OnInitialized_Implementation()
 {
-	// Ensure that PlayerState is not null before subscribing to the event
-	checkf(PlayerState, TEXT("ERROR: 'PlayerState' is null"));
-	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
-}
-
-// Called when the game starts
-void UPSHUDComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
 	ProgressionMenuWidgetInternal = Cast<UPSMenuWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionMenuWidget(), true, -10));
 
 	ProgressionMenuOverlayWidgetInternal = Cast<UPSOverlayWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionOverlayWidget(), true, 1));
@@ -58,6 +49,25 @@ void UPSHUDComponent::BeginPlay()
 
 	// Update the progression widget based on current player state
 	UpdateProgressionWidgetForPlayer();
+}
+
+// Subscribes to the end game state change notification on the player state.
+void UPSHUDComponent::OnLocalPlayerStateReady_Implementation(AMyPlayerState* PlayerState, int32 CharacterID)
+{
+	// Ensure that PlayerState is not null before subscribing to the event
+	if (!ensureMsgf(PlayerState, TEXT("ASSERT: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
+}
+
+// Called when the game starts
+void UPSHUDComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UPSWorldSubsystem::Get().OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
 }
 
 // Called when the component is unregistered, used to clean up resources
@@ -80,17 +90,23 @@ void UPSHUDComponent::OnUnregister()
 void UPSHUDComponent::SavePoints(EEndGameState EndGameState)
 {
 	// @h4rdmol to move to Subsystem instead of hud
-	UPSSaveGameData* SaveGameInstance = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
-	checkf(SaveGameInstance, TEXT("ERROR: 'SaveGameInstanceInternal' is null"));
-
-	SaveGameInstance->SavePoints(EndGameState);
+	const UPSSaveGameData* SaveGameInstance = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	if (!ensureMsgf(SaveGameInstance, TEXT("ASSERT: [%i] %hs:\n'SaveGameInstance' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	UPSSaveGameData* SaveGameData = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	SaveGameData->SavePoints(EndGameState);
 }
 
 // Listening game states changes events 
-void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
+void UPSHUDComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
 {
 	CurrentGameStateInternal = CurrentGameState;
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 
 	switch (CurrentGameState)
 	{
@@ -105,7 +121,7 @@ void UPSHUDComponent::OnGameStateChanged(ECurrentGameState CurrentGameState)
 }
 
 // Listening end game states changes events (win, lose, draw) 
-void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
+void UPSHUDComponent::OnEndGameStateChanged_Implementation(EEndGameState EndGameState)
 {
 	if (EndGameState != EEndGameState::None)
 	{
@@ -119,7 +135,7 @@ void UPSHUDComponent::OnEndGameStateChanged(EEndGameState EndGameState)
 }
 
 // Handle events when player type changes
-void UPSHUDComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
+void UPSHUDComponent::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
 	UpdateProgressionWidgetForPlayer();
 }
@@ -127,20 +143,29 @@ void UPSHUDComponent::OnPlayerTypeChanged(FPlayerTag PlayerTag)
 // Refresh the main menu progression widget player 
 void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 {
-	const FPSRowData& CurrentRowData = UPSWorldSubsystem::Get().GetCurrentRow();
-	// check if empty returned Row from GetCurrentRow 
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
+	UPSSaveGameData* SaveGameData = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
+	if (!SaveGameData)
+	{
+		return;
+	}
+	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
+	const FPSRowData& CurrenProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	// check if empty returned Row from GetCurrentRow
+	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 
 	//set updated amount of stars
-	if (CurrentRowData.CurrentLevelProgression >= CurrentRowData.PointsToUnlock)
+	if (CurrenSaveToDiskDataRow.CurrentLevelProgression >= CurrenProgressionSettingsRow.PointsToUnlock)
 	{
 		// set required points (stars)  to achieve for a level  
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.PointsToUnlock, 0, CurrentRowData.PointsToUnlock);
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrenProgressionSettingsRow.PointsToUnlock, 0, CurrenProgressionSettingsRow.PointsToUnlock);
 	}
 	else
 	{
 		// Calculate the unlocked against locked points (stars) 
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock - CurrentRowData.CurrentLevelProgression, CurrentRowData.PointsToUnlock); // Listen game state changes events 
+		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
 	}
 
 	if (CurrentGameStateInternal == ECurrentGameState::Menu)
@@ -157,22 +182,30 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 		}
 	}
 
-	DisplayLevelUIOverlay(CurrentRowData.IsLevelLocked);
+	DisplayLevelUIOverlay(CurrenSaveToDiskDataRow.IsLevelLocked);
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
 // by default overlay is always displayed 
 void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 {
-	checkf(ProgressionMenuWidgetInternal, TEXT("ERROR: 'ProgressionMenuWidgetInternal' is null"));
-	if (IsLevelLocked)
+	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
 	{
-		// Level is locked show the blocking overlay
-		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible);
+		return;
 	}
-	else
+
+	if (USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
 	{
-		// Level is unlocked hide the blocking overlay
-		ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed);
+		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
+		if (IsLevelLocked)
+		{
+			// Level is locked show the blocking overlay
+			ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible, bShouldPlayFadeAnimation);
+		}
+		else
+		{
+			// Level is unlocked hide the blocking overlay
+			ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
+		}	
 	}
 }

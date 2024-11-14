@@ -20,7 +20,12 @@
 void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
 {
 	//Return to Pool Manager the list of handles which is not needed (if there are any) 
-	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
+	
+	if (!PoolWidgetHandlersInternal.IsEmpty())
+	{
+		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
+		PoolWidgetHandlersInternal.Empty();	
+	}
 	
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
@@ -34,16 +39,21 @@ void UPSMenuWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float
 	
 	// --- Spawn widgets
 	const int32 TotalRequests = AmountOfLockedPoints + AmountOfUnlockedPoints;
-	if (TotalRequests > 0)
+	if (TotalRequests == 0)
 	{
-		UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlersInternal, UPSDataAsset::Get().GetStarWidgetClass(), TotalRequests, OnTakeFromPoolCompleted);
+		// no items to request nothing to add
+		return;
 	}
+	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolWidgetHandlersInternal, UPSDataAsset::Get().GetStarWidgetClass(), TotalRequests, OnTakeFromPoolCompleted);
 }
 
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons
 void UPSMenuWidget::OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
 {
-	checkf(HorizontalBox, TEXT("ERROR: 'HorizontalBox' is null"));
+	if (!ensureMsgf(HorizontalBox, TEXT("ASSERT: [%i] %hs:\n'HorizontalBox' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 	HorizontalBox->ClearChildren();
 	float CurrentAmountOfUnlocked = AmountOfUnlockedPoints;
 	float CurrentAmountOfLocked = AmountOfLockedPoints;

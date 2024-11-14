@@ -36,6 +36,10 @@
 		{
 			"Name": "MetaCheatManager",
 			"Enabled": true
+		},
+		{
+			"Name": "SettingsWidgetConstructor",
+			"Enabled": true
 		}
 	]
 }

@@ -9,6 +9,6 @@
 const UPSDataAsset& UPSDataAsset::Get()
 {
 	const UPSDataAsset* DataAsset = UPSWorldSubsystem::Get().GetPSDataAsset();
-	checkf(DataAsset, TEXT("%s: 'DataAsset' is not set"), *FString(__FUNCTION__));
+	ensureMsgf(DataAsset, TEXT("ASSERT: [%i] %hs:\n'DataAsset' is null!"), __LINE__, __FUNCTION__);
 	return *DataAsset;
 }
