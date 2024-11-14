@@ -5,6 +5,8 @@
 #include "Data/SettingTag.h"
 #include "PSDataAsset.generated.h"
 
+enum class EGameDifficulty : uint8;
+
 /**
  * Contains all progression assets used in the module 
  */
@@ -60,7 +62,7 @@ public:
 
 	/** Returns progression difficulty multiplier */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TMap<EGameDifficulty, float> GetProgressionDifficultyMultiplier() const { return ProgressionDifficultyMultiplierInternal; }
+	const FORCEINLINE TMap<EGameDifficulty, float>& GetProgressionDifficultyMultiplier() const { return ProgressionDifficultyMultiplierInternal; }
 
 	/** Returns the duration of fade-in/fade-out overlay animation in the main menu when cinematic started */
 	UFUNCTION(BlueprintPure, Category = "C++")

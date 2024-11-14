@@ -257,6 +257,12 @@ void UPSWorldSubsystem::LoadGameFromSave()
 			}
 		}
 	}
+
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' failed to create!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+
 	SetFirstElementAsCurrent();
 }
 
@@ -281,9 +287,13 @@ void UPSWorldSubsystem::UpdateProgressionActorsForSpot()
 // Spawn/add the stars actors for a spot
 void UPSWorldSubsystem::AddProgressionStarActors()
 {
-	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
 	//Return to Pool Manager the list of handles which is not needed (if there are any) 
-	UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
+	
+	if (!PoolActorHandlersInternal.IsEmpty())
+	{
+		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
+		PoolActorHandlersInternal.Empty();
+	}
 	// --- Prepare spawn request
 	const TWeakObjectPtr<ThisClass> WeakThis = this;
 	const FOnSpawnAllCallback OnTakeActorsFromPoolCompleted = [WeakThis](const TArray<FPoolObjectData>& CreatedObjects)
@@ -295,7 +305,11 @@ void UPSWorldSubsystem::AddProgressionStarActors()
 	};
 
 	// --- Spawn actors
-	UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolActorHandlersInternal, UPSDataAsset::Get().GetStarActorClass(), CurrentSettingsRowData.PointsToUnlock, OnTakeActorsFromPoolCompleted, ESpawnRequestPriority::High);
+	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
+	if (CurrentSettingsRowData.PointsToUnlock)
+	{
+		UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolActorHandlersInternal, UPSDataAsset::Get().GetStarActorClass(), CurrentSettingsRowData.PointsToUnlock, OnTakeActorsFromPoolCompleted, ESpawnRequestPriority::High);
+	}
 }
 
 // Dynamically adds Star actors which representing unlocked and locked progression above the character
@@ -421,23 +435,18 @@ void UPSWorldSubsystem::UnlockAllLevels()
 // Returns difficultyMultiplier
 float UPSWorldSubsystem::GetDifficultyMultiplier()
 {
-	TMap<EGameDifficulty, float> DifficultyMap = UPSDataAsset::Get().GetProgressionDifficultyMultiplier();
-	if (!ensureMsgf(DifficultyMap.IsEmpty(), TEXT("ASSERT: [%i] %s:\n'DifficultyMap' is empty!"), __LINE__, *FString(__FUNCTION__)))
+	const TMap<EGameDifficulty, float>& DifficultyMap = UPSDataAsset::Get().GetProgressionDifficultyMultiplier();
+	constexpr float DefaultDifficulty = 0.f;
+	if (!ensureMsgf(!DifficultyMap.IsEmpty(), TEXT("ASSERT: [%i] %s:\n'DifficultyMap' is empty!"), __LINE__, *FString(__FUNCTION__)))
 	{
-		return 1.0f;
+		return DefaultDifficulty;
 	}
-
-	switch (UGameDifficultySubsystem::GetGameDifficultySubsystem()->GetDifficultyType())
+	const float* FoundDifficulty = DifficultyMap.Find(UGameDifficultySubsystem::Get().GetDifficultyType());
+	if (!FoundDifficulty)
 	{
-	case EGameDifficulty::Easy:
-		return *DifficultyMap.Find(EGameDifficulty::Easy);
-	case EGameDifficulty::Normal:
-		return *DifficultyMap.Find(EGameDifficulty::Normal);
-	case EGameDifficulty::Hard:
-		return *DifficultyMap.Find(EGameDifficulty::Hard);
-	case EGameDifficulty::Vanilla:
-		return 1.0f;
-	default:
-		return 1.0f;
+		// No difficulty found, try to apply Any scenario
+		FoundDifficulty = DifficultyMap.Find(EGameDifficulty::Any);
 	}
+	
+	return FoundDifficulty ? *FoundDifficulty : DefaultDifficulty;
 }

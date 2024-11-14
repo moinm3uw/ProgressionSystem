@@ -113,7 +113,12 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 }
 
 // Returns the current save to disk data by name
-FPSSaveToDiskData& UPSSaveGameData::GetSaveToDiskDataByName(FName CurrentRowName)
+const FPSSaveToDiskData& UPSSaveGameData::GetSaveToDiskDataByName(FName CurrentRowName)
 {
-	return *ProgressionSettingsRowDataInternal.Find(CurrentRowName);
+	if (const FPSSaveToDiskData* FoundSeeting = ProgressionSettingsRowDataInternal.Find(CurrentRowName))
+	{
+		return *FoundSeeting;
+	}
+
+	return  FPSSaveToDiskData::EmptyData;
 }
