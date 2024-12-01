@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #pragma once
-#include "Engine/DataAsset.h"
+
+#include "Data/MyPrimaryDataAsset.h"
 #include "Data/SettingTag.h"
 #include "PSDataAsset.generated.h"
 
@@ -10,13 +11,13 @@ enum class EGameDifficulty : uint8;
 /**
  * Contains all progression assets used in the module 
  */
-UCLASS()
-class PROGRESSIONSYSTEMRUNTIME_API UPSDataAsset : public UDataAsset
+UCLASS(Blueprintable, BlueprintType)
+class PROGRESSIONSYSTEMRUNTIME_API UPSDataAsset : public UMyPrimaryDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	/** Returns the settings data asset. */
+	/** Returns the progression data asset or crash if can not be obtained. */
 	static const UPSDataAsset& Get();
 
 	/** Returns the Progression Data Table

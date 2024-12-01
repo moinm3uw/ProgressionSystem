@@ -49,8 +49,15 @@ void UPSSpotComponent::BeginPlay()
 // Clears all transient data created by this component.
 void UPSSpotComponent::OnUnregister()
 {
+	// reset back to initial state. By default, the spot is unlocked 
+	constexpr bool bSpotUnlocked = true;
+	if (PlayerSpotOnLevelInternal)
+	{
+		PlayerSpotOnLevelInternal->SetActive(bSpotUnlocked);
+		PlayerSpotOnLevelInternal = nullptr;
+	}
+
 	Super::OnUnregister();
-	PlayerSpotOnLevelInternal = nullptr;
 }
 
 // Returns the Skeletal Mesh of the Bomber character

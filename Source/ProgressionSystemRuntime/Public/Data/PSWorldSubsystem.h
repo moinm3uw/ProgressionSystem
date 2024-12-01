@@ -5,7 +5,6 @@
 #include "PSTypes.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PoolManagerTypes.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "PSWorldSubsystem.generated.h"
 
 enum class ECurrentGameState : uint8;
@@ -27,6 +26,14 @@ public:
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
 
+	/** Is called to initialize the world subsystem. It's a BeginPlay logic for the PS module */
+	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
+	void OnWorldSubSystemInitialize();
+
+	/** Cleanup used on unloading module to remove properties that should not be available by other objects. */
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void PerformCleanUp();
+	
 	/** Set current row of progression system by tag*/
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetCurrentRowByTag(FPlayerTag NewRowPlayerTag);
@@ -138,7 +145,7 @@ protected:
 
 	/** Store the material for dynamic progress material fill for a star actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Dynamic Progress Material"))
-	TObjectPtr<UMaterialInstanceDynamic> StarDynamicProgressMaterial = nullptr;
+	TObjectPtr<class UMaterialInstanceDynamic> StarDynamicProgressMaterial = nullptr;
 
 	/*********************************************************************************************
 	* Protected functions

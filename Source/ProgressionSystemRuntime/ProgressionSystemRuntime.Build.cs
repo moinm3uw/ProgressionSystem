@@ -11,10 +11,10 @@ public class ProgressionSystemRuntime : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicDependencyModuleNames.AddRange(new[]
 			{
-				"Core", "UMG"
+				"Core", "UMG" 
 				// Bomber modules
-				, "Bomber" // Is included in header files
-				, "SettingsWidgetConstructor" // SettingWidgetConstructor
+				, "Bomber"
+				,"SettingsWidgetConstructor"
 			}
 		);
 

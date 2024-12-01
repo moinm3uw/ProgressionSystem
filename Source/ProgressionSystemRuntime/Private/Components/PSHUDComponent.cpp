@@ -66,7 +66,7 @@ void UPSHUDComponent::OnLocalPlayerStateReady_Implementation(AMyPlayerState* Pla
 void UPSHUDComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	UPSWorldSubsystem::Get().OnWorldSubSystemInitialize();
 	UPSWorldSubsystem::Get().OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
 }
 
@@ -74,6 +74,9 @@ void UPSHUDComponent::BeginPlay()
 void UPSHUDComponent::OnUnregister()
 {
 	Super::OnUnregister();
+
+	UPSWorldSubsystem::Get().PerformCleanUp();
+
 	if (ProgressionMenuWidgetInternal)
 	{
 		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
@@ -148,6 +151,7 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 	{
 		return;
 	}
+
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	const FPSRowData& CurrenProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
 	// check if empty returned Row from GetCurrentRow
@@ -168,7 +172,7 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
 	}
 
-	if (CurrentGameStateInternal == ECurrentGameState::Menu)
+	if (AMyGameStateBase::GetCurrentGameState() == ECurrentGameState::Menu)
 	{
 		ProgressionMenuWidgetInternal->SetPadding(FMargin(0));
 
@@ -206,6 +210,6 @@ void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 		{
 			// Level is unlocked hide the blocking overlay
 			ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
-		}	
+		}
 	}
 }

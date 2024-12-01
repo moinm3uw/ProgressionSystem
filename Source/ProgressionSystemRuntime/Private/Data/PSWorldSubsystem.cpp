@@ -9,7 +9,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
-#include "DataAssets/GameStateDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
@@ -22,6 +21,7 @@
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "Subsystems/GameDifficultySubsystem.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSWorldSubsystem)
@@ -65,11 +65,7 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 // Returns the data asset that contains all the assets of Progression System game feature
 const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 {
-	if (!ensureMsgf(!PSDataAssetInternal.IsNull(), TEXT("ASSERT: [%i] %s:\n'PSDataAssetInternal' is empty!"), __LINE__, *FString(__FUNCTION__)))
-	{
-		return nullptr;
-	}
-	return PSDataAssetInternal.LoadSynchronous();
+	return UMyPrimaryDataAsset::GetOrLoadOnce(PSDataAssetInternal);
 }
 
 //  Returns a current save to disk row name
@@ -148,40 +144,29 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	{
 		return;
 	}
+
+	UpdateProgressionActorsForSpot();
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
 void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-
-	const TArray<FName>& GameFeaturesToEnable = UGameStateDataAsset::Get().GetGameFeaturesToEnable();
-	for (const FName GameFeatureName : GameFeaturesToEnable)
-	{
-		if (GameFeatureName.IsNone())
-		{
-			continue;
-		}
-
-		if (GameFeatureName == "ProgressionSystem")
-		{
-			// Load save game data of the Main Menu
-			FAsyncLoadGameFromSlotDelegate AsyncLoadGameFromSlotDelegate;
-			AsyncLoadGameFromSlotDelegate.BindUObject(this, &ThisClass::OnAsyncLoadGameFromSlotCompleted);
-			UGameplayStatics::AsyncLoadGameFromSlot(UPSSaveGameData::GetSaveSlotName(), UPSSaveGameData::GetSaveSlotIndex(), AsyncLoadGameFromSlotDelegate);
-		}
-	}
 }
 
 // Clears all transient data created by this subsystem
 void UPSWorldSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
-	PSHUDComponentInternal = nullptr;
-	PSCurrentSpotComponentInternal = nullptr;
-	SaveGameDataInternal = nullptr;
-	ProgressionSettingsDataInternal.Empty();
-	StarDynamicProgressMaterial = nullptr;
+}
+
+// Is called to initialize the world subsystem. It's a BeginPlay logic for the PS module
+void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
+{
+	// Load save game data of the Main Menu
+	FAsyncLoadGameFromSlotDelegate AsyncLoadGameFromSlotDelegate;
+	AsyncLoadGameFromSlotDelegate.BindUObject(this, &ThisClass::OnAsyncLoadGameFromSlotCompleted);
+	UGameplayStatics::AsyncLoadGameFromSlot(UPSSaveGameData::GetSaveSlotName(), UPSSaveGameData::GetSaveSlotIndex(), AsyncLoadGameFromSlotDelegate);
 }
 
 // Is called when a player character is ready
@@ -288,7 +273,7 @@ void UPSWorldSubsystem::UpdateProgressionActorsForSpot()
 void UPSWorldSubsystem::AddProgressionStarActors()
 {
 	//Return to Pool Manager the list of handles which is not needed (if there are any) 
-	
+
 	if (!PoolActorHandlersInternal.IsEmpty())
 	{
 		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
@@ -315,11 +300,12 @@ void UPSWorldSubsystem::AddProgressionStarActors()
 // Dynamically adds Star actors which representing unlocked and locked progression above the character
 void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects)
 {
+	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
 	const FPSSaveToDiskData& CurrentSaveToDiskRowData = GetCurrentSaveToDiskRowByName();
 
 	float CurrentAmountOfUnlocked = CurrentSaveToDiskRowData.CurrentLevelProgression;
 
-	FVector PreviousActorLocation;
+	FVector PreviousActorLocation = FVector::Zero();
 
 	// Setup spawned widget
 	for (const FPoolObjectData& CreatedObject : CreatedObjects)
@@ -357,6 +343,7 @@ void UPSWorldSubsystem::OnSpotComponentLoad_Implementation(UPSSpotComponent* Spo
 // Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load.
 void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(const FString& SlotName, int32 UserIndex, USaveGame* SaveGame)
 {
+	this->ReloadConfig();
 	// load from data table
 	const UDataTable* ProgressionDataTable = UPSDataAsset::Get().GetProgressionDataTable();
 	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %s:\n'ProgressionDataTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
@@ -379,10 +366,40 @@ void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(const FS
 			}
 		}
 	}
+	
+	
 
 	SetFirstElementAsCurrent();
 	OnInitialized();
 	OnInitialize.Broadcast();
+}
+
+// Destroy all star actors that should not be available by other objects anymore.
+void UPSWorldSubsystem::PerformCleanUp()
+{
+	// Destroying Star Actors
+	if (!PoolActorHandlersInternal.IsEmpty())
+	{
+		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
+		PoolActorHandlersInternal.Empty();
+		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarActorClass());
+	}
+	
+	ProgressionSettingsDataInternal.Empty();
+	StarDynamicProgressMaterial = nullptr;
+
+	// Subsystem clean up  
+	UMyPrimaryDataAsset::ResetDataAsset(PSDataAssetInternal);
+	PSHUDComponentInternal = nullptr;
+	PSSpotComponentArrayInternal.Empty();
+	PSCurrentSpotComponentInternal = nullptr;
+
+	// Saves clean up 
+	if (SaveGameDataInternal)
+	{
+		SaveGameDataInternal->ConditionalBeginDestroy();
+		SaveGameDataInternal = nullptr;
+	}
 }
 
 // Saves the progression to the local files
@@ -447,6 +464,6 @@ float UPSWorldSubsystem::GetDifficultyMultiplier()
 		// No difficulty found, try to apply Any scenario
 		FoundDifficulty = DifficultyMap.Find(EGameDifficulty::Any);
 	}
-	
+
 	return FoundDifficulty ? *FoundDifficulty : DefaultDifficulty;
 }

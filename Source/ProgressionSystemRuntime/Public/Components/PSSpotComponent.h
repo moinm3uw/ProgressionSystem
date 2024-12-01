@@ -61,8 +61,4 @@ protected:
 	/** A player skeletal mesh actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Player Spot On Level"))
 	TObjectPtr<UMySkeletalMeshComponent> PlayerSpotOnLevelInternal = nullptr;
-
-	/** Store the save game instance */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
-	TObjectPtr<class UPSSaveGameData> SaveGameInstanceInternal = nullptr;
 };
