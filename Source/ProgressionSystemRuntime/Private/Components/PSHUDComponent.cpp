@@ -14,8 +14,10 @@
 #include "GameFramework/MyPlayerState.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
+#include "Subsystems/WidgetsSubsystem.h"
 #include "UI/SettingsWidget.h"
 #include "Widgets/PSOverlayWidget.h"
+#include "LevelActors/PlayerCharacter.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
 
@@ -31,9 +33,9 @@ UPSHUDComponent::UPSHUDComponent()
 // Called when main save game file is loaded
 void UPSHUDComponent::OnInitialized_Implementation()
 {
-	ProgressionMenuWidgetInternal = Cast<UPSMenuWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionMenuWidget(), true, -10));
-
-	ProgressionMenuOverlayWidgetInternal = Cast<UPSOverlayWidget>(FWidgetUtilsLibrary::CreateWidgetChecked(UPSDataAsset::Get().GetProgressionOverlayWidget(), true, 1));
+	// Binds to local character ready to guarantee that the player controller is initialized
+	// so we can safely use Widget's Subsystem
+	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
 
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
@@ -46,9 +48,6 @@ void UPSHUDComponent::OnInitialized_Implementation()
 
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetHUDComponent(this);
-
-	// Update the progression widget based on current player state
-	UpdateProgressionWidgetForPlayer();
 }
 
 // Subscribes to the end game state change notification on the player state.
@@ -86,6 +85,10 @@ void UPSHUDComponent::OnUnregister()
 	{
 		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuOverlayWidgetInternal);
 		ProgressionMenuOverlayWidgetInternal = nullptr;
+	}
+	if (UGlobalEventsSubsystem* EventSubsystem = UGlobalEventsSubsystem::GetGlobalEventsSubsystem())
+	{
+		EventSubsystem->BP_OnLocalCharacterReady.RemoveAll(this);
 	}
 }
 
@@ -187,6 +190,18 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 	}
 
 	DisplayLevelUIOverlay(CurrenSaveToDiskDataRow.IsLevelLocked);
+}
+
+//Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
+void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Character, int32 CharacterID)
+{
+	// Create widgets now as fast as possible, later we will register them in Widgets Subsystem
+	UWidgetsSubsystem& WidgetsSubsystem = UWidgetsSubsystem::Get(Character);
+	ProgressionMenuWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSMenuWidget>(UPSDataAsset::Get().GetProgressionMenuWidget());
+	ProgressionMenuOverlayWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSOverlayWidget>(UPSDataAsset::Get().GetProgressionOverlayWidget());
+
+	// Update the progression widget based on current player state
+	UpdateProgressionWidgetForPlayer();
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
