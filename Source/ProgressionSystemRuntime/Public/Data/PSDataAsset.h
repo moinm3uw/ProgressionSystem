@@ -4,6 +4,7 @@
 
 #include "Data/MyPrimaryDataAsset.h"
 #include "Data/SettingTag.h"
+#include "Structures/ManageableWidgetData.h"
 #include "PSDataAsset.generated.h"
 
 enum class EGameDifficulty : uint8;
@@ -27,11 +28,11 @@ public:
 
 	/** Returns a progression menu widget to be displayed in the main menu*/
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TSubclassOf<class UPSMenuWidget> GetProgressionMenuWidget() const { return ProgressionMenuWidgetInternal; }
+	const FORCEINLINE FManageableWidgetData& GetProgressionMenuWidget() const { return ProgressionMenuWidgetInternal; }
 
 	/** Returns a progression overlay widget to be displayed in the main menu for locked levels */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TSubclassOf<class UPSOverlayWidget> GetProgressionOverlayWidget() const { return ProgressionOverlayWidgetInternal; }
+	const FORCEINLINE FManageableWidgetData& GetProgressionOverlayWidget() const { return ProgressionOverlayWidgetInternal; }
 
 	/** Returns a locked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -80,18 +81,19 @@ public:
 	/** Returns Instant Character Switch Tag. When Instant character switch setting enabled fade animation will not be played */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FSettingTag GetInstantCharacterSwitchTag() const { return InstantCharacterSwitchTagInternal; }
+
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
 	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
 
-	/** Main progression widget */
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
+	/** Main menu and end-game progression widget */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "Main Menu and End Game Progression Widget"))
+	FManageableWidgetData ProgressionMenuWidgetInternal;
 
 	/** Main Menu overlay widget */
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UPSOverlayWidget> ProgressionOverlayWidgetInternal = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "Main Menu Overlay Widget"))
+	FManageableWidgetData ProgressionOverlayWidgetInternal;
 
 	/** Star icon widget */
 	UPROPERTY(EditAnywhere)
