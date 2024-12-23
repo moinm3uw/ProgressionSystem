@@ -102,6 +102,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void UnlockAllLevels();
 
+	/** Is called to update the stars actors and in widgets */
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	void RefreshProgressionUIElements();
+
 	/** Returns difficultyMultiplier */
 	UFUNCTION(BlueprintCallable, Category="C++")
 	float GetDifficultyMultiplier();

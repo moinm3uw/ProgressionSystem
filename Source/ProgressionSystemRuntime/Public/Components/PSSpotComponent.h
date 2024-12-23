@@ -34,6 +34,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FPSSpotComponent OnSpotComponentReady;
 
+	/** Locks the player spot when progression for level achieved */
+	UFUNCTION(BlueprintCallable, Category= "C++")
+	void ChangeSpotVisibilityStatus();
+
 protected:
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
@@ -53,10 +57,6 @@ protected:
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnCharacterReady(class APlayerCharacter* PlayerCharacter, int32 CharacterID);
-
-	/** Locks the player spot when progression for level achieved */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta=(BlueprintProtected))
-	void ChangeSpotVisibilityStatus();
 
 	/** A player skeletal mesh actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Player Spot On Level"))
