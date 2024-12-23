@@ -121,9 +121,9 @@ bool APSStarActor::TryPlayStarAnimation(float& StartTimeRef, UCurveTable* Animat
 		return false;
 	}
 
-	const float SecondsSinceStart = GetWorld()->GetTimeSeconds() - StartTimeRef;
+	const float SecondsSinceStart = FMath::Max(GetWorld()->GetTimeSeconds() - StartTimeRef, 0.f);
 
-	return UGameplayUtilsLibrary::ApplyTransformFromCurveTable(this, AnimationCurveTable, SecondsSinceStart);
+	return UGameplayUtilsLibrary::ApplyTransformFromCurveTable(this, InitialTransformInternal, AnimationCurveTable, SecondsSinceStart);
 }
 
 // Set the start time for hiding stars
@@ -157,6 +157,7 @@ void APSStarActor::OnInitialized(const FVector& PreviousActorLocation)
 		DesiredTransform.SetLocation(PreviousActorLocation + CurrentProgressionSettingsRow.OffsetBetweenStarActors);
 	}
 
+	InitialTransformInternal = DesiredTransform;
 	SetActorTransform(DesiredTransform);
 }
 
