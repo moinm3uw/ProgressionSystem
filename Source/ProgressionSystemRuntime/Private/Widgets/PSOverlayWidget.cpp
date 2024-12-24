@@ -74,6 +74,7 @@ void UPSOverlayWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 void UPSOverlayWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	SetVisibility(ESlateVisibility::Collapsed);
 }
 
 // Play the overlay elements fade-in/fade-out animation. Uses the internal FadeCurveFloatInternal initialized in NativeConstruct
