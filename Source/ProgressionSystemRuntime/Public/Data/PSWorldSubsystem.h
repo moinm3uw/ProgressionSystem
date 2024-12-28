@@ -38,9 +38,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetCurrentRowByTag(FPlayerTag NewRowPlayerTag);
 
-	/** Returns previous row of progression system */
-	const FPSRowData& GetPreviousRow() const;
-
 	/* Delegate for informing row data changed */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FCurrentRowDataChanged OnCurrentRowDataChanged;
@@ -92,7 +89,7 @@ public:
 
 	/** Saves the progression to the local files */
 	UFUNCTION()
-	void SaveDataAsync() const;
+	void SaveDataAsync();
 
 	/** Removes all saved data of the Progression system and creates a new empty data */
 	UFUNCTION(BlueprintCallable, Category = "C++")
@@ -103,8 +100,12 @@ public:
 	void UnlockAllLevels();
 
 	/** Returns difficultyMultiplier */
-	UFUNCTION(BlueprintCallable, Category="C++")
-	float GetDifficultyMultiplier();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
+	float GetDifficultyMultiplier() const;
+
+	/** Returns current spot component returns null if spot is not found */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
+	UPSSpotComponent* GetCurrentSpot() const;
 
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
@@ -164,7 +165,7 @@ protected:
 
 	/** Is called when a player character is ready */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnCharacterReady(class APlayerCharacter* PlayerCharacter, int32 CharacterID);
+	void OnLocalCharacterReady(class APlayerCharacter* PlayerCharacter, int32 CharacterID);
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
@@ -174,21 +175,13 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnGameStateChanged(ECurrentGameState CurrentGameState);
 
-	/** Load game from save file or create a new one (does initial load from data table) */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void LoadGameFromSave();
-
 	/** Set first element as current active */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetFirstElementAsCurrent();
 
-	/** Updates the stars actors for a spot */
-	UFUNCTION(Blueprintable, Category="C++", meta=(BlueprintProtected))
-	void UpdateProgressionActorsForSpot();
-
-	/** Spawn/add the stars actors for a spot */
-	UFUNCTION(Blueprintable, Category="C++", meta=(BlueprintProtected))
-	void AddProgressionStarActors();
+	/** Updates the stars actors for a spot by Spawning/adding the stars actors for a spot */
+	UFUNCTION(BlueprintCallable, Category="C++", meta=(BlueprintProtected))
+	void UpdateProgressionStarActors();
 
 	/**
 	 * Dynamically adds Star actors which representing unlocked and locked progression above the character
@@ -198,10 +191,14 @@ protected:
 	void OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects);
 
 	/** Triggers when a spot is loaded */
-	UFUNCTION(BlueprintNativeEvent, Blueprintable, Category="C++", meta=(BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="C++", meta=(BlueprintProtected))
 	void OnSpotComponentLoad(class UPSSpotComponent* SpotComponent);
 
 	/** Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnAsyncLoadGameFromSlotCompleted(const FString& SlotName, int32 UserIndex, class USaveGame* SaveGame);
+
+	/** Is called to update the stars actors and in widgets when finish to save date in save file */
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void UpdateProgressionUI();
 };

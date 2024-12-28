@@ -6,6 +6,7 @@
 #include "PSStarActor.generated.h"
 
 enum class ECurrentGameState : uint8;
+enum class EPSStarActorState : uint8;
 
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API APSStarActor : public AActor
@@ -41,10 +42,10 @@ public:
 	 * between 0-1 - partially unlocked material (dynamic) e.g. 0.5  
 	 * @param StarDynamicProgressMaterial a Dynamic fill material of a star (e.g. 0.5)
 	 * @param AmountOfStars The number of stars to be added on top of the character
-	 * @param bIsLockedStar Defines whether a star is locked or unlocked
+	 * @param StarActorState Desired state of the star actor.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState);
+	void UpdateStarActorMeshMaterial(class UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState);
 
 protected:
 	// Called when the game starts or when spawned
@@ -64,6 +65,10 @@ protected:
 	/** Stores the starting time to animate stars in main menu */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Starting time to animate stars in menu"))
 	float StartTimeMenuStarsInternal = 0.0f;
+
+	/** The initial transform of the star actor with which the star actor was initialized. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Initial Transform"))
+	FTransform InitialTransformInternal = FTransform::Identity;
 
 	/** When a local character load finished */
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable, Category= "C++", meta = (BlueprintProtected))

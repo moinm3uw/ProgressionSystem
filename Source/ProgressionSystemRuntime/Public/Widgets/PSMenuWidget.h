@@ -39,6 +39,18 @@ protected:
 	 * May be called multiple times due to adding and removing from the hierarchy. */
 	virtual void NativeConstruct() override;
 
+	/** Called when the end game state was changed to toggle progression widget visibility. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnGameStateChanged(ECurrentGameState CurrentGameState);
+
+	/** Subscribes to the end game state change notification on the player state. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
+
+	/** Called when the end game state was changed. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnEndGameStateChanged(EEndGameState EndGameState);
+
 	/**
 	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 	* @param CreatedObjects - Handles of objects from Pool Manager
@@ -47,7 +59,6 @@ protected:
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
-
 	
 	/** Updates star images icon to locked/unlocked according to input amounnt
 	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 

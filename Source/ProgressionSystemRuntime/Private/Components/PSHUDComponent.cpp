@@ -2,6 +2,7 @@
 
 #include "Components/PSHUDComponent.h"
 //---
+
 #include "Bomber.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 #include "Data/PSDataAsset.h"
@@ -33,10 +34,6 @@ UPSHUDComponent::UPSHUDComponent()
 // Called when main save game file is loaded
 void UPSHUDComponent::OnInitialized_Implementation()
 {
-	// Binds to local character ready to guarantee that the player controller is initialized
-	// so we can safely use Widget's Subsystem
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
-
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 
@@ -48,6 +45,9 @@ void UPSHUDComponent::OnInitialized_Implementation()
 
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetHUDComponent(this);
+
+	// Update the progression widget based on current player state
+	UpdateProgressionWidgetForPlayer();
 }
 
 // Subscribes to the end game state change notification on the player state.
@@ -65,8 +65,9 @@ void UPSHUDComponent::OnLocalPlayerStateReady_Implementation(AMyPlayerState* Pla
 void UPSHUDComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	UPSWorldSubsystem::Get().OnWorldSubSystemInitialize();
-	UPSWorldSubsystem::Get().OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
+	// Binds to local character ready to guarantee that the player controller is initialized
+	// so we can safely use Widget's Subsystem
+	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
 }
 
 // Called when the component is unregistered, used to clean up resources
@@ -108,21 +109,12 @@ void UPSHUDComponent::SavePoints(EEndGameState EndGameState)
 // Listening game states changes events 
 void UPSHUDComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
 {
-	CurrentGameStateInternal = CurrentGameState;
-	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
 	switch (CurrentGameState)
 	{
-	case ECurrentGameState::GameStarting:
-		ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::Collapsed);
-
 	case ECurrentGameState::Menu:
 		UpdateProgressionWidgetForPlayer();
-
-	default: return;
+		break;
+	default: break;
 	}
 }
 
@@ -133,9 +125,8 @@ void UPSHUDComponent::OnEndGameStateChanged_Implementation(EEndGameState EndGame
 	{
 		SavePoints(EndGameState);
 		// show the stars widget at the bottom.
-		ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::Visible);
 		DisplayLevelUIOverlay(false); // isLevelLocked to show/hide the level blocking overlay with padlock icon at InGame state always level locked is false
-		ProgressionMenuWidgetInternal->SetPadding(FMargin(0, 800, 0, 0));
+
 		UpdateProgressionWidgetForPlayer();
 	}
 }
@@ -195,13 +186,19 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 //Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
 void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Character, int32 CharacterID)
 {
+	if (!Character || !Character->IsLocallyControlled())
+	{
+		return;
+	}
+
 	// Create widgets now as fast as possible, later we will register them in Widgets Subsystem
-	UWidgetsSubsystem& WidgetsSubsystem = UWidgetsSubsystem::Get(Character);
+	UWidgetsSubsystem& WidgetsSubsystem = UWidgetsSubsystem::Get();
 	ProgressionMenuWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSMenuWidget>(UPSDataAsset::Get().GetProgressionMenuWidget());
 	ProgressionMenuOverlayWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSOverlayWidget>(UPSDataAsset::Get().GetProgressionOverlayWidget());
 
-	// Update the progression widget based on current player state
-	UpdateProgressionWidgetForPlayer();
+	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
+	WorldSubsystem.OnInitialize.AddUniqueDynamic(this, &ThisClass::OnInitialized);
+	WorldSubsystem.OnWorldSubSystemInitialize();
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
