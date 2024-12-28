@@ -31,7 +31,7 @@ void UPSSpotComponent::OnInitialized_Implementation()
 
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 	// Subscribe events on player type changed and Character spawned
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnCharacterReady);
+	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
 
 	ChangeSpotVisibilityStatus();
 
@@ -89,7 +89,7 @@ void UPSSpotComponent::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 }
 
 //  Is called when a player has been changed 
-void UPSSpotComponent::OnCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
+void UPSSpotComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
 {
 	if (PlayerCharacter->GetPlayerTag() == GetMeshChecked().GetPlayerTag())
 	{
