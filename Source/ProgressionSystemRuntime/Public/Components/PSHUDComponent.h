@@ -41,10 +41,6 @@ protected:
 	/** Created Main Menu overlay widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Overaly Widget"))
 	TObjectPtr<class UPSOverlayWidget> ProgressionMenuOverlayWidgetInternal = nullptr;
-
-	/** Current game state. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Game state"))
-	ECurrentGameState CurrentGameStateInternal = ECurrentGameState::None;
 	
 	/** Enabled Main Menu widget. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category="C++", meta = (BlueprintProtected, DisplayName = "Enable Main Menu Widget"))
