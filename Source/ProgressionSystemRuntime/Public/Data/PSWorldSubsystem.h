@@ -126,7 +126,7 @@ protected:
 	 * Intentionally added to the config-ini instead of Data Asset, as it's not for designers
 	 */
 	UPROPERTY(Config, VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save File Version Extentsion"))
-	int32 SaveFileVersionExtensionInternal = 0;
+	int32 SaveFileVersionExtensionInternal;
 
 	/** Progression System component reference*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
