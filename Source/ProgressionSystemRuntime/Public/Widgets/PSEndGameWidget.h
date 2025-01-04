@@ -7,7 +7,7 @@
 #include "PSEndGameWidget.generated.h"
 
 /**
- * Widget to display the progression as stars in the main menu.
+ * Widget to display the progression as stars in the end game state
  */
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UPSEndGameWidget : public UUserWidget
