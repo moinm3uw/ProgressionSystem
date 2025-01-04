@@ -6,6 +6,9 @@
 #include "PoolManagerTypes.h"
 #include "PSEndGameWidget.generated.h"
 
+enum class ECurrentGameState : uint8;
+enum class EEndGameState : uint8;
+
 /**
  * Widget to display the progression as stars in the end game state
  */
@@ -46,7 +49,7 @@ protected:
 
 	/** Subscribes to the end game state change notification on the player state. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
+	void OnLocalPlayerStateReady(class AMyPlayerState* PlayerState, int32 CharacterID);
 
 	/** Called when the end game state was changed. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
@@ -62,7 +65,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
 	
-	/** Updates star images icon to locked/unlocked according to input amounnt
+	/** Updates star images icon to locked/unlocked according to input amount
 	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
 	 * @param AmountOfUnlockedStars Amount of icons to be switched to Unlocked stars.
 	 * @param AmountOfLockedStars Amount of icons to be switched to Locked stars.
