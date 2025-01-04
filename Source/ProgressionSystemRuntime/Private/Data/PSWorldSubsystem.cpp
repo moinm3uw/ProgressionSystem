@@ -163,7 +163,7 @@ void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 	// Load save game data of the Progression system
 	FAsyncLoadGameFromSlotDelegate AsyncLoadGameFromSlotDelegate;
 	AsyncLoadGameFromSlotDelegate.BindUObject(this, &ThisClass::OnAsyncLoadGameFromSlotCompleted);
-	UGameplayStatics::AsyncLoadGameFromSlot(UPSSaveGameData::GetSaveSlotName(), UPSSaveGameData::GetSaveSlotIndex(), AsyncLoadGameFromSlotDelegate);
+	UGameplayStatics::AsyncLoadGameFromSlot(UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), UPSSaveGameData::GetSaveSlotIndex(), AsyncLoadGameFromSlotDelegate);
 }
 
 // Is called when a player character is ready
@@ -394,13 +394,13 @@ void UPSWorldSubsystem::SaveDataAsync()
 		return;
 	}
 
-	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(), SaveGameDataInternal->GetSaveSlotIndex());
+	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());
 }
 
 // Removes all saved data of the Progression system and creates a new empty data
 void UPSWorldSubsystem::ResetSaveGameData()
 {
-	const FString& SlotName = UPSSaveGameData::GetSaveSlotName();
+	const FString& SlotName = UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal);
 	const int32 UserIndex = UPSSaveGameData::GetSaveSlotIndex();
 
 	SaveGameDataInternal = Cast<UPSSaveGameData>(UGameplayUtilsLibrary::ResetSaveGameData(SaveGameDataInternal, SlotName, UserIndex));
