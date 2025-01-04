@@ -83,10 +83,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FSettingTag GetInstantCharacterSwitchTag() const { return InstantCharacterSwitchTagInternal; }
 
-	/** Returns padding settings table for the Menu Widget displayed in the end game state/menu  */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE FMargin GetMenuWidgetPadding() const { return MenuWidgetPaddingInternal; }
-
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
@@ -148,8 +144,4 @@ protected:
 	/** When Instant character switch setting enabled fade animation will not be played */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", AdvancedDisplay, meta = (BlueprintProtected, DisplayName = "Instant Character Switch Tag"))
 	FSettingTag InstantCharacterSwitchTagInternal = FSettingTag::EmptySettingTag;
-
-	/** A padding setting for the Menu Widget displayed in the end game state/menu */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", AdvancedDisplay, meta = (BlueprintProtected, DisplayName = "Padding for Stars Menu Widget"))
-	FMargin MenuWidgetPaddingInternal = FMargin(0, 0, 0, 0);
 };
