@@ -11,7 +11,6 @@
 #include "PoolManagerSubsystem.h"
 #include "PoolManagerTypes.h"
 #include "Components/StaticMeshComponent.h"
-#include "Curves/RealCurve.h"
 #include "Engine/CurveTable.h"
 #include "GameFramework/MyGameStateBase.h"
 #include "GameFramework/MyPlayerState.h"

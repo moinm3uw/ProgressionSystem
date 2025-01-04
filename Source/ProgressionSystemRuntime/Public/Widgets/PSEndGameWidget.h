@@ -19,6 +19,7 @@ public:
 	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 	 * @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
+	 * @param MaxLevelPoints The maximum amount of images can be added for the level
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
@@ -56,6 +57,7 @@ protected:
 	* @param CreatedObjects - Handles of objects from Pool Manager
 	* @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
+	 * @param MaxLevelPoints The maximum amount of images can be added for the level
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
