@@ -40,7 +40,7 @@ void UPSEndGameWidget::OnGameStateChanged_Implementation(ECurrentGameState Curre
 {
 	switch (CurrentGameState)
 	{
-	case ECurrentGameState::GameStarting:
+	case ECurrentGameState::GameStarting: // Fallthrough
 		SetVisibility(ESlateVisibility::Collapsed);
 	case ECurrentGameState::Menu:
 		SetVisibility(ESlateVisibility::Collapsed);
