@@ -122,9 +122,8 @@ protected:
 	TSoftObjectPtr<const class UPSDataAsset> PSDataAssetInternal;
 
 	/** Extension to a save file to increment with a new build
-	 * Note: Since Subsystem is code-only, there is config property set in BaseProgressionSystem.ini.
-	 * Property is put to subsystem because its instance is created before any other object.
-	 * It can't be put to DevelopSettings class because it does work properly for MGF-modules.
+	 * Note: it's config property stored in BaseProgressionSystem.ini and going to be changed frequently.
+	 * Intentionally added to the config-ini instead of Data Asset, as it's not for designers
 	 */
 	UPROPERTY(Config, VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save File Version Extentsion"))
 	int32 SaveFileVersionExtensionInternal = 0;
