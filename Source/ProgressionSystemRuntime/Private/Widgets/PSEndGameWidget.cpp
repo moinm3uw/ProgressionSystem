@@ -43,7 +43,6 @@ void UPSEndGameWidget::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	{
 	case ECurrentGameState::GameStarting:
 		SetVisibility(ESlateVisibility::Collapsed);
-		break;
 	case ECurrentGameState::Menu:
 		SetVisibility(ESlateVisibility::Collapsed);
 		break;
