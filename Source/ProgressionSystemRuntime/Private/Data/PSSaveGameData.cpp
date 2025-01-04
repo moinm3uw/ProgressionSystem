@@ -2,6 +2,7 @@
 
 #include "Data/PSSaveGameData.h"
 
+#include "Data/PSDataAsset.h"
 #include "Data/PSWorldSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
@@ -11,7 +12,7 @@
 const FString& UPSSaveGameData::GetSaveSlotName()
 {
 	// Using a function-static variable to avoid the static initialization order fiasco
-	static const FString SaveSlotName = StaticClass()->GetName();
+	static const FString SaveSlotName = FString::Printf(TEXT("%s-%d"), *StaticClass()->GetName(), UPSWorldSubsystem::Get().GetSaveFileVersionExtension());
 	return SaveSlotName;
 }
 
