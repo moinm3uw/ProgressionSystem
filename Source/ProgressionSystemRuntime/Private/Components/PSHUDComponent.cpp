@@ -7,7 +7,7 @@
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 #include "Data/PSDataAsset.h"
 #include "Blueprint/WidgetTree.h"
-#include "Widgets/PSMenuWidget.h"
+#include "Widgets/PSEndGameWidget.h"
 #include "Data/PSTypes.h"
 #include "Data/PSSaveGameData.h"
 #include "Data/PSWorldSubsystem.h"
@@ -77,10 +77,10 @@ void UPSHUDComponent::OnUnregister()
 
 	UPSWorldSubsystem::Get().PerformCleanUp();
 
-	if (ProgressionMenuWidgetInternal)
+	if (ProgressionEndGameWidgetInternal)
 	{
-		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuWidgetInternal);
-		ProgressionMenuWidgetInternal = nullptr;
+		FWidgetUtilsLibrary::DestroyWidget(*ProgressionEndGameWidgetInternal);
+		ProgressionEndGameWidgetInternal = nullptr;
 	}
 	if (ProgressionMenuOverlayWidgetInternal)
 	{
@@ -149,7 +149,7 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	const FPSRowData& CurrenProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
 	// check if empty returned Row from GetCurrentRow
-	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
+	if (!ensureMsgf(ProgressionEndGameWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -158,26 +158,12 @@ void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
 	if (CurrenSaveToDiskDataRow.CurrentLevelProgression >= CurrenProgressionSettingsRow.PointsToUnlock)
 	{
 		// set required points (stars)  to achieve for a level  
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrenProgressionSettingsRow.PointsToUnlock, 0, CurrenProgressionSettingsRow.PointsToUnlock);
+		ProgressionEndGameWidgetInternal->AddImagesToHorizontalBox(CurrenProgressionSettingsRow.PointsToUnlock, 0, CurrenProgressionSettingsRow.PointsToUnlock);
 	}
 	else
 	{
 		// Calculate the unlocked against locked points (stars) 
-		ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
-	}
-
-	if (AMyGameStateBase::GetCurrentGameState() == ECurrentGameState::Menu)
-	{
-		ProgressionMenuWidgetInternal->SetPadding(FMargin(0));
-
-		if (PSMenuWidgetEnabledInternal)
-		{
-			ProgressionMenuWidgetInternal->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			ProgressionMenuWidgetInternal->AddImagesToHorizontalBox(0, 0, 0);
-		}
+		ProgressionEndGameWidgetInternal->AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
 	}
 
 	DisplayLevelUIOverlay(CurrenSaveToDiskDataRow.IsLevelLocked);
@@ -193,7 +179,7 @@ void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Cha
 
 	// Create widgets now as fast as possible, later we will register them in Widgets Subsystem
 	UWidgetsSubsystem& WidgetsSubsystem = UWidgetsSubsystem::Get();
-	ProgressionMenuWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSMenuWidget>(UPSDataAsset::Get().GetProgressionMenuWidget());
+	ProgressionEndGameWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSEndGameWidget>(UPSDataAsset::Get().GetProgressionEndGameWidget());
 	ProgressionMenuOverlayWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSOverlayWidget>(UPSDataAsset::Get().GetProgressionOverlayWidget());
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
@@ -205,7 +191,7 @@ void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Cha
 // by default overlay is always displayed 
 void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
 {
-	if (!ensureMsgf(ProgressionMenuWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
+	if (!ensureMsgf(ProgressionEndGameWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
