@@ -4,13 +4,16 @@
 
 #include "Blueprint/UserWidget.h"
 #include "PoolManagerTypes.h"
-#include "PSMenuWidget.generated.h"
+#include "PSEndGameWidget.generated.h"
+
+enum class ECurrentGameState : uint8;
+enum class EEndGameState : uint8;
 
 /**
- * Widget to display the progression as stars in the main menu.
+ * Widget to display the progression as stars in the end game state
  */
 UCLASS()
-class PROGRESSIONSYSTEMRUNTIME_API UPSMenuWidget : public UUserWidget
+class PROGRESSIONSYSTEMRUNTIME_API UPSEndGameWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -19,6 +22,7 @@ public:
 	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 	 * @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
+	 * @param MaxLevelPoints The maximum amount of images can be added for the level
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
@@ -45,7 +49,7 @@ protected:
 
 	/** Subscribes to the end game state change notification on the player state. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
+	void OnLocalPlayerStateReady(class AMyPlayerState* PlayerState, int32 CharacterID);
 
 	/** Called when the end game state was changed. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
@@ -56,11 +60,12 @@ protected:
 	* @param CreatedObjects - Handles of objects from Pool Manager
 	* @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
+	 * @param MaxLevelPoints The maximum amount of images can be added for the level
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
 	
-	/** Updates star images icon to locked/unlocked according to input amounnt
+	/** Updates star images icon to locked/unlocked according to input amount
 	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
 	 * @param AmountOfUnlockedStars Amount of icons to be switched to Unlocked stars.
 	 * @param AmountOfLockedStars Amount of icons to be switched to Locked stars.

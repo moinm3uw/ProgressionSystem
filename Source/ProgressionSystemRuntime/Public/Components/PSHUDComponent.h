@@ -36,15 +36,11 @@ public:
 protected:
 	/** Created Main Menu widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
-	TObjectPtr<class UPSMenuWidget> ProgressionMenuWidgetInternal = nullptr;
+	TObjectPtr<class UPSEndGameWidget> ProgressionEndGameWidgetInternal = nullptr;
 
 	/** Created Main Menu overlay widget. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Overaly Widget"))
 	TObjectPtr<class UPSOverlayWidget> ProgressionMenuOverlayWidgetInternal = nullptr;
-	
-	/** Enabled Main Menu widget. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category="C++", meta = (BlueprintProtected, DisplayName = "Enable Main Menu Widget"))
-	bool PSMenuWidgetEnabledInternal = false;
 	
 	/*********************************************************************************************
 	* Protected functions

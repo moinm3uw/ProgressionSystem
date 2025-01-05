@@ -4,6 +4,7 @@
 
 #include "Data/MyPrimaryDataAsset.h"
 #include "Data/SettingTag.h"
+#include "Layout/Margin.h"
 #include "Structures/ManageableWidgetData.h"
 #include "PSDataAsset.generated.h"
 
@@ -28,7 +29,7 @@ public:
 
 	/** Returns a progression menu widget to be displayed in the main menu*/
 	UFUNCTION(BlueprintPure, Category = "C++")
-	const FORCEINLINE FManageableWidgetData& GetProgressionMenuWidget() const { return ProgressionMenuWidgetInternal; }
+	const FORCEINLINE FManageableWidgetData& GetProgressionEndGameWidget() const { return ProgressionEndGameWidgetInternal; }
 
 	/** Returns a progression overlay widget to be displayed in the main menu for locked levels */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -88,8 +89,8 @@ protected:
 	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
 
 	/** Main menu and end-game progression widget */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "Main Menu and End Game Progression Widget"))
-	FManageableWidgetData ProgressionMenuWidgetInternal;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "End Game Progression Widget"))
+	FManageableWidgetData ProgressionEndGameWidgetInternal;
 
 	/** Main Menu overlay widget */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "Main Menu Overlay Widget"))
