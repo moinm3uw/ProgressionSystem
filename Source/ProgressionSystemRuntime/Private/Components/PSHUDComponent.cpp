@@ -11,7 +11,6 @@
 #include "Data/PSTypes.h"
 #include "Data/PSSaveGameData.h"
 #include "Data/PSWorldSubsystem.h"
-#include "GameFramework/MyGameStateBase.h"
 #include "GameFramework/MyPlayerState.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
@@ -37,17 +36,11 @@ void UPSHUDComponent::OnInitialized_Implementation()
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 
-	// Listen to handle input for each game state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
-
 	// Subscribe to the event notifying changes in player type
 	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetHUDComponent(this);
-
-	// Update the progression widget based on current player state
-	UpdateProgressionWidgetForPlayer();
 }
 
 // Subscribes to the end game state change notification on the player state.
@@ -106,67 +99,19 @@ void UPSHUDComponent::SavePoints(EEndGameState EndGameState)
 	SaveGameData->SavePoints(EndGameState);
 }
 
-// Listening game states changes events 
-void UPSHUDComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
-{
-	switch (CurrentGameState)
-	{
-	case ECurrentGameState::Menu:
-		UpdateProgressionWidgetForPlayer();
-		break;
-	default: break;
-	}
-}
-
 // Listening end game states changes events (win, lose, draw) 
 void UPSHUDComponent::OnEndGameStateChanged_Implementation(EEndGameState EndGameState)
 {
 	if (EndGameState != EEndGameState::None)
 	{
 		SavePoints(EndGameState);
-		// show the stars widget at the bottom.
-		DisplayLevelUIOverlay(false); // isLevelLocked to show/hide the level blocking overlay with padlock icon at InGame state always level locked is false
-
-		UpdateProgressionWidgetForPlayer();
 	}
 }
 
 // Handle events when player type changes
 void UPSHUDComponent::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
-	UpdateProgressionWidgetForPlayer();
-}
 
-// Refresh the main menu progression widget player 
-void UPSHUDComponent::UpdateProgressionWidgetForPlayer()
-{
-	UPSSaveGameData* SaveGameData = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
-	if (!SaveGameData)
-	{
-		return;
-	}
-
-	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
-	const FPSRowData& CurrenProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
-	// check if empty returned Row from GetCurrentRow
-	if (!ensureMsgf(ProgressionEndGameWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
-	//set updated amount of stars
-	if (CurrenSaveToDiskDataRow.CurrentLevelProgression >= CurrenProgressionSettingsRow.PointsToUnlock)
-	{
-		// set required points (stars)  to achieve for a level  
-		ProgressionEndGameWidgetInternal->AddImagesToHorizontalBox(CurrenProgressionSettingsRow.PointsToUnlock, 0, CurrenProgressionSettingsRow.PointsToUnlock);
-	}
-	else
-	{
-		// Calculate the unlocked against locked points (stars) 
-		ProgressionEndGameWidgetInternal->AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
-	}
-
-	DisplayLevelUIOverlay(CurrenSaveToDiskDataRow.IsLevelLocked);
 }
 
 //Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
@@ -185,29 +130,4 @@ void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Cha
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnInitialize.AddUniqueDynamic(this, &ThisClass::OnInitialized);
 	WorldSubsystem.OnWorldSubSystemInitialize();
-}
-
-// Show or hide the LevelUIOverlay depends on the level lock state for current level
-// by default overlay is always displayed 
-void UPSHUDComponent::DisplayLevelUIOverlay(bool IsLevelLocked)
-{
-	if (!ensureMsgf(ProgressionEndGameWidgetInternal, TEXT("ASSERT: [%i] %hs:\n'ProgressionMenuWidgetInternal' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
-	if (USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
-	{
-		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
-		if (IsLevelLocked)
-		{
-			// Level is locked show the blocking overlay
-			ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Visible, bShouldPlayFadeAnimation);
-		}
-		else
-		{
-			// Level is unlocked hide the blocking overlay
-			ProgressionMenuOverlayWidgetInternal->SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
-		}
-	}
 }

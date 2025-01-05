@@ -214,7 +214,7 @@ void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState Curr
 void UPSWorldSubsystem::SetFirstElementAsCurrent()
 {
 	FName FirstSaveToDiskRow = GetFirstSaveToDiskRowName();
-	
+
 	// early return if first element is not valid
 	if (!ensureMsgf(!FirstSaveToDiskRow.IsNone(), TEXT("ASSERT: [%i] %s:\n'FirstSaveToDiskRow' is not valid!"), __LINE__, *FString(__FUNCTION__)))
 	{
@@ -227,6 +227,15 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 
 	CurrentRowNameInternal = FirstSaveToDiskRow;
 	SaveGameDataInternal->UnlockLevelByName(CurrentRowNameInternal);
+	
+	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	{
+		return;
+	}
+	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
 }
 
@@ -394,6 +403,7 @@ void UPSWorldSubsystem::SaveDataAsync()
 		return;
 	}
 
+	OnProgressionUpdate.Broadcast();
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());
 }
 
@@ -421,14 +431,8 @@ void UPSWorldSubsystem::ResetSaveGameData()
 
 	// Re-load save game object. Load game from save file or if there is no such creates a new one
 	SetFirstElementAsCurrent();
+	
 	UpdateProgressionUI();
-
-	const APlayerCharacter* LocalCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-	if (!ensureMsgf(LocalCharacter, TEXT("ASSERT: [%i] %hs:\n'SpotComponent' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-	SetCurrentRowByTag(LocalCharacter->GetPlayerTag());
 }
 
 // Unlocks all levels of the Progression System
@@ -439,6 +443,14 @@ void UPSWorldSubsystem::UnlockAllLevels()
 		return;
 	}
 	SaveGameDataInternal->UnlockAllLevels();
+	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	{
+		return;
+	}
+	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
 	UpdateProgressionUI();
 }
@@ -477,6 +489,5 @@ void UPSWorldSubsystem::UpdateProgressionUI()
 	}
 
 	SpotComponent->ChangeSpotVisibilityStatus();
-	PSHUDComponent->UpdateProgressionWidgetForPlayer();
 	UpdateProgressionStarActors();
 }

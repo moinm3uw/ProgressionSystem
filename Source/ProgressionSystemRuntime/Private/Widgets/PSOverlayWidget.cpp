@@ -7,6 +7,9 @@
 #include "Curves/CurveFloat.h"
 #include "Data/PSDataAsset.h"
 #include "Components/Overlay.h"
+#include "Data/PSWorldSubsystem.h"
+#include "UI/SettingsWidget.h"
+#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSOverlayWidget)
 
@@ -75,6 +78,9 @@ void UPSOverlayWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	SetVisibility(ESlateVisibility::Collapsed);
+
+	// Subscribe to the event notifying changes in player type
+	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
 }
 
 // Play the overlay elements fade-in/fade-out animation. Uses the internal FadeCurveFloatInternal initialized in NativeConstruct
@@ -111,8 +117,37 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 	}
 }
 
+// Is called when a player has been changed 
+void UPSOverlayWidget::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
+{
+	DisplayLevelUIOverlay();
+}
+
 void UPSOverlayWidget::SetOverlayItemsVisibility(ESlateVisibility VisibilitySlate)
 {
 	// Level is unlocked hide the blocking overlay
 	SetVisibility(VisibilitySlate);
+}
+
+// Show or hide the LevelUIOverlay depends on the level lock state for current level
+// by default overlay is always displayed 
+void UPSOverlayWidget::DisplayLevelUIOverlay()
+{
+	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
+	const bool IsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
+	
+	if (USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
+	{
+		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
+		if (IsLevelLocked)
+		{
+			// Level is locked show the blocking overlay
+			SetOverlayVisibility(ESlateVisibility::Visible, bShouldPlayFadeAnimation);
+		}
+		else
+		{
+			// Level is unlocked hide the blocking overlay
+			SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
+		}
+	}
 }
