@@ -37,7 +37,7 @@ void UPSEndGameWidget::NativeConstruct()
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
-	WorldSubsystem.OnProgressionUpdate.AddUniqueDynamic(this, &ThisClass::UpdateProgressionWidgetForPlayer);
+	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::UpdateProgressionWidgetForPlayer);
 }
 
 // Called when the end game state was changed to toggle progression widget visibility

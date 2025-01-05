@@ -403,7 +403,7 @@ void UPSWorldSubsystem::SaveDataAsync()
 		return;
 	}
 
-	OnProgressionUpdate.Broadcast();
+	OnCurrentScoreChanged.Broadcast();
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());
 }
 
