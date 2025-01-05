@@ -8,11 +8,10 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveGameData)
 
 // Retrieves the name of the save slot, safely initializing the name statically to ensure thread safety and initialization order.
-const FString& UPSSaveGameData::GetSaveSlotName()
+FString UPSSaveGameData::GetSaveSlotName(int32 SaveSlotVersion)
 {
 	// Using a function-static variable to avoid the static initialization order fiasco
-	static const FString SaveSlotName = StaticClass()->GetName();
-	return SaveSlotName;
+	return FString::Printf(TEXT("%s-%d"), *StaticClass()->GetName(), SaveSlotVersion);
 }
 
 // Retrieves the saved game progression row by index from internal saved rows. If the index is out of range, returns a static empty data object. 
@@ -120,5 +119,5 @@ const FPSSaveToDiskData& UPSSaveGameData::GetSaveToDiskDataByName(FName CurrentR
 		return *FoundSeeting;
 	}
 
-	return  FPSSaveToDiskData::EmptyData;
+	return FPSSaveToDiskData::EmptyData;
 }

@@ -20,6 +20,7 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPlayerTag, SavedProgressionRowData);
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnInitialize);
 
 	/** Returns this Subsystem, is checked and will crash if it can't be obtained.*/
@@ -33,7 +34,7 @@ public:
 	/** Cleanup used on unloading module to remove properties that should not be available by other objects. */
 	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void PerformCleanUp();
-	
+
 	/** Set current row of progression system by tag*/
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetCurrentRowByTag(FPlayerTag NewRowPlayerTag);
@@ -50,6 +51,11 @@ public:
 	 * @see UPSWorldSubsystem::PSDataAssetInternal. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
 	const class UPSDataAsset* GetPSDataAsset() const;
+
+	/** Returns the Save file versioning extension to avoid issues with conflicting save file versioning.
+	 * @see UPSWorldSubsytem::SaveFileVersionExtensionInternal. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
+	FORCEINLINE int32 GetSaveFileVersionExtension() const { return SaveFileVersionExtensionInternal; }
 
 	/** Returns a progression System component reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -115,6 +121,13 @@ protected:
 	UPROPERTY(Config, VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
 	TSoftObjectPtr<const class UPSDataAsset> PSDataAssetInternal;
 
+	/** Extension to a save file to increment with a new build
+	 * Note: it's config property stored in BaseProgressionSystem.ini and going to be changed frequently.
+	 * Intentionally added to the config-ini instead of Data Asset, as it's not for designers
+	 */
+	UPROPERTY(Config, VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save File Version Extentsion"))
+	int32 SaveFileVersionExtensionInternal;
+
 	/** Progression System component reference*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
 	TObjectPtr<class UPSHUDComponent> PSHUDComponentInternal = nullptr;
@@ -156,7 +169,7 @@ protected:
 	 * Once the save file is loaded it activates the functionality of this class */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnInitialized();
-	
+
 	/** Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors */
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 
