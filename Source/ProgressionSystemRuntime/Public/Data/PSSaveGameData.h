@@ -18,7 +18,7 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSSaveGameData : public USaveGame
 public:
 	/** Returns the name of the save slot. */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	static const FString& GetSaveSlotName(int32 SaveSlotVersion);
+	static const FString GetSaveSlotName(int32 SaveSlotVersion);
 
 	/** Returns the Slot Index of the save slot. */
 	UFUNCTION(BlueprintPure, Category = "C++")
