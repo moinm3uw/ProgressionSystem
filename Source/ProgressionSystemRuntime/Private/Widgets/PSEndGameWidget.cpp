@@ -167,7 +167,7 @@ void UPSEndGameWidget::UpdateStarProgressBarValue(const FPoolObjectData& Created
 }
 
 // Updates the progression menu widget when player changed
-void UPSEndGameWidget::OnCurrentScoreChanged()
+void UPSEndGameWidget::OnCurrentScoreChanged_Implementation()
 {
 	UPSSaveGameData* SaveGameData = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
 	if (!SaveGameData)

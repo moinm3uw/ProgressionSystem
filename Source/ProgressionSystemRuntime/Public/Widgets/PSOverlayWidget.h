@@ -39,9 +39,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="C++", meta=(BlueprintProtected))
 	void TickPlayFadeOverlayAnimation();
 
-	/** Is called when a player has been changed */
+	/** When a character has been changed current active progression row also changes */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
+	void OnCurrentRowDataChanged(FPlayerTag PlayerTag);
 	
 	/**
 	* Sets the visibility of the background overlay and lock icon.

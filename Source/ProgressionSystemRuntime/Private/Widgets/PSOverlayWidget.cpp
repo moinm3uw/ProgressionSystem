@@ -80,7 +80,7 @@ void UPSOverlayWidget::NativeConstruct()
 	SetVisibility(ESlateVisibility::Collapsed);
 
 	// Subscribe to the event notifying changes in player type
-	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
+	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnCurrentRowDataChanged);
 }
 
 // Play the overlay elements fade-in/fade-out animation. Uses the internal FadeCurveFloatInternal initialized in NativeConstruct
@@ -117,8 +117,8 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 	}
 }
 
-// Is called when a player has been changed 
-void UPSOverlayWidget::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
+// When a character has been changed current active progression row also changes
+void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag PlayerTag)
 {
 	DisplayLevelUIOverlay();
 }
