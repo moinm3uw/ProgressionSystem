@@ -135,19 +135,12 @@ void UPSOverlayWidget::DisplayLevelUIOverlay()
 {
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	const bool IsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
-	
+
 	if (USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
 	{
 		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
-		if (IsLevelLocked)
-		{
-			// Level is locked show the blocking overlay
-			SetOverlayVisibility(ESlateVisibility::Visible, bShouldPlayFadeAnimation);
-		}
-		else
-		{
-			// Level is unlocked hide the blocking overlay
-			SetOverlayVisibility(ESlateVisibility::Collapsed, bShouldPlayFadeAnimation);
-		}
+
+		const ESlateVisibility OverlayVisibility = IsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+		SetOverlayVisibility(OverlayVisibility, bShouldPlayFadeAnimation);
 	}
 }
