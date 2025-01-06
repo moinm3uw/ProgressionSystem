@@ -23,7 +23,7 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnInitialize);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnCurrentScoreChanged);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPSOnCurrentScoreChanged, const FPSSaveToDiskData&, CurrenSaveToDiskDataRow, const FPSRowData&, CurrenProgressionSettingsRow);
 	
 	/** Returns this Subsystem, is checked and will crash if it can't be obtained.*/
 	static UPSWorldSubsystem& Get();

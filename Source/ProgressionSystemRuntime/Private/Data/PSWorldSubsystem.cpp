@@ -402,8 +402,10 @@ void UPSWorldSubsystem::SaveDataAsync()
 	{
 		return;
 	}
-
-	OnCurrentScoreChanged.Broadcast();
+	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = GetCurrentSaveToDiskRowByName();
+	const FPSRowData& CurrenProgressionSettingsRow = GetCurrentProgressionSettingsRowByName();
+	
+	OnCurrentScoreChanged.Broadcast(CurrenSaveToDiskDataRow, CurrenProgressionSettingsRow);
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());
 }
 
