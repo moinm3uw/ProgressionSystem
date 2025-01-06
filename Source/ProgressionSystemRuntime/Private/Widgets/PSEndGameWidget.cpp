@@ -37,7 +37,7 @@ void UPSEndGameWidget::NativeConstruct()
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
-	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::UpdateProgressionWidgetForPlayer);
+	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 }
 
 // Called when the end game state was changed to toggle progression widget visibility
@@ -167,7 +167,7 @@ void UPSEndGameWidget::UpdateStarProgressBarValue(const FPoolObjectData& Created
 }
 
 // Updates the progression menu widget when player changed
-void UPSEndGameWidget::UpdateProgressionWidgetForPlayer()
+void UPSEndGameWidget::OnCurrentScoreChanged()
 {
 	UPSSaveGameData* SaveGameData = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
 	if (!SaveGameData)

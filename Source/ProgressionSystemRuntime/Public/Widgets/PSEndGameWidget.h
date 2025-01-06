@@ -82,5 +82,5 @@ protected:
 
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void UpdateProgressionWidgetForPlayer();
+	void OnCurrentScoreChanged();
 };
