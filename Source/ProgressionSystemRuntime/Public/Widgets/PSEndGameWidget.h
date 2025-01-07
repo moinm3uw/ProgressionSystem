@@ -79,4 +79,8 @@ protected:
 	 */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void UpdateStarProgressBarValue(const FPoolObjectData& CreatedData, float NewProgressBarValue);
+
+	/** Updates the progression menu widget when player changed */
+	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
+	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrenSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow);
 };

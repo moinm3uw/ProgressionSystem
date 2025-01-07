@@ -11,6 +11,8 @@
 #include "PoolManagerSubsystem.h"
 #include "PoolManagerTypes.h"
 #include "Components/StaticMeshComponent.h"
+#include "Data/PSTypes.h"
+#include "Data/PSWorldSubsystem.h"
 #include "Engine/CurveTable.h"
 #include "GameFramework/MyGameStateBase.h"
 #include "GameFramework/MyPlayerState.h"
@@ -33,6 +35,9 @@ void UPSEndGameWidget::NativeConstruct()
 
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
+
+	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
+	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 }
 
 // Called when the end game state was changed to toggle progression widget visibility
@@ -159,4 +164,20 @@ void UPSEndGameWidget::UpdateStarProgressBarValue(const FPoolObjectData& Created
 {
 	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();
 	SpawnedWidget.UpdateProgressionBarPercentage(NewProgressBarValue);
+}
+
+// Updates the progression menu widget when player changed
+void UPSEndGameWidget::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrenSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow)
+{
+	//set updated amount of stars
+	if (CurrenSaveToDiskDataRow.CurrentLevelProgression >= CurrenProgressionSettingsRow.PointsToUnlock)
+	{
+		// set required points (stars)  to achieve for a level  
+		AddImagesToHorizontalBox(CurrenProgressionSettingsRow.PointsToUnlock, 0, CurrenProgressionSettingsRow.PointsToUnlock);
+	}
+	else
+	{
+		// Calculate the unlocked against locked points (stars) 
+		AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
+	}
 }
