@@ -57,6 +57,7 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 		{
 			CurrentRowNameInternal = KeyValue.Key;
 			OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag);
+			UpdateProgressionStarActors();
 			return; // Exit immediately after finding the match
 		}
 	}
@@ -130,9 +131,6 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
-
-	// Listen to handle input for each game state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
@@ -170,24 +168,6 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
 	SetCurrentRowByTag(PlayerTag);
-	UpdateProgressionStarActors();
-}
-
-// Called when the current game state was changed
-void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
-{
-	switch (CurrentGameState)
-	{
-	case ECurrentGameState::Menu:
-		// refresh 3D Stars actors
-		UpdateProgressionStarActors();
-		break;
-	case ECurrentGameState::GameStarting:
-		// Show Progression Menu widget in Main Menu
-		break;
-	default:
-		break;
-	}
 }
 
 // Always set first levels as unlocked on begin play
@@ -401,7 +381,6 @@ void UPSWorldSubsystem::ResetSaveGameData()
 
 	// Re-load save game object. Load game from save file or if there is no such creates a new one
 	SetFirstElementAsCurrent();
-	UpdateProgressionStarActors();
 }
 
 // Unlocks all levels of the Progression System
@@ -421,7 +400,6 @@ void UPSWorldSubsystem::UnlockAllLevels()
 	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
 	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
-	UpdateProgressionStarActors();
 }
 
 // Returns difficultyMultiplier
