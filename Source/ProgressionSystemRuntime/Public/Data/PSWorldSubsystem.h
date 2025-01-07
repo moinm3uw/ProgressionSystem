@@ -19,12 +19,12 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentRowDataChanged, const FPlayerTag, SavedProgressionRowData);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentActiveSaveRowChanged, const FPlayerTag, SavedProgressionRowData);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnInitialize);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPSOnCurrentScoreChanged, const FPSSaveToDiskData&, CurrenSaveToDiskDataRow, const FPSRowData&, CurrenProgressionSettingsRow);
-	
+
 	/** Returns this Subsystem, is checked and will crash if it can't be obtained.*/
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
@@ -41,9 +41,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetCurrentRowByTag(FPlayerTag NewRowPlayerTag);
 
-	/* Delegate for informing row data changed */
+	/* Each level has its own row. Each row is tied to a character
+	 * Delegate is called after chosen character was changed so the active save row in save instance also changed */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
-	FCurrentRowDataChanged OnCurrentRowDataChanged;
+	FCurrentActiveSaveRowChanged OnCurrentActiveSaveRowChanged;
 
 	/* Delegate for informing save game file is loaded/created if empty */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
@@ -95,10 +96,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void RegisterSpotComponent(class UPSSpotComponent* MyHUDComponent);
 
-	/** Set the progression system spot component */
-	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SetCurrentSpotComponent(class UPSSpotComponent* MyHUDComponent);
-
 	/** Saves the progression to the local files */
 	UFUNCTION()
 	void SaveDataAsync();
@@ -141,10 +138,6 @@ protected:
 	/** Progression System Array of Spot Components */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
 	TArray<class UPSSpotComponent*> PSSpotComponentArrayInternal;
-
-	/** Progression System Spot Component reference*/
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Component"))
-	TObjectPtr<class UPSSpotComponent> PSCurrentSpotComponentInternal = nullptr;
 
 	/** Store the current save game instance
 	 * Contains the FPSSaveToDiskData which has actual data from save file */
@@ -209,15 +202,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects);
 
-	/** Triggers when a spot is loaded */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="C++", meta=(BlueprintProtected))
-	void OnSpotComponentLoad(class UPSSpotComponent* SpotComponent);
-
 	/** Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnAsyncLoadGameFromSlotCompleted(const FString& SlotName, int32 UserIndex, class USaveGame* SaveGame);
-
-	/** Is called to update the stars actors and in widgets when finish to save date in save file */
-	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void UpdateProgressionUI();
 };
