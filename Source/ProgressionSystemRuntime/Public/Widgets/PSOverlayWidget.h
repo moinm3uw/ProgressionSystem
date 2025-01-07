@@ -39,6 +39,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="C++", meta=(BlueprintProtected))
 	void TickPlayFadeOverlayAnimation();
 
+	/** When a character has been changed current active progression row also changes */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnCurrentRowDataChanged(FPlayerTag PlayerTag);
+	
 	/**
 	* Sets the visibility of the background overlay and lock icon.
 	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
@@ -61,4 +65,8 @@ protected:
 	/** Current overlay widget fade state. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Overlay Widget Fade State"))
 	EPSOverlayWidgetFadeState OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::None;
+
+	/** Show locked level ui overlay */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void DisplayLevelUIOverlay();
 };

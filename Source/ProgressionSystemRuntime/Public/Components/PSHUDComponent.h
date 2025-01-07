@@ -26,10 +26,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="C++")
 	void SavePoints(EEndGameState EndGameState);
 	
-	/** Updates the progression menu widget when player changed */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void UpdateProgressionWidgetForPlayer();
-	
 	/*********************************************************************************************
 	* Protected properties
 	********************************************************************************************* */
@@ -61,10 +57,6 @@ protected:
 	/** Clears all transient data created by this component. */
 	virtual void OnUnregister() override;
 
-	/** Called when the current game state was changed. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(ECurrentGameState CurrentGameState);
-
 	/** Called when the end game state was changed. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnEndGameStateChanged(EEndGameState EndGameState);
@@ -76,8 +68,4 @@ protected:
 	/** Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnLocalCharacterReady(class APlayerCharacter* Character, int32 CharacterID);
-
-	/** Show locked level ui overlay */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void DisplayLevelUIOverlay(bool IsLevelLocked);
 };
