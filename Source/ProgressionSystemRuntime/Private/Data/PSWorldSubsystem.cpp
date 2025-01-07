@@ -169,8 +169,6 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 // Is called when a player has been changed
 void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
-	// todo refactor: in SetCurrentRowByTag function on broadcast OnCurrentRowDataChanged create a function which will
-	// perform all logic after this function call
 	SetCurrentRowByTag(PlayerTag);
 	UpdateProgressionStarActors();
 }
