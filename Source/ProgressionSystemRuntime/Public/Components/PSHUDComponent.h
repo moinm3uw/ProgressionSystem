@@ -61,10 +61,6 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnEndGameStateChanged(EEndGameState EndGameState);
 
-	/** Is called when a player has been changed */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
-
 	/** Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnLocalCharacterReady(class APlayerCharacter* Character, int32 CharacterID);
