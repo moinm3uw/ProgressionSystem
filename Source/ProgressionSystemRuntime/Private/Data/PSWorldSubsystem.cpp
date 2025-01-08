@@ -131,6 +131,9 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
+
+	// Listen to handle input for each game state
+	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
@@ -168,6 +171,20 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
 	SetCurrentRowByTag(PlayerTag);
+}
+
+// Called when the current game state was changed
+void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+{
+	switch (CurrentGameState)
+	{
+	case ECurrentGameState::Menu:
+		// refresh 3D Stars actors
+		UpdateProgressionStarActors();
+		break;
+	default:
+		break;
+	}
 }
 
 // Always set first levels as unlocked on begin play
