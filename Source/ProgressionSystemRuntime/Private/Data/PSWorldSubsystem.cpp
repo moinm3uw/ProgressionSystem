@@ -56,7 +56,8 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 		if (RowData.Character == NewRowPlayerTag)
 		{
 			CurrentRowNameInternal = KeyValue.Key;
-			OnCurrentRowDataChanged.Broadcast(NewRowPlayerTag);
+			OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag);
+			UpdateProgressionStarActors();
 			return; // Exit immediately after finding the match
 		}
 	}
@@ -110,23 +111,13 @@ void UPSWorldSubsystem::SetHUDComponent(UPSHUDComponent* MyHUDComponent)
 }
 
 // Set the progression system spot component
-void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MyHUDComponent)
+void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 {
-	if (!ensureMsgf(MyHUDComponent, TEXT("ASSERT: [%i] %hs:\n'MyHUDComponent' is null!"), __LINE__, __FUNCTION__))
+	if (!ensureMsgf(MySpotComponent, TEXT("ASSERT: [%i] %hs:\n'MyHUDComponent' is null!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
-	PSSpotComponentArrayInternal.AddUnique(MyHUDComponent);
-	MyHUDComponent->OnSpotComponentReady.AddDynamic(this, &UPSWorldSubsystem::OnSpotComponentLoad);
-}
-
-void UPSWorldSubsystem::SetCurrentSpotComponent(UPSSpotComponent* MyHUDComponent)
-{
-	if (!ensureMsgf(MyHUDComponent, TEXT("ASSERT: [%i] %hs:\n'MyHUDComponent' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-	PSCurrentSpotComponentInternal = MyHUDComponent;
+	PSSpotComponentArrayInternal.AddUnique(MySpotComponent);
 }
 
 // Called when progression module ready
@@ -140,9 +131,6 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
-
-	// Listen to handle input for each game state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
@@ -179,35 +167,7 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 // Is called when a player has been changed
 void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
-	// todo refactor: in SetCurrentRowByTag function on broadcast OnCurrentRowDataChanged create a function which will
-	// perform all logic after this function call
 	SetCurrentRowByTag(PlayerTag);
-
-	for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
-	{
-		if (SpotComponent->GetMeshChecked().GetPlayerTag() == PlayerTag)
-		{
-			PSCurrentSpotComponentInternal = SpotComponent;
-			UpdateProgressionStarActors();
-		}
-	}
-}
-
-// Called when the current game state was changed
-void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
-{
-	switch (CurrentGameState)
-	{
-	case ECurrentGameState::Menu:
-		// refresh 3D Stars actors
-		UpdateProgressionStarActors();
-		break;
-	case ECurrentGameState::GameStarting:
-		// Show Progression Menu widget in Main Menu
-		break;
-	default:
-		break;
-	}
 }
 
 // Always set first levels as unlocked on begin play
@@ -227,7 +187,7 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 
 	CurrentRowNameInternal = FirstSaveToDiskRow;
 	SaveGameDataInternal->UnlockLevelByName(CurrentRowNameInternal);
-	
+
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
 	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
@@ -324,17 +284,6 @@ UPSSpotComponent* UPSWorldSubsystem::GetCurrentSpot() const
 	return nullptr;
 }
 
-// Triggers when a spot is loaded
-void UPSWorldSubsystem::OnSpotComponentLoad_Implementation(UPSSpotComponent* SpotComponent)
-{
-	if (!ensureMsgf(SpotComponent, TEXT("ASSERT: [%i] %s:\n'SpotComponent' is not valid!"), __LINE__, *FString(__FUNCTION__)))
-	{
-		return;
-	}
-
-	PSCurrentSpotComponentInternal = SpotComponent;
-}
-
 // Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load.
 void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(const FString& SlotName, int32 UserIndex, USaveGame* SaveGame)
 {
@@ -385,7 +334,6 @@ void UPSWorldSubsystem::PerformCleanUp()
 	UMyPrimaryDataAsset::ResetDataAsset(PSDataAssetInternal);
 	PSHUDComponentInternal = nullptr;
 	PSSpotComponentArrayInternal.Empty();
-	PSCurrentSpotComponentInternal = nullptr;
 
 	// Saves clean up 
 	if (SaveGameDataInternal)
@@ -404,7 +352,7 @@ void UPSWorldSubsystem::SaveDataAsync()
 	}
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = GetCurrentSaveToDiskRowByName();
 	const FPSRowData& CurrenProgressionSettingsRow = GetCurrentProgressionSettingsRowByName();
-	
+
 	OnCurrentScoreChanged.Broadcast(CurrenSaveToDiskDataRow, CurrenProgressionSettingsRow);
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());
 }
@@ -433,8 +381,6 @@ void UPSWorldSubsystem::ResetSaveGameData()
 
 	// Re-load save game object. Load game from save file or if there is no such creates a new one
 	SetFirstElementAsCurrent();
-	
-	UpdateProgressionUI();
 }
 
 // Unlocks all levels of the Progression System
@@ -454,7 +400,6 @@ void UPSWorldSubsystem::UnlockAllLevels()
 	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
 	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
-	UpdateProgressionUI();
 }
 
 // Returns difficultyMultiplier
@@ -474,22 +419,4 @@ float UPSWorldSubsystem::GetDifficultyMultiplier() const
 	}
 
 	return FoundDifficulty ? *FoundDifficulty : DefaultDifficulty;
-}
-
-void UPSWorldSubsystem::UpdateProgressionUI()
-{
-	UPSHUDComponent* PSHUDComponent = GetProgressionSystemHUDComponent();
-	if (!ensureMsgf(PSHUDComponent, TEXT("ASSERT: [%i] %hs:\n'PSHUDComponent' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
-	UPSSpotComponent* SpotComponent = GetCurrentSpot();
-	if (!ensureMsgf(SpotComponent, TEXT("ASSERT: [%i] %hs:\n'SpotComponent' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
-	SpotComponent->ChangeSpotVisibilityStatus();
-	UpdateProgressionStarActors();
 }
