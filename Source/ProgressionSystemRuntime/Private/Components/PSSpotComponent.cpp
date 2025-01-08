@@ -26,24 +26,18 @@ UPSSpotComponent::UPSSpotComponent()
 // Called when progression module ready
 void UPSSpotComponent::OnInitialized_Implementation()
 {
-	// Ensure the component's mesh is properly assigned and not null.
-	PlayerSpotOnLevelInternal = GetMeshChecked();
-
-	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
-	// Subscribe events on player type changed and Character spawned
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
-
-	ChangeSpotVisibilityStatus();
-
+	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
+	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
 	// Save reference of this component to the world subsystem
-	UPSWorldSubsystem::Get().RegisterSpotComponent(this);
+	WorldSubsystem.RegisterSpotComponent(this);
 }
 
 // Called when the game starts
 void UPSSpotComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	UPSWorldSubsystem::Get().OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
+	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
+	WorldSubsystem.OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
 }
 
 // Clears all transient data created by this component.
@@ -51,13 +45,19 @@ void UPSSpotComponent::OnUnregister()
 {
 	// reset back to initial state. By default, the spot is unlocked 
 	constexpr bool bSpotUnlocked = true;
-	if (PlayerSpotOnLevelInternal)
-	{
-		PlayerSpotOnLevelInternal->SetActive(bSpotUnlocked);
-		PlayerSpotOnLevelInternal = nullptr;
-	}
+	GetMeshChecked().SetActive(bSpotUnlocked);
 
 	Super::OnUnregister();
+}
+
+// Updates the progression menu widget when player changed
+void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag PlayerTag)
+{
+	UMySkeletalMeshComponent& Mesh = GetMeshChecked();
+	if (Mesh.GetPlayerTag() == PlayerTag)
+	{
+		ChangeSpotVisibilityStatus(&Mesh);
+	}
 }
 
 // Returns the Skeletal Mesh of the Bomber character
@@ -74,37 +74,10 @@ UMySkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
 	return *Mesh;
 }
 
-// Is called when a player has been changed
-void UPSSpotComponent::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
-{
-	UMySkeletalMeshComponent& Mesh = GetMeshChecked();
-	if (Mesh.GetPlayerTag() == PlayerTag)
-	{
-		PlayerSpotOnLevelInternal = Mesh;
-		ChangeSpotVisibilityStatus();
-
-		// Save reference of this component to the world subsystem
-		UPSWorldSubsystem::Get().SetCurrentSpotComponent(this);
-	}
-}
-
-//  Is called when a player has been changed 
-void UPSSpotComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
-{
-	if (PlayerCharacter->GetPlayerTag() == GetMeshChecked().GetPlayerTag())
-	{
-		PlayerSpotOnLevelInternal = GetMeshChecked();
-		OnSpotComponentReady.Broadcast(this);
-	}
-}
-
-// Locks the player spot when progression for level achieved 
-void UPSSpotComponent::ChangeSpotVisibilityStatus()
+// Changes the player spot depends on current level state 
+void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh)
 {
 	// Locks and unlocks the spot depends on the current level progression status
-	if (PlayerSpotOnLevelInternal)
-	{
-		FPSSaveToDiskData SaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
-		PlayerSpotOnLevelInternal->SetActive(!SaveToDiskDataRow.IsLevelLocked);
-	}
+	FPSSaveToDiskData SaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
+	Mesh->SetActive(!SaveToDiskDataRow.IsLevelLocked);
 }

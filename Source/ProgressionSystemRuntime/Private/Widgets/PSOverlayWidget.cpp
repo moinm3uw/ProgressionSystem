@@ -80,7 +80,7 @@ void UPSOverlayWidget::NativeConstruct()
 	SetVisibility(ESlateVisibility::Collapsed);
 
 	// Subscribe to the event notifying changes in player type
-	UPSWorldSubsystem::Get().OnCurrentRowDataChanged.AddDynamic(this, &ThisClass::OnCurrentRowDataChanged);
+	UPSWorldSubsystem::Get().OnCurrentActiveSaveRowChanged.AddDynamic(this, &ThisClass::OnCurrentRowDataChanged);
 }
 
 // Play the overlay elements fade-in/fade-out animation. Uses the internal FadeCurveFloatInternal initialized in NativeConstruct
