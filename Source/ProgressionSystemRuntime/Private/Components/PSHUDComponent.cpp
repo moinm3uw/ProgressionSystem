@@ -36,9 +36,6 @@ void UPSHUDComponent::OnInitialized_Implementation()
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 
-	// Subscribe to the event notifying changes in player type
-	UPSWorldSubsystem::Get().OnCurrentActiveSaveRowChanged.AddDynamic(this, &ThisClass::OnPlayerTypeChanged);
-
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetHUDComponent(this);
 }
@@ -106,12 +103,6 @@ void UPSHUDComponent::OnEndGameStateChanged_Implementation(EEndGameState EndGame
 	{
 		SavePoints(EndGameState);
 	}
-}
-
-// Handle events when player type changes
-void UPSHUDComponent::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
-{
-
 }
 
 //Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
