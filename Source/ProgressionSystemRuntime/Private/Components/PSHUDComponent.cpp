@@ -33,22 +33,8 @@ UPSHUDComponent::UPSHUDComponent()
 // Called when main save game file is loaded
 void UPSHUDComponent::OnInitialized_Implementation()
 {
-	// Binds the local player state ready event to the handler
-	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
-
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetHUDComponent(this);
-}
-
-// Subscribes to the end game state change notification on the player state.
-void UPSHUDComponent::OnLocalPlayerStateReady_Implementation(AMyPlayerState* PlayerState, int32 CharacterID)
-{
-	// Ensure that PlayerState is not null before subscribing to the event
-	if (!ensureMsgf(PlayerState, TEXT("ASSERT: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
 // Called when the game starts
@@ -80,28 +66,6 @@ void UPSHUDComponent::OnUnregister()
 	if (UGlobalEventsSubsystem* EventSubsystem = UGlobalEventsSubsystem::GetGlobalEventsSubsystem())
 	{
 		EventSubsystem->BP_OnLocalCharacterReady.RemoveAll(this);
-	}
-}
-
-// Save the progression depends on EEndGameState
-void UPSHUDComponent::SavePoints(EEndGameState EndGameState)
-{
-	// @h4rdmol to move to Subsystem instead of hud
-	const UPSSaveGameData* SaveGameInstance = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
-	if (!ensureMsgf(SaveGameInstance, TEXT("ASSERT: [%i] %hs:\n'SaveGameInstance' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-	UPSSaveGameData* SaveGameData = UPSWorldSubsystem::Get().GetCurrentSaveGameData();
-	SaveGameData->SavePoints(EndGameState);
-}
-
-// Listening end game states changes events (win, lose, draw) 
-void UPSHUDComponent::OnEndGameStateChanged_Implementation(EEndGameState EndGameState)
-{
-	if (EndGameState != EEndGameState::None)
-	{
-		SavePoints(EndGameState);
 	}
 }
 

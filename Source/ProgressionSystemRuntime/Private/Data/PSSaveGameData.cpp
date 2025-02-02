@@ -3,6 +3,7 @@
 #include "Data/PSSaveGameData.h"
 
 #include "Data/PSWorldSubsystem.h"
+#include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveGameData)
@@ -55,9 +56,15 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 		// Increase the current level's progression by the reward from the end game state
 		FName CurrentRowName = UPSWorldSubsystem::Get().GetCurrentRowName();
 		FPSSaveToDiskData* CurrentSaveToDiskDataRowRef = ProgressionSettingsRowDataInternal.Find(CurrentRowName);
-		CurrentSaveToDiskDataRowRef->CurrentLevelProgression += GetProgressionReward(EndGameState);
-
 		const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+
+		// do nothing if max start achieved. Max stars of level is amount of point to unlock for a level
+		if (CurrentSaveToDiskDataRowRef->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
+		{
+			return;
+		}
+		
+		CurrentSaveToDiskDataRowRef->CurrentLevelProgression += GetProgressionReward(EndGameState);
 
 		// Check if the current level progression has reached or surpassed the points needed to unlock
 		if (CurrentSaveToDiskDataRowRef->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
@@ -72,9 +79,13 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 void UPSSaveGameData::NextLevelProgressionRowData()
 {
 	bool bNextRowFound = false;
-
+	
+	int32 Index = 0;
+	
 	for (const TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
 	{
+		Index++;
+		
 		if (bNextRowFound)
 		{
 			UnlockLevelByName(KeyValue.Key);
@@ -84,6 +95,11 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 		if (KeyValue.Key == UPSWorldSubsystem::Get().GetCurrentRowName())
 		{
 			bNextRowFound = true; // Indicate that the current row has been found
+
+			if (Index == ProgressionSettingsRowDataInternal.Num())
+			{
+				UGlobalEventsSubsystem::Get().OnGameProgressionCompleted.Broadcast();
+			}
 		}
 	}
 }
