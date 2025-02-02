@@ -132,7 +132,6 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
-	
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
