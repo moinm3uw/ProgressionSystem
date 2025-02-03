@@ -162,7 +162,7 @@ void APSStarActor::OnInitialized(const FVector& PreviousActorLocation)
 }
 
 //  Updates star actors Mesh material to the Locked Star, Unlocked or partially achieved
-void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState)
+void APSStarActor::UpdateStarActorProgressMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState)
 {
 	if (!ensureMsgf(StarDynamicProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicProgressMaterial' is not valid!"), __LINE__, __FUNCTION__)
 		|| !ensureMsgf(StarMeshComponent, TEXT("ASSERT: [%i] %hs:\n'StarMeshComponent' is not valid!"), __LINE__, __FUNCTION__))
@@ -187,4 +187,15 @@ void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDyn
 
 	// unlocked stars EPSStarActorState::Unlocked
 	StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetUnlockedProgressionMaterial());
+}
+
+// Updates star actors face Mesh material according to level
+void APSStarActor::UpdateStarActorFaceMeshMaterial(class UMaterialInterface* StarFaceMaterial)
+{
+	if (!ensureMsgf(StarFaceMaterial, TEXT("ASSERT: [%i] %hs:\n'StarFaceMaterial' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return; // Early return if pointers are invalid
+	}
+
+	StarMeshComponent->SetMaterial(1, StarFaceMaterial);
 }

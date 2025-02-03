@@ -45,7 +45,14 @@ public:
 	 * @param StarActorState Desired state of the star actor.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void UpdateStarActorMeshMaterial(class UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState);
+	void UpdateStarActorProgressMeshMaterial(class UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState);
+
+	/** Updates star actors face Mesh material according to level
+	 * For each character (level) stars has unique face expression
+	 * @param StarFaceMaterial is a face material to be granted
+	 */
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	void UpdateStarActorFaceMeshMaterial(class UMaterialInterface* StarFaceMaterial);
 
 protected:
 	// Called when the game starts or when spawned

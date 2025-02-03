@@ -262,12 +262,14 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 		float StarAmount = FMath::Clamp(CurrentAmountOfUnlocked, 0.0f, 1.0f);
 		if (CurrentAmountOfUnlocked > 0)
 		{
-			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, StarAmount, EPSStarActorState::Unlocked);
+			SpawnedActor.UpdateStarActorProgressMeshMaterial(StarDynamicProgressMaterial, StarAmount, EPSStarActorState::Unlocked);
 		}
 		else
 		{
-			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, 1, EPSStarActorState::Locked);
+			SpawnedActor.UpdateStarActorProgressMeshMaterial(StarDynamicProgressMaterial, 1, EPSStarActorState::Locked);
 		}
+
+		SpawnedActor.UpdateStarActorFaceMeshMaterial(CurrentSettingsRowData.LevelStarFaceMaterial);
 
 		CurrentAmountOfUnlocked -= StarAmount;
 
