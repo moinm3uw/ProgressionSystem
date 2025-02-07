@@ -168,6 +168,7 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 // Subscribes to the end game state change notification on the player state. 
 void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(AMyPlayerState* PlayerState, int32 CharacterID)
 {
+	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
