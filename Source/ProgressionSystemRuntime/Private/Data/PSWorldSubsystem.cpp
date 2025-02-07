@@ -381,7 +381,7 @@ void UPSWorldSubsystem::SaveDataAsync()
 
 	UpdateProgressionStarActors();
 	OnCurrentScoreChanged.Broadcast(CurrenSaveToDiskDataRow, CurrenProgressionSettingsRow);
-s
+
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());
 }
 
