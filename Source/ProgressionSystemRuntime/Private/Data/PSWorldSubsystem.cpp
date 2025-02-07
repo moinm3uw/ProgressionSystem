@@ -168,11 +168,6 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 // Subscribes to the end game state change notification on the player state. 
 void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(AMyPlayerState* PlayerState, int32 CharacterID)
 {
-	// Ensure that PlayerState is not null before subscribing to the event
-	if (!ensureMsgf(PlayerState, TEXT("ASSERT: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
