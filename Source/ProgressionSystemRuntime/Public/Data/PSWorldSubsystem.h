@@ -192,7 +192,7 @@ protected:
 	void OnEndGameStateChanged(EEndGameState EndGameState);
 
 	/** Save the progression depends on EEndGameState. */
-	UFUNCTION(BlueprintCallable, Category="C++")
+	UFUNCTION(BlueprintCallable, Category="C++", meta = (BlueprintProtected))
 	void SavePoints(EEndGameState EndGameState);
 	
 	/** Set first element as current active */
