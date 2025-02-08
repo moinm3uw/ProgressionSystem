@@ -179,14 +179,22 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnLocalCharacterReady(class APlayerCharacter* PlayerCharacter, int32 CharacterID);
 
+	/** Subscribes to the end game state change notification on the player state. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
+
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
 
-	/** Called when the current game state was changed. */
+	/** Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.)  */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(ECurrentGameState CurrentGameState);
+	void OnEndGameStateChanged(EEndGameState EndGameState);
 
+	/** Save the progression depends on EEndGameState. */
+	UFUNCTION(BlueprintCallable, Category="C++", meta = (BlueprintProtected))
+	void SavePoints(EEndGameState EndGameState);
+	
 	/** Set first element as current active */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetFirstElementAsCurrent();

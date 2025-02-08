@@ -21,10 +21,6 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSHUDComponent final : public UActorComponen
 public:
 	/** Sets default values for this component's properties. */
 	UPSHUDComponent();
-
-	/** Save the progression depends on EEndGameState. */
-	UFUNCTION(BlueprintCallable, Category="C++")
-	void SavePoints(EEndGameState EndGameState);
 	
 	/*********************************************************************************************
 	* Protected properties
@@ -46,20 +42,12 @@ protected:
 	 * Once the save file is loaded it activates the functionality of this class */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnInitialized();
-	
-	/** Subscribes to the end game state change notification on the player state. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
 
 	/** Called when the game starts. */
 	virtual void BeginPlay() override;
 
 	/** Clears all transient data created by this component. */
 	virtual void OnUnregister() override;
-
-	/** Called when the end game state was changed. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnEndGameStateChanged(EEndGameState EndGameState);
 
 	/** Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
