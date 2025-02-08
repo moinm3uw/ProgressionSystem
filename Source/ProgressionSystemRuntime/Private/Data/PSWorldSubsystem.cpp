@@ -15,13 +15,11 @@
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
-#include "GameFramework/MyGameStateBase.h"
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "Subsystems/GameDifficultySubsystem.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSWorldSubsystem)
@@ -132,8 +130,8 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
 
-	// Listen to handle input for each game state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+	// Binds the local player state ready event to the handler
+	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
@@ -167,24 +165,36 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 	PlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
 }
 
+// Subscribes to the end game state change notification on the player state. 
+void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(AMyPlayerState* PlayerState, int32 CharacterID)
+{
+	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
+	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
+}
+
 // Is called when a player has been changed
 void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
 {
 	SetCurrentRowByTag(PlayerTag);
 }
 
-// Called when the current game state was changed
-void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+// Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.) 
+void UPSWorldSubsystem::OnEndGameStateChanged_Implementation(EEndGameState EndGameState)
 {
-	switch (CurrentGameState)
+	if (EndGameState != EEndGameState::None)
 	{
-	case ECurrentGameState::Menu:
-		// refresh 3D Stars actors
-			UpdateProgressionStarActors();
-		break;
-	default:
-		break;
+		SavePoints(EndGameState);
 	}
+}
+
+// Save the progression depends on EEndGameState. 
+void UPSWorldSubsystem::SavePoints(EEndGameState EndGameState)
+{
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	SaveGameDataInternal->SavePoints(EndGameState);
 }
 
 // Always set first levels as unlocked on begin play
@@ -370,7 +380,9 @@ void UPSWorldSubsystem::SaveDataAsync()
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = GetCurrentSaveToDiskRowByName();
 	const FPSRowData& CurrenProgressionSettingsRow = GetCurrentProgressionSettingsRowByName();
 
+	UpdateProgressionStarActors();
 	OnCurrentScoreChanged.Broadcast(CurrenSaveToDiskDataRow, CurrenProgressionSettingsRow);
+
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());
 }
 
