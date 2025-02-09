@@ -63,8 +63,8 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 		{
 			return;
 		}
-
-		const int32 NewProgression = CurrentSaveToDiskDataRowRef->CurrentLevelProgression + GetProgressionReward(EndGameState);
+	
+		const float NewProgression = CurrentSaveToDiskDataRowRef->CurrentLevelProgression + GetProgressionReward(EndGameState);
 		CurrentSaveToDiskDataRowRef->CurrentLevelProgression = FMath::Min(NewProgression, CurrentProgressionSettingsRowData.PointsToUnlock);
 
 		// Check if the current level progression has reached or surpassed the points needed to unlock
