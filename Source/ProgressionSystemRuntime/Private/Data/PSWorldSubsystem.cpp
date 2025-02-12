@@ -180,7 +180,7 @@ void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState Curr
 	{
 	case ECurrentGameState::Menu:
 		// refresh 3D Stars actors
-			UpdateProgressionStarActors();
+		UpdateProgressionStarActors();
 		break;
 	default:
 		break;
@@ -254,6 +254,11 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 
 	FVector PreviousActorLocation = FVector::Zero();
 
+	// Add a face texture over current star material
+	const FName StarFaceTextureParameter = UPSDataAsset::Get().GetStarFaceTextureParameter();
+	UTexture* StarFaceTexture = CurrentSettingsRowData.StarFaceTexture;
+	StarDynamicProgressMaterial->SetTextureParameterValue(StarFaceTextureParameter, StarFaceTexture);
+
 	// Setup spawned widget
 	for (const FPoolObjectData& CreatedObject : CreatedObjects)
 	{
@@ -268,8 +273,6 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 		{
 			SpawnedActor.UpdateStarActorProgressMeshMaterial(StarDynamicProgressMaterial, 1, EPSStarActorState::Locked);
 		}
-
-		SpawnedActor.UpdateStarActorFaceMeshMaterial(CurrentSettingsRowData.LevelStarFaceMaterial);
 
 		CurrentAmountOfUnlocked -= StarAmount;
 

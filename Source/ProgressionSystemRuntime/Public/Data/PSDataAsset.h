@@ -83,6 +83,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FSettingTag GetInstantCharacterSwitchTag() const { return InstantCharacterSwitchTagInternal; }
 
+	/** Returns Star Face Texture Parameter name used to apply a face over each star */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE FName GetStarFaceTextureParameter() const { return StarFaceTextureParameter; }
+
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
@@ -135,6 +139,10 @@ protected:
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Material Slot Name"))
 	FName StarMaterialSlotNameInternal = NAME_None;
+
+	/** Star Face Texture Parameter name to add a face texture for each character*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Face Texture Parameter Name"))
+	FName StarFaceTextureParameter = NAME_None;
 
 	/** Temporary used to tweak the stars with bad UV  to look as expected
 	 * Since it's a divisor couldn't be 0 */

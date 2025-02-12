@@ -188,14 +188,3 @@ void APSStarActor::UpdateStarActorProgressMeshMaterial(UMaterialInstanceDynamic*
 	// unlocked stars EPSStarActorState::Unlocked
 	StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetUnlockedProgressionMaterial());
 }
-
-// Updates star actors face Mesh material according to level
-void APSStarActor::UpdateStarActorFaceMeshMaterial(class UMaterialInterface* StarFaceMaterial)
-{
-	if (!ensureMsgf(StarFaceMaterial, TEXT("ASSERT: [%i] %hs:\n'StarFaceMaterial' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return; // Early return if pointers are invalid
-	}
-
-	StarMeshComponent->SetMaterial(1, StarFaceMaterial);
-}

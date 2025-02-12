@@ -54,9 +54,9 @@ struct FPSRowData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	TObjectPtr<class UCurveTable> MenuStarsAnimation = nullptr;
 
-	/** Defines a star face material for each character. Displayed in the main menu */
+	/** Defines a star face texture for each character. Displayed in the main menu */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	TObjectPtr<class UMaterialInterface> LevelStarFaceMaterial = nullptr;
+	TObjectPtr<class UTexture> StarFaceTexture = nullptr;
 };
 
 /**

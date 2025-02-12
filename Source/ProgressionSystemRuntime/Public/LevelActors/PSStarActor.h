@@ -47,13 +47,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void UpdateStarActorProgressMeshMaterial(class UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState);
 
-	/** Updates star actors face Mesh material according to level
-	 * For each character (level) stars has unique face expression
-	 * @param StarFaceMaterial is a face material to be granted
-	 */
-	UFUNCTION(BlueprintCallable, Category = "C++")
-	void UpdateStarActorFaceMeshMaterial(class UMaterialInterface* StarFaceMaterial);
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
