@@ -121,17 +121,16 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 // Called when progression module ready
 void UPSWorldSubsystem::OnInitialized_Implementation()
 {
-	StarDynamicProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
-	StarLockedProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
-	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
+	UMaterialInterface* StarMaterial = UPSDataAsset::Get().GetDynamicProgressionMaterial();
 
-
-	if (!ensureMsgf(StarDynamicProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicProgressMaterial' is null!"), __LINE__, __FUNCTION__)
-		|| !ensureMsgf(StarLockedProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarLockedProgressMaterial' is null!"), __LINE__, __FUNCTION__)
-		|| !ensureMsgf(StarUnLockedProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarUnLockedProgressMaterial' is null!"), __LINE__, __FUNCTION__))
+	if (!ensureMsgf(StarMaterial, TEXT("ASSERT: [%i] %hs:\n'StarMaterial' is null!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
+
+	StarDynamicProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
+	StarLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
+	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
