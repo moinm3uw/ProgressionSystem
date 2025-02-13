@@ -206,9 +206,10 @@ void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynam
 	// Add a face texture over current star material
 	const FPSRowData& CurrentSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
 	const FName StarFaceTextureParameter = UPSDataAsset::Get().GetStarFaceTextureParameter();
+	const FName StarProgressionMaterialSlotName = UPSDataAsset::Get().GetStarMaterialSlotName();
 	UTexture* StarFaceTexture = CurrentSettingsRowData.StarFaceTexture;
 
 	StarMeshComponent->SetMaterial(0, StarDynamicMaterial);
-	StarDynamicMaterial->SetScalarParameterValue(UPSDataAsset::Get().GetStarMaterialSlotName(), StarProgressionAmount);
+	StarDynamicMaterial->SetScalarParameterValue(StarProgressionMaterialSlotName, StarProgressionAmount);
 	StarDynamicMaterial->SetTextureParameterValue(StarFaceTextureParameter, StarFaceTexture);
 }
