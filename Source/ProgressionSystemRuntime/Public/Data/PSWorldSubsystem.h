@@ -116,6 +116,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	UPSSpotComponent* GetCurrentSpot() const;
 
+	/** Returns Progression Star Dynamic Material by state
+	 * Each state has own instance Dynamic Material Instance 
+	 * @param StarState a star state (Locked, Unlocked, Partial) */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
+	UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
+
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
 	 * Note: Since Subsystem is code-only, there is config property set in BaseProgressionSystem.ini.
@@ -159,6 +165,14 @@ protected:
 	/** Store the material for dynamic progress material fill for a star actor */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Dynamic Progress Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarDynamicProgressMaterial = nullptr;
+
+	/** Store the material for locked progress material fill for a star actor */
+	UPROPERTY(BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star locked Progress Material"))
+	TObjectPtr<class UMaterialInstanceDynamic> StarLockedProgressMaterial = nullptr;
+
+	/** Store the material for unlocked progress material fill for a star actor */
+	UPROPERTY(BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Unlocked Progress Material"))
+	TObjectPtr<class UMaterialInstanceDynamic> StarUnLockedProgressMaterial = nullptr;
 
 	/*********************************************************************************************
 	* Protected functions

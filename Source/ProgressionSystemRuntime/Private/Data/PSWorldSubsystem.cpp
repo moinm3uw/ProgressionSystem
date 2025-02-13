@@ -122,7 +122,13 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 void UPSWorldSubsystem::OnInitialized_Implementation()
 {
 	StarDynamicProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
-	if (!ensureMsgf(StarDynamicProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicProgressMaterial' is null!"), __LINE__, __FUNCTION__))
+	StarLockedProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
+	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionMaterial(), this);
+
+
+	if (!ensureMsgf(StarDynamicProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicProgressMaterial' is null!"), __LINE__, __FUNCTION__)
+		|| !ensureMsgf(StarLockedProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarLockedProgressMaterial' is null!"), __LINE__, __FUNCTION__)
+		|| !ensureMsgf(StarUnLockedProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarUnLockedProgressMaterial' is null!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -272,11 +278,11 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 		float StarAmount = FMath::Clamp(CurrentAmountOfUnlocked, 0.0f, 1.0f);
 		if (CurrentAmountOfUnlocked > 0)
 		{
-			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, StarAmount, EPSStarActorState::Unlocked);
+			SpawnedActor.UpdateStarActorProgressMeshMaterial(StarAmount, EPSStarActorState::Unlocked);
 		}
 		else
 		{
-			SpawnedActor.UpdateStarActorMeshMaterial(StarDynamicProgressMaterial, 1, EPSStarActorState::Locked);
+			SpawnedActor.UpdateStarActorProgressMeshMaterial(1, EPSStarActorState::Locked);
 		}
 
 		CurrentAmountOfUnlocked -= StarAmount;
@@ -309,6 +315,22 @@ UPSSpotComponent* UPSWorldSubsystem::GetCurrentSpot() const
 		}
 	}
 	return nullptr;
+}
+
+// Returns Progression Star Dynamic Material by state
+UMaterialInstanceDynamic* UPSWorldSubsystem::GetStarProgressionDynamicMaterial(EPSStarActorState StarState)
+{
+	switch (StarState)
+	{
+	case EPSStarActorState::Locked:
+		return StarLockedProgressMaterial;
+	case EPSStarActorState::Unlocked:
+		return StarUnLockedProgressMaterial;
+	case EPSStarActorState::Partial:
+		return StarDynamicProgressMaterial;
+	default:
+		return nullptr;
+	}
 }
 
 // Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load.
