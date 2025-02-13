@@ -114,13 +114,13 @@ public:
 
 	/** Returns current spot component returns null if spot is not found */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
-	UPSSpotComponent* GetCurrentSpot() const;
+	class UPSSpotComponent* GetCurrentSpot() const;
 
 	/** Returns Progression Star Dynamic Material by state
 	 * Each state has own instance Dynamic Material Instance 
 	 * @param StarState a star state (Locked, Unlocked, Partial) */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
-	UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
+	class UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
 
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
