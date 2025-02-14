@@ -198,6 +198,8 @@ void APSStarActor::UpdateStarActorProgressMeshMaterial(float AmountOfStars, EPSS
 // Applies the star dynamic material
 void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynamic* StarDynamicMaterial, float StarProgressionAmount)
 {
+	checkf(StarMeshComponent, TEXT("ERROR: [%i] %hs:\n'StarMeshComponent' is null!"), __LINE__, __FUNCTION__);
+
 	if (!ensureMsgf(StarDynamicMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicMaterial' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return; // Early return if pointers are invalid
