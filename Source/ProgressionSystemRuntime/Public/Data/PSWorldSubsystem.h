@@ -163,15 +163,15 @@ protected:
 	TArray<FPoolObjectHandle> PoolActorHandlersInternal;
 
 	/** Store the material for dynamic progress material fill for a star actor */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Dynamic Progress Material"))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Dynamic Progress Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarDynamicProgressMaterial = nullptr;
 
 	/** Store the material for locked progress material fill for a star actor */
-	UPROPERTY(BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star locked Progress Material"))
+	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Locked Progress Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarLockedProgressMaterial = nullptr;
 
 	/** Store the material for unlocked progress material fill for a star actor */
-	UPROPERTY(BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Unlocked Progress Material"))
+	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Unlocked Progress Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarUnLockedProgressMaterial = nullptr;
 
 	/*********************************************************************************************
@@ -208,7 +208,7 @@ protected:
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++", meta = (BlueprintProtected))
 	void SavePoints(EEndGameState EndGameState);
-	
+
 	/** Set first element as current active */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetFirstElementAsCurrent();
