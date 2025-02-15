@@ -53,6 +53,10 @@ struct FPSRowData : public FTableRowBase
 	/** Defines the star animations for each character called when in-game cinematic played */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	TObjectPtr<class UCurveTable> MenuStarsAnimation = nullptr;
+
+	/** Defines a star face texture for each character. Displayed in the main menu */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	TObjectPtr<class UTexture> StarFaceTexture = nullptr;
 };
 
 /**
@@ -97,7 +101,7 @@ enum class EPSOverlayWidgetFadeState : uint8
 /**
  * Represents the state of the stars states displayed in the main menu
  */
-UENUM(BlueprintType, DisplayName = "Overlay Widget Fade Animation State")
+UENUM(BlueprintType, DisplayName = "Progression Stars State")
 enum class EPSStarActorState : uint8
 {
 	///< Is not defined
@@ -106,4 +110,6 @@ enum class EPSStarActorState : uint8
 	Locked,
 	///< Star is unlocked 
 	Unlocked,
+	///< Star is partially unlocked
+	Partial
 };

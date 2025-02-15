@@ -51,14 +51,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class AActor> GetStarActorClass() const { return StarActorClassInternal; }
 
-	/** Returns Material applied for locked progression material (star is empty) */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UMaterialInterface* GetLockedProgressionMaterial() const { return LockedProgressionMaterialInternal; }
-
-	/** Returns Material applied for unlocked progression material (star is fully filled) */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UMaterialInterface* GetUnlockedProgressionMaterial() const { return UnlockedProgressionMaterialInternal; }
-
 	/** Returns Material applied for dynamic progression material (star is filled partially depends on progression) */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE class UMaterialInterface* GetDynamicProgressionMaterial() const { return DynamicProgressionMaterialInternal; }
@@ -74,6 +66,10 @@ public:
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FName GetStarMaterialSlotName() const { return StarMaterialSlotNameInternal; }
+
+	/** Returns Star Face Texture Parameter name used to apply a face over each star */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE FName GetStarFaceTextureParameter() const { return StarFaceTextureParameter; }
 
 	/** Returns temp value to tweak the stars with bad UV  to look as expected. Could not be 0 */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -112,14 +108,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UTexture2D> UnlockedProgressionIconInternal = nullptr;
 
-	/** Material applied for locked progression material (star is empty) */
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UMaterialInterface> LockedProgressionMaterialInternal = nullptr;
-
-	/** Material applied for unlocked progression material (star is fully filled) */
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UMaterialInterface> UnlockedProgressionMaterialInternal = nullptr;
-
 	/** Material applied for dynamic progression material (star is filled partially depends on progression) */
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UMaterialInterface> DynamicProgressionMaterialInternal = nullptr;
@@ -135,6 +123,10 @@ protected:
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Material Slot Name"))
 	FName StarMaterialSlotNameInternal = NAME_None;
+
+	/** Star Face Texture Parameter name to add a face texture for each character*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Face Texture Parameter Name"))
+	FName StarFaceTextureParameter = NAME_None;
 
 	/** Temporary used to tweak the stars with bad UV  to look as expected
 	 * Since it's a divisor couldn't be 0 */

@@ -114,7 +114,13 @@ public:
 
 	/** Returns current spot component returns null if spot is not found */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
-	UPSSpotComponent* GetCurrentSpot() const;
+	class UPSSpotComponent* GetCurrentSpot() const;
+
+	/** Returns Progression Star Dynamic Material by state
+	 * Each state has own instance Dynamic Material Instance 
+	 * @param StarState a star state (Locked, Unlocked, Partial) */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
+	class UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
 
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
@@ -157,8 +163,16 @@ protected:
 	TArray<FPoolObjectHandle> PoolActorHandlersInternal;
 
 	/** Store the material for dynamic progress material fill for a star actor */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Dynamic Progress Material"))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Dynamic Progress Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarDynamicProgressMaterial = nullptr;
+
+	/** Store the material for locked progress material fill for a star actor */
+	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Locked Progress Material"))
+	TObjectPtr<class UMaterialInstanceDynamic> StarLockedProgressMaterial = nullptr;
+
+	/** Store the material for unlocked progress material fill for a star actor */
+	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Unlocked Progress Material"))
+	TObjectPtr<class UMaterialInstanceDynamic> StarUnLockedProgressMaterial = nullptr;
 
 	/*********************************************************************************************
 	* Protected functions
@@ -194,7 +208,7 @@ protected:
 	/** Save the progression depends on EEndGameState. */
 	UFUNCTION(BlueprintCallable, Category="C++", meta = (BlueprintProtected))
 	void SavePoints(EEndGameState EndGameState);
-	
+
 	/** Set first element as current active */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetFirstElementAsCurrent();
