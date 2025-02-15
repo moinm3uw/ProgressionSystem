@@ -40,12 +40,11 @@ public:
 	 * 0 - locked star material
 	 * 1 - unlocked star material
 	 * between 0-1 - partially unlocked material (dynamic) e.g. 0.5  
-	 * @param StarDynamicProgressMaterial a Dynamic fill material of a star (e.g. 0.5)
 	 * @param AmountOfStars The number of stars to be added on top of the character
 	 * @param StarActorState Desired state of the star actor.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void UpdateStarActorMeshMaterial(class UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState);
+	void UpdateStarActorProgressMeshMaterial(float AmountOfStars, EPSStarActorState StarActorState);
 
 protected:
 	// Called when the game starts or when spawned
@@ -89,4 +88,8 @@ protected:
 	/** Menu stars with animation in main menu idle */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void TryPlayMenuStarAnimation();
+
+	/** Applies the star dynamic material */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void SetStarActorProgressMeshMaterial(class UMaterialInstanceDynamic* StarDynamicMaterial, float StarProgressionAmount);
 };

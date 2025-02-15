@@ -162,29 +162,56 @@ void APSStarActor::OnInitialized(const FVector& PreviousActorLocation)
 }
 
 //  Updates star actors Mesh material to the Locked Star, Unlocked or partially achieved
-void APSStarActor::UpdateStarActorMeshMaterial(UMaterialInstanceDynamic* StarDynamicProgressMaterial, float AmountOfStars, EPSStarActorState StarActorState)
+void APSStarActor::UpdateStarActorProgressMeshMaterial(float AmountOfStars, EPSStarActorState StarActorState)
 {
-	if (!ensureMsgf(StarDynamicProgressMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicProgressMaterial' is not valid!"), __LINE__, __FUNCTION__)
-		|| !ensureMsgf(StarMeshComponent, TEXT("ASSERT: [%i] %hs:\n'StarMeshComponent' is not valid!"), __LINE__, __FUNCTION__))
+	if (!ensureMsgf(StarMeshComponent, TEXT("ASSERT: [%i] %hs:\n'StarMeshComponent' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return; // Early return if pointers are invalid
 	}
 
+	UMaterialInstanceDynamic* StarProgressionDynamicMaterial = nullptr;
+
 	// locked stars
 	if (StarActorState == EPSStarActorState::Locked)
 	{
-		StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetLockedProgressionMaterial());
+		const float LockedStar = 0.0f;
+		StarProgressionDynamicMaterial = UPSWorldSubsystem::Get().GetStarProgressionDynamicMaterial(EPSStarActorState::Locked);
+		SetStarActorProgressMeshMaterial(StarProgressionDynamicMaterial, LockedStar);
 		return;
 	}
 
 	// unlocked stars with fractional part
 	if (AmountOfStars > 0 && AmountOfStars < 1)
 	{
-		StarMeshComponent->SetMaterial(0, StarDynamicProgressMaterial);
-		StarDynamicProgressMaterial->SetScalarParameterValue(UPSDataAsset::Get().GetStarMaterialSlotName(), AmountOfStars / UPSDataAsset::Get().GetStarMaterialFractionalDivisor()); // StarMaterialFractionalDivisor is hardcoded value to 3 to tweak bad UV to simulate it's working
+		const float PartialUnLockedStarAmount = AmountOfStars / UPSDataAsset::Get().GetStarMaterialFractionalDivisor();
+		StarProgressionDynamicMaterial = UPSWorldSubsystem::Get().GetStarProgressionDynamicMaterial(EPSStarActorState::Partial); // StarMaterialFractionalDivisor is hardcoded value to 3 to tweak bad UV to simulate it's working
+		SetStarActorProgressMeshMaterial(StarProgressionDynamicMaterial, PartialUnLockedStarAmount);
 		return; // Early return for fractional stars
 	}
 
 	// unlocked stars EPSStarActorState::Unlocked
-	StarMeshComponent->SetMaterial(0, UPSDataAsset::Get().GetUnlockedProgressionMaterial());
+	const float UnLockedStarAmount = 1.0f;
+	StarProgressionDynamicMaterial = UPSWorldSubsystem::Get().GetStarProgressionDynamicMaterial(EPSStarActorState::Unlocked);
+	SetStarActorProgressMeshMaterial(StarProgressionDynamicMaterial, UnLockedStarAmount);
+}
+
+// Applies the star dynamic material
+void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynamic* StarDynamicMaterial, float StarProgressionAmount)
+{
+	checkf(StarMeshComponent, TEXT("ERROR: [%i] %hs:\n'StarMeshComponent' is null!"), __LINE__, __FUNCTION__);
+
+	if (!ensureMsgf(StarDynamicMaterial, TEXT("ASSERT: [%i] %hs:\n'StarDynamicMaterial' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return; // Early return if pointers are invalid
+	}
+
+	// Add a face texture over current star material
+	const FPSRowData& CurrentSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const FName StarFaceTextureParameter = UPSDataAsset::Get().GetStarFaceTextureParameter();
+	const FName StarProgressionMaterialSlotName = UPSDataAsset::Get().GetStarMaterialSlotName();
+	UTexture* StarFaceTexture = CurrentSettingsRowData.StarFaceTexture;
+
+	StarMeshComponent->SetMaterial(0, StarDynamicMaterial);
+	StarDynamicMaterial->SetScalarParameterValue(StarProgressionMaterialSlotName, StarProgressionAmount);
+	StarDynamicMaterial->SetTextureParameterValue(StarFaceTextureParameter, StarFaceTexture);
 }
