@@ -121,7 +121,7 @@ protected:
 	float FadeDurationInternal = 1.0;
 
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Material Slot Name"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Percent Slot Name"))
 	FName StarPercentSlotNameInternal = NAME_None;
 
 	/** Star Face Texture Parameter name to add a face texture for each character*/
