@@ -9,6 +9,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
+#include "Engine/CurveTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
@@ -453,20 +454,39 @@ void UPSWorldSubsystem::UnlockAllLevels()
 }
 
 // Returns difficultyMultiplier
-float UPSWorldSubsystem::GetDifficultyMultiplier() const
+float UPSWorldSubsystem::GetDifficultyMultiplier(EEndGameState EndGameState) const
 {
-	const TMap<EGameDifficulty, float>& DifficultyMap = UPSDataAsset::Get().GetProgressionDifficultyMultiplier();
-	constexpr float DefaultDifficulty = 0.f;
-	if (!ensureMsgf(!DifficultyMap.IsEmpty(), TEXT("ASSERT: [%i] %s:\n'DifficultyMap' is empty!"), __LINE__, *FString(__FUNCTION__)))
+	constexpr float DefaultDifficultyMultiplier = 0.f;
+
+	const UCurveTable* DifficultyCurveTable = UPSDataAsset::Get().GetProgressionDifficultyMultiplierCurveTable();
+	if (!ensureMsgf(DifficultyCurveTable, TEXT("ASSERT: [%i] %s:\n'DifficultyCurveTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
 	{
-		return DefaultDifficulty;
-	}
-	const float* FoundDifficulty = DifficultyMap.Find(UGameDifficultySubsystem::Get().GetDifficultyType());
-	if (!FoundDifficulty)
-	{
-		// No difficulty found, try to apply Any scenario
-		FoundDifficulty = DifficultyMap.Find(EGameDifficulty::Any);
+		return DefaultDifficultyMultiplier;
 	}
 
-	return FoundDifficulty ? *FoundDifficulty : DefaultDifficulty;
+	static const UEnum* Enum = StaticEnum<EEndGameState>();
+	const FString ContextString = Enum->GetNameStringByValue(static_cast<int64>(EndGameState));
+	FName RowName = FName(*ContextString);
+
+	FCurveTableRowHandle Handle;
+	Handle.CurveTable = DifficultyCurveTable;
+	Handle.RowName = RowName;
+
+	const FRealCurve* Curve = Handle.CurveTable->FindCurve(RowName, ContextString);
+	if (!Curve)
+	{
+		return DefaultDifficultyMultiplier;
+	}
+
+	float DifficultyType = static_cast<float>(UGameDifficultySubsystem::Get().GetDifficultyType());
+	if (!DifficultyType)
+	{
+		// No difficulty found, try to apply Any scenario
+		DifficultyType = static_cast<float>(EGameDifficulty::Any);
+	}
+
+	float FoundDifficultyMultiplier = 0.f;
+	Handle.Eval(DifficultyType, &FoundDifficultyMultiplier, ContextString);
+
+	return FoundDifficultyMultiplier ? FoundDifficultyMultiplier : DefaultDifficultyMultiplier;
 }
