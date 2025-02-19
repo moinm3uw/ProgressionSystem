@@ -2,7 +2,10 @@
 
 #include "Data/PSSaveGameData.h"
 
+#include "Data/PSDataAsset.h"
 #include "Data/PSWorldSubsystem.h"
+#include "Engine/CurveTable.h"
+#include "Subsystems/GameDifficultySubsystem.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
@@ -119,13 +122,39 @@ void UPSSaveGameData::UnlockAllLevels()
 // Retrieves the progression reward based on the end game state for the current level.
 float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
-	constexpr float DefaultMultiplier = 1.0f;
-	const float DifficultyMultiplier = UPSWorldSubsystem::Get().GetDifficultyMultiplier(EndGameState);
-	const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	constexpr float ProgressionReward = 0.f;
 
-	const float* LevelReward = CurrentProgressionSettingsRowData.ProgressionEndGameValues.Find(EndGameState);
-	const float ProgressionReward = LevelReward ? *LevelReward : DefaultMultiplier;
-	return ProgressionReward * DifficultyMultiplier;
+	const UCurveTable* DifficultyCurveTable = UPSDataAsset::Get().GetProgressionDifficultyMultiplierCurveTable();
+	if (!ensureMsgf(DifficultyCurveTable, TEXT("ASSERT: [%i] %s:\n'DifficultyCurveTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	{
+		return ProgressionReward;
+	}
+
+	static const UEnum* Enum = StaticEnum<EEndGameState>();
+	const FString ContextString = Enum->GetNameStringByValue(static_cast<int64>(EndGameState));
+	FName RowName = FName(*ContextString);
+
+	FCurveTableRowHandle Handle;
+	Handle.CurveTable = DifficultyCurveTable;
+	Handle.RowName = RowName;
+
+	const FRealCurve* Curve = Handle.CurveTable->FindCurve(RowName, ContextString);
+	if (!Curve)
+	{
+		return ProgressionReward;
+	}
+
+	float DifficultyType = static_cast<float>(UGameDifficultySubsystem::Get().GetDifficultyType());
+	if (!DifficultyType)
+	{
+		// No difficulty found, try to apply Any scenario
+		DifficultyType = static_cast<float>(EGameDifficulty::Any);
+	}
+
+	float FoundDifficultyMultiplier = 0.f;
+	Handle.Eval(DifficultyType, &FoundDifficultyMultiplier, ContextString);
+
+	return FoundDifficultyMultiplier ? FoundDifficultyMultiplier : ProgressionReward;
 }
 
 // Returns the current save to disk data by name
