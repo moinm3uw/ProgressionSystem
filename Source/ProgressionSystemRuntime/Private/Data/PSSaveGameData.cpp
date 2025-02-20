@@ -132,7 +132,7 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 
 	static const UEnum* Enum = StaticEnum<EEndGameState>();
 	const FString ContextString = Enum->GetNameStringByValue(static_cast<int64>(EndGameState));
-	FName RowName = FName(*ContextString);
+	FName RowName = *ContextString;
 
 	FCurveTableRowHandle Handle;
 	Handle.CurveTable = DifficultyCurveTable;
@@ -144,15 +144,20 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 		return ProgressionReward;
 	}
 
-	float DifficultyType = static_cast<float>(UGameDifficultySubsystem::Get().GetDifficultyType());
-	if (!DifficultyType)
+	float MinTime = 0.f;
+	float MaxTime = 0.f;
+	Curve->GetTimeRange(/*out*/MinTime, /*out*/MaxTime);
+	
+	float DifficultyType = static_cast<float>(UGameDifficultySubsystem::Get().GetDifficultyLevel());
+	
+	// found difficulty type is outside the range use the latest
+	if (DifficultyType < MinTime || DifficultyType > MaxTime)
 	{
-		// No difficulty found, try to apply Any scenario
-		DifficultyType = static_cast<float>(EGameDifficulty::Any);
+		DifficultyType = MaxTime;
 	}
-
+	
 	float FoundDifficultyMultiplier = 0.f;
-	Handle.Eval(DifficultyType, &FoundDifficultyMultiplier, ContextString);
+	Handle.Eval(DifficultyType, /*out*/ &FoundDifficultyMultiplier, ContextString);
 
 	return FoundDifficultyMultiplier ? FoundDifficultyMultiplier : ProgressionReward;
 }
