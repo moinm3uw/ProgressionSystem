@@ -122,12 +122,12 @@ void UPSSaveGameData::UnlockAllLevels()
 // Retrieves the progression reward based on the end game state for the current level.
 float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
-	constexpr float ProgressionReward = 0.f;
+	constexpr float DefaultProgressionReward = 0.f;
 
 	const UCurveTable* DifficultyCurveTable = UPSDataAsset::Get().GetProgressionDifficultyMultiplierCurveTable();
 	if (!ensureMsgf(DifficultyCurveTable, TEXT("ASSERT: [%i] %s:\n'DifficultyCurveTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
 	{
-		return ProgressionReward;
+		return DefaultProgressionReward;
 	}
 
 	static const UEnum* Enum = StaticEnum<EEndGameState>();
@@ -141,7 +141,7 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 	const FRealCurve* Curve = Handle.CurveTable->FindCurve(RowName, ContextString);
 	if (!Curve)
 	{
-		return ProgressionReward;
+		return DefaultProgressionReward;
 	}
 
 	float MinTime = 0.f;
@@ -156,10 +156,10 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 		DifficultyType = MaxTime;
 	}
 	
-	float FoundDifficultyMultiplier = 0.f;
-	Handle.Eval(DifficultyType, /*out*/ &FoundDifficultyMultiplier, ContextString);
+	float FoundProgressionReward = 0.f;
+	const bool bIsFound = Handle.Eval(DifficultyType, /*out*/ &FoundProgressionReward, ContextString);
 
-	return FoundDifficultyMultiplier ? FoundDifficultyMultiplier : ProgressionReward;
+	return bIsFound ? FoundProgressionReward : DefaultProgressionReward;
 }
 
 // Returns the current save to disk data by name

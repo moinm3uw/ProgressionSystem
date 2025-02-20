@@ -9,7 +9,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
-#include "Engine/CurveTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
