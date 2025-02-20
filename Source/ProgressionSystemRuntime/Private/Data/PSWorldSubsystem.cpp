@@ -17,7 +17,7 @@
 #include "Engine/World.h"
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "MyUtilsLibraries/GameplayUtilsLibrary.h"
+#include "MyUtilsLibraries/SaveUtilsLibrary.h"
 #include "Subsystems/GameDifficultySubsystem.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
@@ -155,9 +155,9 @@ void UPSWorldSubsystem::Deinitialize()
 void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 {
 	// Load save game data of the Progression system
-	FAsyncLoadGameFromSlotDelegate AsyncLoadGameFromSlotDelegate;
+	FAsyncLoadGameFromSlot AsyncLoadGameFromSlotDelegate;
 	AsyncLoadGameFromSlotDelegate.BindUObject(this, &ThisClass::OnAsyncLoadGameFromSlotCompleted);
-	UGameplayStatics::AsyncLoadGameFromSlot(UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), UPSSaveGameData::GetSaveSlotIndex(), AsyncLoadGameFromSlotDelegate);
+	USaveUtilsLibrary::AsyncLoadGameFromSlot(this, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), UPSSaveGameData::GetSaveSlotIndex(), AsyncLoadGameFromSlotDelegate);
 }
 
 // Is called when a player character is ready
@@ -333,7 +333,7 @@ UMaterialInstanceDynamic* UPSWorldSubsystem::GetStarProgressionDynamicMaterial(E
 }
 
 // Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load.
-void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(const FString& SlotName, int32 UserIndex, USaveGame* SaveGame)
+void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(USaveGame* SaveGame)
 {
 	// load from data table
 	const UDataTable* ProgressionDataTable = UPSDataAsset::Get().GetProgressionDataTable();
@@ -413,7 +413,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 	const FString& SlotName = UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal);
 	const int32 UserIndex = UPSSaveGameData::GetSaveSlotIndex();
 
-	SaveGameDataInternal = Cast<UPSSaveGameData>(UGameplayUtilsLibrary::ResetSaveGameData(SaveGameDataInternal, SlotName, UserIndex));
+	SaveGameDataInternal = USaveUtilsLibrary::ResetSaveGameData<UPSSaveGameData>(SaveGameDataInternal, SlotName, UserIndex);
 	checkf(SaveGameDataInternal, TEXT("ERROR: [%i] %hs:\n'SaveGameDataInternal' is null!"), __LINE__, __FUNCTION__);
 
 	// load from data table
