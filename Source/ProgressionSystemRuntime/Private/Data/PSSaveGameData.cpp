@@ -129,10 +129,9 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 	{
 		return DefaultProgressionReward;
 	}
-
-	static const UEnum* Enum = StaticEnum<EEndGameState>();
-	const FString ContextString = Enum->GetNameStringByValue(static_cast<int64>(EndGameState));
-	FName RowName = *ContextString;
+	
+	const FString ContextString = UEnum::GetValueAsString(EndGameState);
+	const FName RowName = *ContextString;
 
 	FCurveTableRowHandle Handle;
 	Handle.CurveTable = DifficultyCurveTable;
