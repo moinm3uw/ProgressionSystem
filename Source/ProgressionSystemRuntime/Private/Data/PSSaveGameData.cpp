@@ -120,7 +120,7 @@ void UPSSaveGameData::UnlockAllLevels()
 
 // @h4rdmol - make function const
 // Retrieves the progression reward based on the end game state for the current level.
-float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
+const float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 {
 	constexpr float DefaultProgressionReward = 0.f;
 
