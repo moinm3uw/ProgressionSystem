@@ -451,22 +451,3 @@ void UPSWorldSubsystem::UnlockAllLevels()
 	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
 }
-
-// Returns difficultyMultiplier
-float UPSWorldSubsystem::GetDifficultyMultiplier() const
-{
-	const TMap<EGameDifficulty, float>& DifficultyMap = UPSDataAsset::Get().GetProgressionDifficultyMultiplier();
-	constexpr float DefaultDifficulty = 0.f;
-	if (!ensureMsgf(!DifficultyMap.IsEmpty(), TEXT("ASSERT: [%i] %s:\n'DifficultyMap' is empty!"), __LINE__, *FString(__FUNCTION__)))
-	{
-		return DefaultDifficulty;
-	}
-	const float* FoundDifficulty = DifficultyMap.Find(UGameDifficultySubsystem::Get().GetDifficultyType());
-	if (!FoundDifficulty)
-	{
-		// No difficulty found, try to apply Any scenario
-		FoundDifficulty = DifficultyMap.Find(EGameDifficulty::Any);
-	}
-
-	return FoundDifficulty ? *FoundDifficulty : DefaultDifficulty;
-}

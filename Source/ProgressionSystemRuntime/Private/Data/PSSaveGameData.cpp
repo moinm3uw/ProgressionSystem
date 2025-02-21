@@ -2,7 +2,10 @@
 
 #include "Data/PSSaveGameData.h"
 
+#include "Data/PSDataAsset.h"
 #include "Data/PSWorldSubsystem.h"
+#include "Engine/CurveTable.h"
+#include "Subsystems/GameDifficultySubsystem.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
@@ -115,17 +118,42 @@ void UPSSaveGameData::UnlockAllLevels()
 	}
 }
 
-// @h4rdmol - make function const
 // Retrieves the progression reward based on the end game state for the current level.
-float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
+float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 {
-	constexpr float DefaultMultiplier = 1.0f;
-	const float DifficultyMultiplier = UPSWorldSubsystem::Get().GetDifficultyMultiplier();
-	const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	constexpr float DefaultProgressionReward = 0.f;
 
-	const float* LevelReward = CurrentProgressionSettingsRowData.ProgressionEndGameValues.Find(EndGameState);
-	const float ProgressionReward = LevelReward ? *LevelReward : DefaultMultiplier;
-	return ProgressionReward * DifficultyMultiplier;
+	const UCurveTable* DifficultyCurveTable = UPSDataAsset::Get().GetProgressionDifficultyMultiplierCurveTable();
+	if (!ensureMsgf(DifficultyCurveTable, TEXT("ASSERT: [%i] %hs:\n'DifficultyCurveTable' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return DefaultProgressionReward;
+	}
+
+	const FString ContextString = UEnum::GetDisplayValueAsText(EndGameState).ToString();
+	const FName RowName = *ContextString;
+
+	FCurveTableRowHandle Handle;
+	Handle.CurveTable = DifficultyCurveTable;
+	Handle.RowName = RowName;
+
+	const FRealCurve* Curve = Handle.CurveTable->FindCurve(RowName, ContextString);
+	if (!Curve)
+	{
+		return DefaultProgressionReward;
+	}
+
+	float MinTime = 0.f;
+	float MaxTime = 0.f;
+	Curve->GetTimeRange(/*out*/MinTime, /*out*/MaxTime);
+
+	float DifficultyType = static_cast<float>(UGameDifficultySubsystem::Get().GetDifficultyLevel());
+
+	DifficultyType = FMath::Clamp(DifficultyType, MinTime, MaxTime);
+
+	float FoundProgressionReward = 0.f;
+	const bool bIsFound = Handle.Eval(DifficultyType, /*out*/ &FoundProgressionReward, ContextString);
+
+	return bIsFound ? FoundProgressionReward : DefaultProgressionReward;
 }
 
 // Returns the current save to disk data by name
