@@ -53,8 +53,8 @@ public:
 	void UnlockAllLevels();
 
 	/** Returns the endgame reward. */
-	UFUNCTION(BlueprintCallable, Category="C++")
-	float GetProgressionReward(EEndGameState EndGameState);
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
+	float GetProgressionReward(EEndGameState EndGameState) const;
 
 	/** Returns the current save to disk data by name. */
 	UFUNCTION(BlueprintCallable, Category="C++")
