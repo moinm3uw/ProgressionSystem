@@ -54,7 +54,7 @@ public:
 
 	/** Returns the endgame reward. */
 	UFUNCTION(BlueprintCallable, Category="C++")
-	const float GetProgressionReward(EEndGameState EndGameState);
+	float GetProgressionReward(EEndGameState EndGameState);
 
 	/** Returns the current save to disk data by name. */
 	UFUNCTION(BlueprintCallable, Category="C++")
