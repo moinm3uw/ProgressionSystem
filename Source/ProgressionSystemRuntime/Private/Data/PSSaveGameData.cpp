@@ -125,12 +125,12 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 	constexpr float DefaultProgressionReward = 0.f;
 
 	const UCurveTable* DifficultyCurveTable = UPSDataAsset::Get().GetProgressionDifficultyMultiplierCurveTable();
-	if (!ensureMsgf(DifficultyCurveTable, TEXT("ASSERT: [%i] %s:\n'DifficultyCurveTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(DifficultyCurveTable, TEXT("ASSERT: [%i] %hs:\n'DifficultyCurveTable' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return DefaultProgressionReward;
 	}
-	
-	const FString ContextString = UEnum::GetValueAsString(EndGameState);
+
+	const FString ContextString = UEnum::GetDisplayValueAsText(EndGameState).ToString();
 	const FName RowName = *ContextString;
 
 	FCurveTableRowHandle Handle;
@@ -146,15 +146,11 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState)
 	float MinTime = 0.f;
 	float MaxTime = 0.f;
 	Curve->GetTimeRange(/*out*/MinTime, /*out*/MaxTime);
-	
+
 	float DifficultyType = static_cast<float>(UGameDifficultySubsystem::Get().GetDifficultyLevel());
-	
-	// found difficulty type is outside the range use the latest
-	if (DifficultyType < MinTime || DifficultyType > MaxTime)
-	{
-		DifficultyType = MaxTime;
-	}
-	
+
+	DifficultyType = FMath::Clamp(DifficultyType, MinTime, MaxTime);
+
 	float FoundProgressionReward = 0.f;
 	const bool bIsFound = Handle.Eval(DifficultyType, /*out*/ &FoundProgressionReward, ContextString);
 
