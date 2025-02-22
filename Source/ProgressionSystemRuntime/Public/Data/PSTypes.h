@@ -52,6 +52,10 @@ struct FPSRowData : public FTableRowBase
 	/** Defines a star face texture for each character. Displayed in the main menu */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	TObjectPtr<class UTexture> StarFaceTexture = nullptr;
+
+	/** Defines a map of skin indexes and score required to unlock */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	TMap<FName, float> PointsToUnlockLevelSkin;
 };
 
 /**
@@ -76,8 +80,11 @@ struct FPSSaveToDiskData
 	/** Defines if level is locked or not */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	bool IsLevelLocked = true;
-};
 
+	/* Stores the amount of total unlocked skins index */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
+	int32 UnlockedSkinsAmount = 1;
+};
 
 /**
  * Represents the state of the overlay widget fade animation played in the menu.

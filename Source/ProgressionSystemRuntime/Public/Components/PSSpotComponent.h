@@ -28,6 +28,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh);
 
+	/** Refresh Amount Of Unlocked skins for the character (level) */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void RefreshAmountOfUnlockedSkins(int32 UnlockedSkinsAmount);
+
 protected:
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
@@ -43,4 +47,8 @@ protected:
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
 	void OnCurrentActiveSaveRowChanged(const FPlayerTag PlayerTag);
+
+	/** Updates the progression unlocked skins when score changes */
+	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
+	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow);
 };

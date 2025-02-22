@@ -88,6 +88,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	const FPSRowData& GetCurrentProgressionSettingsRowByName() const;
 
+	/** Returns the current row data by name. */
+	UFUNCTION(BlueprintCallable, Category="C++")
+	const FPSRowData& GetRowDataByName(FName CurrentRowName) const;
+
 	/** Set the progression system component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void SetHUDComponent(class UPSHUDComponent* MyHUDComponent);

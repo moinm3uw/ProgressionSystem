@@ -8,8 +8,6 @@
 #include "Components/MySkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "LevelActors/PlayerCharacter.h"
-#include "Materials/MaterialInstanceDynamic.h"
-#include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
@@ -28,6 +26,7 @@ void UPSSpotComponent::OnInitialized_Implementation()
 {
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
+	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 	// Save reference of this component to the world subsystem
 	WorldSubsystem.RegisterSpotComponent(this);
 }
@@ -50,6 +49,11 @@ void UPSSpotComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
+void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow)
+{
+	RefreshAmountOfUnlockedSkins(CurrentSaveToDiskDataRow.UnlockedSkinsAmount);
+}
+
 // Updates the progression menu widget when player changed
 void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag PlayerTag)
 {
@@ -57,6 +61,8 @@ void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlaye
 	if (Mesh.GetPlayerTag() == PlayerTag)
 	{
 		ChangeSpotVisibilityStatus(&Mesh);
+		int32 CurrentAmountOfUnlockedSkins = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
+		RefreshAmountOfUnlockedSkins(CurrentAmountOfUnlockedSkins);
 	}
 }
 
@@ -80,4 +86,14 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh
 	// Locks and unlocks the spot depends on the current level progression status
 	FPSSaveToDiskData SaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	Mesh->SetActive(!SaveToDiskDataRow.IsLevelLocked);
+}
+
+// Refresh Amount Of Unlocked skins for the character (level)s
+void UPSSpotComponent::RefreshAmountOfUnlockedSkins(int32 UnlockedSkinsAmount)
+{
+	for (int Index = 0; Index < UnlockedSkinsAmount; Index++)
+	{
+		UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
+		SpotMeshComponent.SetSkin(Index);
+	}
 }
