@@ -4,10 +4,11 @@
 
 #include "Components/PSHUDComponent.h"
 #include "Data/PSWorldSubsystem.h"
-#include "Data/PSSaveGameData.h"
 #include "Components/MySkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/MyGameStateBase.h"
 #include "LevelActors/PlayerCharacter.h"
+#include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
@@ -27,6 +28,10 @@ void UPSSpotComponent::OnInitialized_Implementation()
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
+
+	// Listen to handle input for each game state
+	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+
 	// Save reference of this component to the world subsystem
 	WorldSubsystem.RegisterSpotComponent(this);
 }
@@ -37,6 +42,13 @@ void UPSSpotComponent::BeginPlay()
 	Super::BeginPlay();
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
+
+	// reset 
+	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
+	for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
+	{
+		SpotMeshComponent.SetSkinAvailable(false, Index);
+	}
 }
 
 // Clears all transient data created by this component.
@@ -49,9 +61,44 @@ void UPSSpotComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
+// Called when the end game state was changed to toggle progression widget visibility.
+void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+{
+	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	{
+		return;
+	}
+	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+
+	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
+	{
+		constexpr bool bApplySkin = true;
+
+		switch (CurrentGameState)
+		{
+		case ECurrentGameState::Menu:
+			RefreshAmountOfUnlockedSkins(bApplySkin);
+			break;
+		default: break;
+		}
+	}
+}
+
 void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow)
 {
-	RefreshAmountOfUnlockedSkins(CurrentSaveToDiskDataRow.UnlockedSkinsAmount);
+	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	{
+		return;
+	}
+	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
+	{
+		constexpr bool bApplySkin = false;
+		RefreshAmountOfUnlockedSkins(bApplySkin);
+	}
 }
 
 // Updates the progression menu widget when player changed
@@ -61,8 +108,8 @@ void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlaye
 	if (Mesh.GetPlayerTag() == PlayerTag)
 	{
 		ChangeSpotVisibilityStatus(&Mesh);
-		int32 CurrentAmountOfUnlockedSkins = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
-		RefreshAmountOfUnlockedSkins(CurrentAmountOfUnlockedSkins);
+		constexpr bool bApplySkin = false;
+		RefreshAmountOfUnlockedSkins(bApplySkin);
 	}
 }
 
@@ -89,11 +136,17 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh
 }
 
 // Refresh Amount Of Unlocked skins for the character (level)s
-void UPSSpotComponent::RefreshAmountOfUnlockedSkins(int32 UnlockedSkinsAmount)
+void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 {
+	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
+	int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
+
 	for (int Index = 0; Index < UnlockedSkinsAmount; Index++)
 	{
-		UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
-		SpotMeshComponent.SetSkin(Index);
+		SpotMeshComponent.SetSkinAvailable(true, Index);
+		if (bApplySkin)
+		{
+			SpotMeshComponent.ApplySkinByIndex(Index);
+		}
 	}
 }

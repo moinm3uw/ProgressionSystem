@@ -230,7 +230,6 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 
 	CurrentRowNameInternal = FirstSaveToDiskRow;
 	SaveGameDataInternal->UnlockLevelByName(CurrentRowNameInternal);
-
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
 	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
@@ -423,7 +422,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 {
 	const FString& SlotName = UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal);
 	const int32 UserIndex = UPSSaveGameData::GetSaveSlotIndex();
-	
+
 	SaveGameDataInternal = USaveUtilsLibrary::ResetSaveGameData<UPSSaveGameData>(SaveGameDataInternal, SlotName, UserIndex);
 	checkf(SaveGameDataInternal, TEXT("ERROR: [%i] %hs:\n'SaveGameDataInternal' is null!"), __LINE__, __FUNCTION__);
 
@@ -439,6 +438,19 @@ void UPSWorldSubsystem::ResetSaveGameData()
 	{
 		SaveGameDataInternal->SetProgressionMap(Row.Key, FPSSaveToDiskData::EmptyData);
 	}
+
+	// reset skins
+	for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
+	{
+		UMySkeletalMeshComponent& SpotMeshComponent = SpotComponent->GetMeshChecked();
+		for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
+		{
+			SpotMeshComponent.SetSkinAvailable(false, Index);
+		}
+	}
+	// apply first skin 
+	GetCurrentSpot()->GetMeshChecked().ApplySkinByIndex(0);
+
 	// Re-load save game object. Load game from save file or if there is no such creates a new one
 	SetFirstElementAsCurrent();
 }
@@ -451,7 +463,7 @@ void UPSWorldSubsystem::UnlockAllLevels()
 		return;
 	}
 	SaveGameDataInternal->UnlockAllLevels();
-	
+
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
 	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))

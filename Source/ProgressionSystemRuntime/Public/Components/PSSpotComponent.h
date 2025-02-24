@@ -30,7 +30,7 @@ public:
 
 	/** Refresh Amount Of Unlocked skins for the character (level) */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void RefreshAmountOfUnlockedSkins(int32 UnlockedSkinsAmount);
+	void RefreshAmountOfUnlockedSkins(bool bApplySkin);
 
 protected:
 	/** Called when progression module ready
@@ -51,4 +51,8 @@ protected:
 	/** Updates the progression unlocked skins when score changes */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
 	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow);
+
+	/** Called when the end game state was changed to toggle progression widget visibility. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnGameStateChanged(ECurrentGameState CurrentGameState);
 };
