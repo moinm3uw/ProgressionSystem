@@ -85,7 +85,7 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	}
 }
 
-void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow)
+void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow)
 {
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
