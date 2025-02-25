@@ -52,10 +52,6 @@ struct FPSRowData : public FTableRowBase
 	/** Defines a star face texture for each character. Displayed in the main menu */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	TObjectPtr<class UTexture> StarFaceTexture = nullptr;
-
-	/** Defines a map of skin indexes and score required to unlock */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	TMap<FName, float> PointsToUnlockLevelSkin;
 };
 
 /**
