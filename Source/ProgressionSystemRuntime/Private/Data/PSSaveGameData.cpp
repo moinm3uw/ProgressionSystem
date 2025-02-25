@@ -3,6 +3,7 @@
 #include "Data/PSSaveGameData.h"
 
 #include "Components/MySkeletalMeshComponent.h"
+#include "Components/PSSpotComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Engine/CurveTable.h"
@@ -134,8 +135,9 @@ void UPSSaveGameData::UnlockAllLevels()
 		KeyValue.Value.CurrentLevelProgression = CurrentProgressionSettingsRowData.PointsToUnlock;
 
 		// skins
-		int32 DefaultAmountOfUnlockedSkins = 1;
-		KeyValue.Value.UnlockedSkinsAmount = CurrentProgressionSettingsRowData.PointsToUnlock + DefaultAmountOfUnlockedSkins;
+		UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().GetCurrentSpot();
+		class UMySkeletalMeshComponent& Mesh = SpotComponent->GetMeshChecked();
+		KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum();
 	}
 }
 
