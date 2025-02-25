@@ -140,7 +140,7 @@ protected:
 
 	/** Stores the duration of fade-in/fade-out overlay animation in the main menu when cinematic started */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Fade duration"))
-	float FadeDurationInternal = 1.0;
+	float FadeDurationInternal = 1.f;
 
 	/** Interval which used of amount stars required to unlock a skin
 	 * Can not be 0 */
