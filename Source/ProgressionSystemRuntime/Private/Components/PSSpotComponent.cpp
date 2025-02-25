@@ -70,7 +70,7 @@ void UPSSpotComponent::OnUnregister()
 // Called when the end game state was changed to toggle progression widget visibility.
 void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
 {
-	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
 	{
 		return;
@@ -93,7 +93,7 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 
 void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow)
 {
-	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
 	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
 	{
@@ -145,7 +145,7 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh
 void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 {
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
-	int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
+	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
 
 	for (int Index = 0; Index < UnlockedSkinsAmount; Index++)
 	{

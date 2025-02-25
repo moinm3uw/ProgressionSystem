@@ -70,7 +70,7 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 			return;
 		}
 
-		float ProgressionReward = GetProgressionReward(EndGameState);
+		const float ProgressionReward = GetProgressionReward(EndGameState);
 
 		// skins to unlock
 		const int32 DataAssetInterval = UPSDataAsset::Get().GetSkinUnlockInterval();
