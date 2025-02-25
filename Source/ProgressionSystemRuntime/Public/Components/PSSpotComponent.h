@@ -29,7 +29,7 @@ public:
 	void ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh);
 
 	/** Refresh Amount Of Unlocked skins for the character (level) */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category= "C++")
 	void RefreshAmountOfUnlockedSkins(bool bApplySkin);
 
 protected:
