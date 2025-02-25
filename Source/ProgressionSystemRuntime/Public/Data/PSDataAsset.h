@@ -144,6 +144,6 @@ protected:
 
 	/** Interval which used of amount stars required to unlock a skin
 	 * Can not be 0 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Skin Unlock Interval"))
-	int32 SkinUnlockIntervalInternal = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Skin Unlock Interval", ClampMin = "0"))
+	int32 SkinUnlockIntervalInternal = 1;
 };
