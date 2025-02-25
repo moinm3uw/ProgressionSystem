@@ -74,12 +74,12 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 		// skins to unlock
 		const int32 DataAssetInterval = UPSDataAsset::Get().GetSkinUnlockInterval();
 		constexpr int32 DefaultAmountOfUnlockedSkins = 1;
-		const int32 OldAmountOfUnlockedSkins = FMath::FloorToInt(CurrentSaveToDiskDataRowRef->CurrentLevelProgression + DefaultAmountOfUnlockedSkins / DataAssetInterval);
+		const int32 OldAmountOfUnlockedSkins = FMath::FloorToInt(CurrentSaveToDiskDataRowRef->CurrentLevelProgression);
 		const float LeftoverStars = FMath::Fmod(CurrentSaveToDiskDataRowRef->CurrentLevelProgression, DataAssetInterval);
 		const float TotalStars = LeftoverStars + ProgressionReward;
 		const int32 NewSkins = FMath::FloorToInt(TotalStars / DataAssetInterval);
 		const int32 TotalUnlockedSkins = OldAmountOfUnlockedSkins + NewSkins;
-		CurrentSaveToDiskDataRowRef->UnlockedSkinsAmount = TotalUnlockedSkins;
+		CurrentSaveToDiskDataRowRef->UnlockedSkinsAmount = FMath::Clamp(TotalUnlockedSkins, DefaultAmountOfUnlockedSkins, CurrentProgressionSettingsRowData.PointsToUnlock);
 
 		const float NewProgression = CurrentSaveToDiskDataRowRef->CurrentLevelProgression + ProgressionReward;
 		CurrentSaveToDiskDataRowRef->CurrentLevelProgression = FMath::Min(NewProgression, CurrentProgressionSettingsRowData.PointsToUnlock);
