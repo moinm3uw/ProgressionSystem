@@ -89,7 +89,7 @@ public:
 	const FPSRowData& GetCurrentProgressionSettingsRowByName() const;
 
 	/** Returns the current row data by name. */
-	UFUNCTION(BlueprintCallable, Category="C++")
+	UFUNCTION(BlueprintPure, Category="C++")
 	const FPSRowData& GetRowDataByName(FName CurrentRowName) const;
 
 	/** Set the progression system component */
