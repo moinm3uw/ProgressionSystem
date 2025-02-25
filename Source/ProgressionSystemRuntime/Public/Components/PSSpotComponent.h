@@ -38,6 +38,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnInitialized();
 
+	/** Once the save file is reset the spot component needs to reset skins */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnReset();
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 

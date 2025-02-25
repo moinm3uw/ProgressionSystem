@@ -36,19 +36,25 @@ void UPSSpotComponent::OnInitialized_Implementation()
 	WorldSubsystem.RegisterSpotComponent(this);
 }
 
-// Called when the game starts
-void UPSSpotComponent::BeginPlay()
+// Once the save file is reset the spot component needs to reset skins
+void UPSSpotComponent::OnReset_Implementation()
 {
-	Super::BeginPlay();
-	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
-	WorldSubsystem.OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
-
 	// reset 
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(false, Index);
 	}
+}
+
+// Called when the game starts
+void UPSSpotComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
+	WorldSubsystem.OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
+	WorldSubsystem.OnReset.AddDynamic(this, &ThisClass::OnReset);
+	OnReset();
 }
 
 // Clears all transient data created by this component.

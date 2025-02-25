@@ -25,6 +25,8 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPSOnCurrentScoreChanged, const FPSSaveToDiskData&, CurrenSaveToDiskDataRow, const FPSRowData&, CurrenProgressionSettingsRow);
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnReset);
+
 	/** Returns this Subsystem, is checked and will crash if it can't be obtained.*/
 	static UPSWorldSubsystem& Get();
 	static UPSWorldSubsystem& Get(const UObject& WorldContextObject);
@@ -53,6 +55,10 @@ public:
 	/* Delegate for informing save game file is loaded/created if empty */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FPSOnCurrentScoreChanged OnCurrentScoreChanged;
+
+	/* Delegate for informing that save game file is reset */
+	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
+	FPSOnReset OnReset;
 
 	/** Returns the data asset that contains all the assets of Progression System game feature.
 	 * @see UPSWorldSubsystem::PSDataAssetInternal. */

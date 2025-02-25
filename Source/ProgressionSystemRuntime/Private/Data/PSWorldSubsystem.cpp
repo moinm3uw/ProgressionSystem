@@ -439,18 +439,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 		SaveGameDataInternal->SetProgressionMap(Row.Key, FPSSaveToDiskData::EmptyData);
 	}
 
-	// reset skins
-	for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
-	{
-		UMySkeletalMeshComponent& SpotMeshComponent = SpotComponent->GetMeshChecked();
-		for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
-		{
-			SpotMeshComponent.SetSkinAvailable(false, Index);
-		}
-	}
-	// apply first skin 
-	GetCurrentSpot()->GetMeshChecked().ApplySkinByIndex(0);
-
+	OnReset.Broadcast();
 	// Re-load save game object. Load game from save file or if there is no such creates a new one
 	SetFirstElementAsCurrent();
 }
