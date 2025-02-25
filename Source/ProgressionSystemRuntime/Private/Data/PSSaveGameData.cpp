@@ -74,6 +74,10 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 
 		// skins to unlock
 		const int32 DataAssetInterval = UPSDataAsset::Get().GetSkinUnlockInterval();
+		if (!ensureMsgf(DataAssetInterval > 0.f, TEXT("ASSERT: [%i] %hs:\n'DataAssetInterval = 0' is not valid!"), __LINE__, __FUNCTION__))
+		{
+			return;
+		}
 		constexpr int32 DefaultAmountOfUnlockedSkins = 1;
 		const int32 OldAmountOfUnlockedSkins = FMath::FloorToInt(CurrentSaveToDiskDataRowRef->CurrentLevelProgression);
 		const float LeftoverStars = FMath::Fmod(CurrentSaveToDiskDataRowRef->CurrentLevelProgression, DataAssetInterval);
