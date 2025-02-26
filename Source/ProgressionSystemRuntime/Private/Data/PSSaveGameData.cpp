@@ -66,6 +66,10 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 
 	// Increase the current level's progression by the reward from the end game state
 	const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
 
 	// do nothing if max start achieved. Max stars of level is amount of point to unlock for a level
 	if (CurrentSaveToDiskDataRowPtr->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
@@ -138,6 +142,10 @@ void UPSSaveGameData::UnlockAllLevels()
 		// levels
 		UnlockLevelByName(KeyValue.Key);
 		const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetRowDataByName(KeyValue.Key);
+		if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
+		{
+			return;
+		}
 		KeyValue.Value.CurrentLevelProgression = CurrentProgressionSettingsRowData.PointsToUnlock;
 
 		// skins
