@@ -31,7 +31,7 @@ void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bo
 
 	if (VisibilitySlate == ESlateVisibility::Visible)
 	{
-		if (!ensureMsgf(PSCOverlay, TEXT("ASSERT: [%i] %s:\n'PSCOverlay' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+		if (!ensureMsgf(PSCOverlay, TEXT("ASSERT: [%i] %hs:\n'PSCOverlay' is not valid!"), __LINE__, __FUNCTION__))
 		{
 			return;
 		}
@@ -53,7 +53,7 @@ void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bo
 	}
 
 	const UWorld* World = GetWorld();
-	if (!ensureMsgf(World, TEXT("ASSERT: [%i] %s:\n'World' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(World, TEXT("ASSERT: [%i] %hs:\n'World' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}

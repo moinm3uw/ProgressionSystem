@@ -70,7 +70,7 @@ const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 //  Returns a current save to disk row name
 FName UPSWorldSubsystem::GetFirstSaveToDiskRowName() const
 {
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is empty!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is empty!"), __LINE__, __FUNCTION__))
 	{
 		return NAME_None;
 	}
@@ -80,7 +80,7 @@ FName UPSWorldSubsystem::GetFirstSaveToDiskRowName() const
 //  Returns a current save to disk row by name
 const FPSSaveToDiskData& UPSWorldSubsystem::GetCurrentSaveToDiskRowByName() const
 {
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is empty!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is empty!"), __LINE__, __FUNCTION__))
 	{
 		return FPSSaveToDiskData::EmptyData;
 	}
@@ -174,7 +174,7 @@ void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 // Is called when a player character is ready
 void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
 {
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -219,11 +219,11 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 	FName FirstSaveToDiskRow = GetFirstSaveToDiskRowName();
 
 	// early return if first element is not valid
-	if (!ensureMsgf(!FirstSaveToDiskRow.IsNone(), TEXT("ASSERT: [%i] %s:\n'FirstSaveToDiskRow' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(!FirstSaveToDiskRow.IsNone(), TEXT("ASSERT: [%i] %hs:\n'FirstSaveToDiskRow' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -232,7 +232,7 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 	SaveGameDataInternal->UnlockLevelByName(CurrentRowNameInternal);
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -347,7 +347,7 @@ void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(USaveGam
 {
 	// load from data table
 	const UDataTable* ProgressionDataTable = UPSDataAsset::Get().GetProgressionDataTable();
-	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %s:\n'ProgressionDataTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %hs:\n'ProgressionDataTable' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -428,7 +428,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 
 	// load from data table
 	const UDataTable* ProgressionDataTable = UPSDataAsset::Get().GetProgressionDataTable();
-	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %s:\n'ProgressionDataTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %hs:\n'ProgressionDataTable' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -447,7 +447,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 // Unlocks all levels of the Progression System
 void UPSWorldSubsystem::UnlockAllLevels()
 {
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -455,7 +455,7 @@ void UPSWorldSubsystem::UnlockAllLevels()
 
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
