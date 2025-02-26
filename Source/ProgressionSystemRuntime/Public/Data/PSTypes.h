@@ -82,7 +82,7 @@ struct FPSSaveToDiskData
 
 	/* Stores the amount of total unlocked skins index */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	int32 UnlockedSkinsAmount = 1;
+	int32 UnlockedSkinsAmount = 0;
 };
 
 /**

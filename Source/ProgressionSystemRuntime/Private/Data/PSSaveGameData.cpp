@@ -85,7 +85,7 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 	{
 		return;
 	}
-	constexpr int32 DefaultAmountOfUnlockedSkins = 1;
+	constexpr int32 DefaultAmountOfUnlockedSkins = 0;
 	const int32 OldAmountOfUnlockedSkins = FMath::FloorToInt(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression);
 	const float LeftoverStars = FMath::Fmod(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression, DataAssetInterval);
 	const float TotalStars = LeftoverStars + ProgressionReward;
