@@ -38,7 +38,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnInitialized();
 
-	/** Once the save file is reset the spot component needs to reset skins */
+	/** Once the save file is reset the spot component needs to reset skins
+	* Before progression loaded, the game has all skins available by default.
+	* But if Progression System plugin is enabled, we are changing the default state only when the first skin unlocked.
+	* This should happen right after the once the progression spot loaded and the reset cheat activated */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnReset();
 
