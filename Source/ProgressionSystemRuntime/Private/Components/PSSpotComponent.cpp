@@ -29,7 +29,7 @@ void UPSSpotComponent::OnInitialized_Implementation()
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 
-	// Listen to handle input for each game state
+	// Listen to handle game stated changed to menu state
 	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 
 	// Save reference of this component to the world subsystem
