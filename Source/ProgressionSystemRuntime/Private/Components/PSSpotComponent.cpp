@@ -75,19 +75,20 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	{
 		return;
 	}
+
 	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-
-	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
+	if (GetMeshChecked().GetPlayerTag() != PlayerTag)
 	{
-		constexpr bool bApplySkin = true;
+		return;
+	}
 
-		switch (CurrentGameState)
-		{
-		case ECurrentGameState::Menu:
-			RefreshAmountOfUnlockedSkins(bApplySkin);
-			break;
-		default: break;
-		}
+	constexpr bool bApplySkin = true;
+	switch (CurrentGameState)
+	{
+	case ECurrentGameState::Menu:
+		RefreshAmountOfUnlockedSkins(bApplySkin);
+		break;
+	default: break;
 	}
 }
 
