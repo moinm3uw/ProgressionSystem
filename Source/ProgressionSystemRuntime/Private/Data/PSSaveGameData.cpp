@@ -85,13 +85,15 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 	{
 		return;
 	}
-	constexpr int32 DefaultAmountOfUnlockedSkins = 0;
 	const int32 OldAmountOfUnlockedSkins = FMath::FloorToInt(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression);
 	const float LeftoverStars = FMath::Fmod(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression, DataAssetInterval);
 	const float TotalStars = LeftoverStars + ProgressionReward;
 	const int32 NewSkins = FMath::FloorToInt(TotalStars / DataAssetInterval);
 	const int32 TotalUnlockedSkins = OldAmountOfUnlockedSkins + NewSkins;
-	CurrentSaveToDiskDataRowPtr->UnlockedSkinsAmount = FMath::Clamp(TotalUnlockedSkins, DefaultAmountOfUnlockedSkins, CurrentProgressionSettingsRowData.PointsToUnlock);
+	const int32 MaxUnlockedSkins = UPSWorldSubsystem::Get().GetCurrentSpot()->GetMeshChecked().GetSkinTexturesNum();
+
+	constexpr int32 MinAllowedToUnlockedSkins = 0;
+	CurrentSaveToDiskDataRowPtr->UnlockedSkinsAmount = FMath::Clamp(TotalUnlockedSkins, MinAllowedToUnlockedSkins, MaxUnlockedSkins);
 
 	const float NewProgression = CurrentSaveToDiskDataRowPtr->CurrentLevelProgression + ProgressionReward;
 	CurrentSaveToDiskDataRowPtr->CurrentLevelProgression = FMath::Min(NewProgression, CurrentProgressionSettingsRowData.PointsToUnlock);
