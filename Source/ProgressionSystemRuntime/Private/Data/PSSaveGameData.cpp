@@ -153,7 +153,7 @@ void UPSSaveGameData::UnlockAllLevels()
 		// skins
 		UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().GetCurrentSpot();
 		class UMySkeletalMeshComponent& Mesh = SpotComponent->GetMeshChecked();
-		KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum();
+		KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
 	}
 }
 

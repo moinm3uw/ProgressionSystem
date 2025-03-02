@@ -103,7 +103,7 @@ void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskD
 	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
 	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
 	{
-		constexpr bool bApplySkin = false;
+		constexpr bool bApplySkin = true;
 		RefreshAmountOfUnlockedSkins(bApplySkin);
 	}
 }
