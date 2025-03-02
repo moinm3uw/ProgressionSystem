@@ -127,6 +127,14 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 		return;
 	}
 	PSSpotComponentArrayInternal.AddUnique(MySpotComponent);
+
+	for (TTuple<FName, FPSRowData> RowData : ProgressionSettingsDataInternal)
+	{
+		if (RowData.Value.Character == MySpotComponent->GetMeshChecked().GetPlayerTag())
+		{
+			PSSpotTagArrayInternal.Add(RowData.Key, MySpotComponent);
+		}
+	}
 }
 
 // Called when progression module ready

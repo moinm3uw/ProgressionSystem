@@ -122,6 +122,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	class UPSSpotComponent* GetCurrentSpot() const;
 
+	/** Returns a map of active spots FNames (tags converted to FName) in order to later in runtime find from TMap<FName, SaveToDiskFile> by FName */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE TMap<FName, class UPSSpotComponent*> GetAllSpotMap() const { return PSSpotTagArrayInternal; }
+
+
+	
 	/** Returns Progression Star Dynamic Material by state
 	 * Each state has own instance Dynamic Material Instance 
 	 * @param StarState a star state (Locked, Unlocked, Partial) */
@@ -150,6 +156,10 @@ protected:
 	/** Progression System Array of Spot Components */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
 	TArray<class UPSSpotComponent*> PSSpotComponentArrayInternal;
+
+	/** Stores list of FNames (tags converted to FName) in order to later in runtime find from TMap<FName, SaveToDiskFile> by FName. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
+	TMap<FName, UPSSpotComponent*> PSSpotTagArrayInternal;
 
 	/** Store the current save game instance
 	 * Contains the FPSSaveToDiskData which has actual data from save file */
