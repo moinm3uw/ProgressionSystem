@@ -144,9 +144,9 @@ void UPSSaveGameData::UnlockAllLevels()
 		// levels
 		UnlockLevelByName(KeyValue.Key);
 		const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetRowDataByName(KeyValue.Key);
-		if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
+		if (!ensureMsgf(CurrentProgressionSettingsRowData.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
 		{
-			return;
+			continue;
 		}
 		KeyValue.Value.CurrentLevelProgression = CurrentProgressionSettingsRowData.PointsToUnlock;
 
