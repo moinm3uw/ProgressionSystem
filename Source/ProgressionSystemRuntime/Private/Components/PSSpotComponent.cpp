@@ -29,8 +29,8 @@ void UPSSpotComponent::OnInitialized_Implementation()
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 
-	// Listen to handle game stated changed to menu state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+	constexpr bool bApplySkin = false;
+	RefreshAmountOfUnlockedSkins(bApplySkin);
 
 	// Save reference of this component to the world subsystem
 	WorldSubsystem.RegisterSpotComponent(this);
@@ -65,31 +65,6 @@ void UPSSpotComponent::OnUnregister()
 	GetMeshChecked().SetActive(bSpotUnlocked);
 
 	Super::OnUnregister();
-}
-
-// Called when the end game state was changed to toggle progression widget visibility.
-void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
-{
-	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (GetMeshChecked().GetPlayerTag() != PlayerTag)
-	{
-		return;
-	}
-
-	constexpr bool bApplySkin = true;
-	switch (CurrentGameState)
-	{
-	case ECurrentGameState::Menu:
-		RefreshAmountOfUnlockedSkins(bApplySkin);
-		break;
-	default: break;
-	}
 }
 
 void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow)
