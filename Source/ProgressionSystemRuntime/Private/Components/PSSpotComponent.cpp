@@ -129,6 +129,10 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		if (bApplySkin)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
+			if (APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
+			{
+				PlayerCharacter->SetCustomPlayerMeshData(SpotMeshComponent.GetCustomPlayerMeshData());
+			}
 		}
 	}
 }
