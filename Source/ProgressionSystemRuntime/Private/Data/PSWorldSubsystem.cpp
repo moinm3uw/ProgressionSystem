@@ -230,6 +230,8 @@ void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState Curr
 				{
 					MeshComp.ApplySkinByIndex(i);
 					SetCurrentRowByTag(MeshComp.GetPlayerTag());
+					constexpr bool bApplySkin = true;
+					CurrentSpot->RefreshAmountOfUnlockedSkins(bApplySkin);
 					break;
 				}
 			}
