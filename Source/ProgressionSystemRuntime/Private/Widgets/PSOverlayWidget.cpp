@@ -4,9 +4,11 @@
 #include "Widgets/PSOverlayWidget.h"
 
 #include "Components/Image.h"
+#include "Components/MySkeletalMeshComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Data/PSDataAsset.h"
 #include "Components/Overlay.h"
+#include "Components/PSSpotComponent.h"
 #include "Data/PSWorldSubsystem.h"
 #include "UI/SettingsWidget.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
@@ -136,11 +138,22 @@ void UPSOverlayWidget::DisplayLevelUIOverlay()
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	const bool IsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
 
-	if (USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
+	if (const USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
 	{
 		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
+		ESlateVisibility OverlayVisibility = IsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
 
-		const ESlateVisibility OverlayVisibility = IsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+		if (!IsLevelLocked)
+		{
+			const UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
+			if (CurrentSpot)
+			{
+				const UMySkeletalMeshComponent& MeshComp = CurrentSpot->GetMeshChecked();
+				const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
+				const bool isCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
+				OverlayVisibility = isCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
+			}
+		}
 		SetOverlayVisibility(OverlayVisibility, bShouldPlayFadeAnimation);
 	}
 }

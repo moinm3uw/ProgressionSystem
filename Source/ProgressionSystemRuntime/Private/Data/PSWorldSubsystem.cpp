@@ -15,6 +15,7 @@
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "GameFramework/MyGameStateBase.h"
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "MyUtilsLibraries/SaveUtilsLibrary.h"
@@ -194,6 +195,46 @@ void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(AMyPlayerState* P
 {
 	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
+	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+}
+
+//  Listen game states to switch character skin
+void UPSWorldSubsystem::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+{
+	if (CurrentGameState == ECurrentGameState::GameStarting)
+	{
+		UPSSpotComponent* CurrentSpot = GetCurrentSpot();
+		if (!ensureMsgf(CurrentSpot, TEXT("ASSERT: [%i] %hs:\n'CurrentSpot' is null!"), __LINE__, __FUNCTION__))
+		{
+			return;
+		}
+
+		UMySkeletalMeshComponent& MeshComp = CurrentSpot->GetMeshChecked();
+		const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
+		bool isCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
+
+		if (!isCurrentSkinAvailable)
+		{
+			for (int32 i = CurrentSkinIndex; i >= 0; i--)
+			{
+				if (i == 0)
+				{
+					isCurrentSkinAvailable = true;
+				}
+				else
+				{
+					isCurrentSkinAvailable = MeshComp.IsSkinAvailable(i);
+				}
+
+				if (isCurrentSkinAvailable)
+				{
+					MeshComp.ApplySkinByIndex(i);
+					SetCurrentRowByTag(MeshComp.GetPlayerTag());
+					break;
+				}
+			}
+		}
+	}
 }
 
 // Is called when a player has been changed
