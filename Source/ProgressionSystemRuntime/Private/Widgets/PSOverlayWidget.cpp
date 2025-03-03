@@ -125,6 +125,7 @@ void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag PlayerT
 	DisplayLevelUIOverlay();
 }
 
+// Sets the visibility of the background overlay and lock icon.
 void UPSOverlayWidget::SetOverlayItemsVisibility(ESlateVisibility VisibilitySlate)
 {
 	// Level is unlocked hide the blocking overlay
