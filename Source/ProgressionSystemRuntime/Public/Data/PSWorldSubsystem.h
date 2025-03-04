@@ -127,7 +127,6 @@ public:
 	FORCEINLINE TMap<FName, class UPSSpotComponent*> GetAllSpotMap() const { return PSSpotTagArrayInternal; }
 
 
-	
 	/** Returns Progression Star Dynamic Material by state
 	 * Each state has own instance Dynamic Material Instance 
 	 * @param StarState a star state (Locked, Unlocked, Partial) */
@@ -213,10 +212,6 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
 
-	/** Listen game states to switch character skin. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(ECurrentGameState CurrentGameState);
-	
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnPlayerTypeChanged(FPlayerTag PlayerTag);

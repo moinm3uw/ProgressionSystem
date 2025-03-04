@@ -45,6 +45,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnReset();
 
+	/** Listen game states to switch character skin. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnGameStateChanged(ECurrentGameState CurrentGameState);
+	
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
