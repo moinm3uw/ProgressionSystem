@@ -157,14 +157,12 @@ void UPSSaveGameData::UnlockAllLevels()
 		KeyValue.Value.CurrentLevelProgression = CurrentProgressionSettingsRowData.PointsToUnlock;
 
 		// skins
-		for (TTuple<FName, UPSSpotComponent*> Spot : SpotsMap)
+		UPSSpotComponent** SpotComponent = SpotsMap.Find(KeyValue.Key);
+		UPSSpotComponent* ActualSpotComponent = *SpotComponent;
+		if (SpotComponent != nullptr && ActualSpotComponent != nullptr)
 		{
-			if (Spot.Key == KeyValue.Key)
-			{
-				UMySkeletalMeshComponent& Mesh = Spot.Value->GetMeshChecked();
-				KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
-				break;
-			}
+			UMySkeletalMeshComponent& Mesh = ActualSpotComponent->GetMeshChecked();
+			KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
 		}
 	}
 }
