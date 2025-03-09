@@ -73,6 +73,7 @@ void APSStarActor::OnGameStateChanged_Implementation(ECurrentGameState GameState
 {
 	if (GameState == ECurrentGameState::Menu)
 	{
+		SetActorHiddenInGame(false); 
 		SetStartTimeMenuStars();
 		TryPlayMenuStarAnimation();
 	}
