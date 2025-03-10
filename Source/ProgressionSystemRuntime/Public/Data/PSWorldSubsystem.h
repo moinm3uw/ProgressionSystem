@@ -72,7 +72,7 @@ public:
 
 	/** Returns a progression System component reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UPSHUDComponent* GetProgressionSystemHUDComponent() const { return PSHUDComponentInternal; }
+	FORCEINLINE class UPSHUDComponent* GetProgressionSystemHUDComponent() const { return HUDComponentInternal; }
 
 	/** Returns a current progression row name */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -124,10 +124,9 @@ public:
 
 	/** Find a spot component element by row name */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	 class UPSSpotComponent* FindSpotByRowName(FName RowName) const;
+	class UPSSpotComponent* FindSpotByRowName(FName RowName) const;
 
 
-	
 	/** Returns Progression Star Dynamic Material by state
 	 * Each state has own instance Dynamic Material Instance 
 	 * @param StarState a star state (Locked, Unlocked, Partial) */
@@ -140,7 +139,7 @@ protected:
 	 * Property is put to subsystem because its instance is created before any other object.
 	 * It can't be put to DevelopSettings class because it does work properly for MGF-modules. */
 	UPROPERTY(Config, VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TSoftObjectPtr<const class UPSDataAsset> PSDataAssetInternal;
+	TSoftObjectPtr<const class UPSDataAsset> DataAssetInternal;
 
 	/** Extension to a save file to increment with a new build
 	 * Note: it's config property stored in BaseProgressionSystem.ini and going to be changed frequently.
@@ -151,15 +150,15 @@ protected:
 
 	/** Progression System component reference*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
-	TObjectPtr<class UPSHUDComponent> PSHUDComponentInternal = nullptr;
+	TObjectPtr<class UPSHUDComponent> HUDComponentInternal = nullptr;
 
 	/** Progression System Array of Spot Components */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
-	TArray<class UPSSpotComponent*> PSSpotComponentArrayInternal;
+	TArray<class UPSSpotComponent*> SpotComponentArrayInternal;
 
 	/** Stores list of FNames (tags converted to FName) in order to later in runtime find from TMap<FName, SaveToDiskFile> by FName. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
-	TMap<FName, TObjectPtr<class UPSSpotComponent>> PSSpotTagArrayInternal;
+	TMap<FName/*Row*/, TObjectPtr<class UPSSpotComponent>> SpotComponentsMapInternal;
 
 	/** Store the current save game instance
 	 * Contains the FPSSaveToDiskData which has actual data from save file */
@@ -168,7 +167,7 @@ protected:
 
 	/** Store default values from the progression settings data table cached once on load and never changed later */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
-	TMap<FName, FPSRowData> ProgressionSettingsDataInternal;
+	TMap<FName/*Row*/, FPSRowData> ProgressionSettingsDataInternal;
 
 	/** Store the current row name */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Row Name"))
