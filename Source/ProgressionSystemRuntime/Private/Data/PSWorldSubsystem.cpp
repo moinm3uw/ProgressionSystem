@@ -400,6 +400,7 @@ void UPSWorldSubsystem::PerformCleanUp()
 	UMyPrimaryDataAsset::ResetDataAsset(PSDataAssetInternal);
 	PSHUDComponentInternal = nullptr;
 	PSSpotComponentArrayInternal.Empty();
+	PSSpotTagArrayInternal.Empty();
 
 	// Saves clean up 
 	if (SaveGameDataInternal)
