@@ -56,17 +56,28 @@ void UPSSaveGameData::UnlockLevelByName(FName RowName)
 // Updates the current level's progression based on the end game state and proceeds to the next level if unlocked.
 void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 {
-	FName CurrentRowName = UPSWorldSubsystem::Get().GetCurrentRowName();
-	// Check if the current row exists in the map before attempting to update it
-	FPSSaveToDiskData* CurrentSaveToDiskDataRowPtr = ProgressionSettingsRowDataInternal.Find(CurrentRowName);
-	if (!CurrentSaveToDiskDataRowPtr)
+	UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
+	if (!ensureMsgf(CurrentSpot, TEXT("ASSERT: [%i] %hs:\n'CurrentSpot' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	// Increase the current level's progression by the reward from the end game state
+	const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	// skins to unlock
+	const int32 DataAssetInterval = UPSDataAsset::Get().GetSkinUnlockInterval();
+	if (!ensureMsgf(DataAssetInterval > 0.f, TEXT("ASSERT: [%i] %hs:\n'DataAssetInterval = 0' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
 
-	// Increase the current level's progression by the reward from the end game state
-	const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
-	if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
+	FName CurrentRowName = UPSWorldSubsystem::Get().GetCurrentRowName();
+	// Check if the current row exists in the map before attempting to update it
+	FPSSaveToDiskData* CurrentSaveToDiskDataRowPtr = ProgressionSettingsRowDataInternal.Find(CurrentRowName);
+	if (!CurrentSaveToDiskDataRowPtr)
 	{
 		return;
 	}
@@ -79,19 +90,12 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 
 	const float ProgressionReward = GetProgressionReward(EndGameState);
 
-	// skins to unlock
-	const int32 DataAssetInterval = UPSDataAsset::Get().GetSkinUnlockInterval();
-	if (!ensureMsgf(DataAssetInterval > 0.f, TEXT("ASSERT: [%i] %hs:\n'DataAssetInterval = 0' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
 	const int32 OldAmountOfUnlockedSkins = FMath::FloorToInt(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression);
 	const float LeftoverStars = FMath::Fmod(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression, DataAssetInterval);
 	const float TotalStars = LeftoverStars + ProgressionReward;
 	const int32 NewSkins = FMath::FloorToInt(TotalStars / DataAssetInterval);
 	const int32 TotalUnlockedSkins = OldAmountOfUnlockedSkins + NewSkins;
-	const int32 MaxUnlockedSkins = UPSWorldSubsystem::Get().GetCurrentSpot()->GetMeshChecked().GetSkinTexturesNum();
-
+	const int32 MaxUnlockedSkins = CurrentSpot->GetMeshChecked().GetSkinTexturesNum();
 	constexpr int32 MinAllowedToUnlockedSkins = 0;
 	CurrentSaveToDiskDataRowPtr->UnlockedSkinsAmount = FMath::Clamp(TotalUnlockedSkins, MinAllowedToUnlockedSkins, MaxUnlockedSkins);
 
@@ -138,8 +142,6 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 // Unlocks all levels and set maximum allowed progression points
 void UPSSaveGameData::UnlockAllLevels()
 {
-	TMap<FName, UPSSpotComponent*> SpotsMap = UPSWorldSubsystem::Get().GetAllSpotMap();
-
 	// unlock levels loop
 	for (TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
 	{
@@ -153,14 +155,11 @@ void UPSSaveGameData::UnlockAllLevels()
 		KeyValue.Value.CurrentLevelProgression = CurrentProgressionSettingsRowData.PointsToUnlock;
 
 		// skins
-		for (TTuple<FName, UPSSpotComponent*> Spot : SpotsMap)
+		UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().FindSpotByRowName(KeyValue.Key);
+		if (SpotComponent != nullptr)
 		{
-			if (Spot.Key == KeyValue.Key)
-			{
-				UMySkeletalMeshComponent& Mesh = Spot.Value->GetMeshChecked();
-				KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
-				break;
-			}
+			UMySkeletalMeshComponent& Mesh = SpotComponent->GetMeshChecked();
+			KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
 		}
 	}
 }

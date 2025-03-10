@@ -65,7 +65,7 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 // Returns the data asset that contains all the assets of Progression System game feature
 const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 {
-	return UMyPrimaryDataAsset::GetOrLoadOnce(PSDataAssetInternal);
+	return UMyPrimaryDataAsset::GetOrLoadOnce(DataAssetInternal);
 }
 
 //  Returns a current save to disk row name
@@ -117,7 +117,7 @@ void UPSWorldSubsystem::SetHUDComponent(UPSHUDComponent* MyHUDComponent)
 	{
 		return;
 	}
-	PSHUDComponentInternal = MyHUDComponent;
+	HUDComponentInternal = MyHUDComponent;
 }
 
 // Set the progression system spot component
@@ -127,13 +127,12 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 	{
 		return;
 	}
-	PSSpotComponentArrayInternal.AddUnique(MySpotComponent);
 
-	for (TTuple<FName, FPSRowData> RowData : ProgressionSettingsDataInternal)
+	for (const TTuple<FName, FPSRowData>& RowData : ProgressionSettingsDataInternal)
 	{
 		if (RowData.Value.Character == MySpotComponent->GetMeshChecked().GetPlayerTag())
 		{
-			PSSpotTagArrayInternal.Add(RowData.Key, MySpotComponent);
+			SpotComponentsMapInternal.Add(RowData.Key, MySpotComponent);
 		}
 	}
 }
@@ -320,19 +319,19 @@ UPSSpotComponent* UPSWorldSubsystem::GetCurrentSpot() const
 	}
 
 	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (PSSpotComponentArrayInternal.IsEmpty() || !PlayerTag.IsValid())
+	if (!PlayerTag.IsValid() || CurrentRowNameInternal.IsNone())
 	{
 		return nullptr;
 	}
+	UPSSpotComponent* SpotComponent = FindSpotByRowName(CurrentRowNameInternal);
+	return SpotComponent;
+}
 
-	for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
-	{
-		if (SpotComponent && SpotComponent->GetMeshChecked().GetPlayerTag() == PlayerTag)
-		{
-			return SpotComponent;
-		}
-	}
-	return nullptr;
+// Find a spot component element by row name
+class UPSSpotComponent* UPSWorldSubsystem::FindSpotByRowName(FName RowName) const
+{
+	const TObjectPtr<UPSSpotComponent>* FoundSpotPtr = SpotComponentsMapInternal.Find(RowName);
+	return FoundSpotPtr ? *FoundSpotPtr : nullptr;
 }
 
 // Returns Progression Star Dynamic Material by state
@@ -398,9 +397,9 @@ void UPSWorldSubsystem::PerformCleanUp()
 	StarDynamicProgressMaterial = nullptr;
 
 	// Subsystem clean up  
-	UMyPrimaryDataAsset::ResetDataAsset(PSDataAssetInternal);
-	PSHUDComponentInternal = nullptr;
-	PSSpotComponentArrayInternal.Empty();
+	UMyPrimaryDataAsset::ResetDataAsset(DataAssetInternal);
+	HUDComponentInternal = nullptr;
+	SpotComponentsMapInternal.Empty();
 
 	// Saves clean up 
 	if (SaveGameDataInternal)
