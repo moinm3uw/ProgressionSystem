@@ -122,9 +122,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	class UPSSpotComponent* GetCurrentSpot() const;
 
-	/** Returns a map of active spots FNames (tags converted to FName) in order to later in runtime find from TMap<FName, SaveToDiskFile> by FName */
+	/** Find a spot component element by row name */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE TMap<FName, class UPSSpotComponent*> GetAllSpotMap() const { return PSSpotTagArrayInternal; }
+	 class UPSSpotComponent* FindSpotByRowName(FName RowName) const;
 
 
 	
@@ -159,7 +159,7 @@ protected:
 
 	/** Stores list of FNames (tags converted to FName) in order to later in runtime find from TMap<FName, SaveToDiskFile> by FName. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
-	TMap<FName, UPSSpotComponent*> PSSpotTagArrayInternal;
+	TMap<FName, TObjectPtr<class UPSSpotComponent>> PSSpotTagArrayInternal;
 
 	/** Store the current save game instance
 	 * Contains the FPSSaveToDiskData which has actual data from save file */

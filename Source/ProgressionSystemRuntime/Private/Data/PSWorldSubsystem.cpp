@@ -334,6 +334,13 @@ UPSSpotComponent* UPSWorldSubsystem::GetCurrentSpot() const
 	return nullptr;
 }
 
+// Find a spot component element by row name
+class UPSSpotComponent* UPSWorldSubsystem::FindSpotByRowName(FName RowName) const
+{
+	const TObjectPtr<UPSSpotComponent>* FoundSpotPtr = PSSpotTagArrayInternal.Find(RowName);
+	return FoundSpotPtr ? *FoundSpotPtr : nullptr;
+}
+
 // Returns Progression Star Dynamic Material by state
 UMaterialInstanceDynamic* UPSWorldSubsystem::GetStarProgressionDynamicMaterial(EPSStarActorState StarState)
 {

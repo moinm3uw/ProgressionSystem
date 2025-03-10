@@ -142,8 +142,6 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 // Unlocks all levels and set maximum allowed progression points
 void UPSSaveGameData::UnlockAllLevels()
 {
-	TMap<FName, UPSSpotComponent*> SpotsMap = UPSWorldSubsystem::Get().GetAllSpotMap();
-
 	// unlock levels loop
 	for (TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
 	{
@@ -157,11 +155,10 @@ void UPSSaveGameData::UnlockAllLevels()
 		KeyValue.Value.CurrentLevelProgression = CurrentProgressionSettingsRowData.PointsToUnlock;
 
 		// skins
-		UPSSpotComponent** SpotComponent = SpotsMap.Find(KeyValue.Key);
-		UPSSpotComponent* ActualSpotComponent = *SpotComponent;
-		if (SpotComponent != nullptr && ActualSpotComponent != nullptr)
+		UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().FindSpotByRowName(KeyValue.Key);
+		if (SpotComponent != nullptr)
 		{
-			UMySkeletalMeshComponent& Mesh = ActualSpotComponent->GetMeshChecked();
+			UMySkeletalMeshComponent& Mesh = SpotComponent->GetMeshChecked();
 			KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
 		}
 	}
