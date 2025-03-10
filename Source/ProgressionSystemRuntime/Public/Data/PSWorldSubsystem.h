@@ -120,12 +120,12 @@ public:
 
 	/** Returns current spot component returns null if spot is not found */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
-	class UPSSpotComponent* GetCurrentSpot() const;
+	FORCEINLINE class UPSSpotComponent* GetCurrentSpot() const { return FindSpotByRowName(CurrentRowNameInternal); }
+
 
 	/** Find a spot component element by row name */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	class UPSSpotComponent* FindSpotByRowName(FName RowName) const;
-
 
 	/** Returns Progression Star Dynamic Material by state
 	 * Each state has own instance Dynamic Material Instance 
@@ -153,7 +153,7 @@ protected:
 	TObjectPtr<class UPSHUDComponent> HUDComponentInternal = nullptr;
 
 	/** Stores list of FNames (tags converted to FName) in order to later in runtime find from TMap<FName, SaveToDiskFile> by FName. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Map"))
 	TMap<FName/*Row*/, TObjectPtr<class UPSSpotComponent>> SpotComponentsMapInternal;
 
 	/** Store the current save game instance
