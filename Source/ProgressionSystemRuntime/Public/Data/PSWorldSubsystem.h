@@ -152,10 +152,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System HUD Component"))
 	TObjectPtr<class UPSHUDComponent> HUDComponentInternal = nullptr;
 
-	/** Progression System Array of Spot Components */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
-	TArray<class UPSSpotComponent*> SpotComponentArrayInternal;
-
 	/** Stores list of FNames (tags converted to FName) in order to later in runtime find from TMap<FName, SaveToDiskFile> by FName. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Spot Array"))
 	TMap<FName/*Row*/, TObjectPtr<class UPSSpotComponent>> SpotComponentsMapInternal;

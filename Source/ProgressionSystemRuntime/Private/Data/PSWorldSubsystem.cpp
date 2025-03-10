@@ -126,7 +126,6 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 	{
 		return;
 	}
-	SpotComponentArrayInternal.AddUnique(MySpotComponent);
 
 	for (const TTuple<FName, FPSRowData>& RowData : ProgressionSettingsDataInternal)
 	{
@@ -319,19 +318,12 @@ UPSSpotComponent* UPSWorldSubsystem::GetCurrentSpot() const
 	}
 
 	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (SpotComponentArrayInternal.IsEmpty() || !PlayerTag.IsValid())
+	if (!PlayerTag.IsValid() || CurrentRowNameInternal.IsNone())
 	{
 		return nullptr;
 	}
-
-	for (UPSSpotComponent* SpotComponent : SpotComponentArrayInternal)
-	{
-		if (SpotComponent && SpotComponent->GetMeshChecked().GetPlayerTag() == PlayerTag)
-		{
-			return SpotComponent;
-		}
-	}
-	return nullptr;
+	UPSSpotComponent* SpotComponent = FindSpotByRowName(CurrentRowNameInternal);
+	return SpotComponent;
 }
 
 // Find a spot component element by row name
@@ -406,7 +398,6 @@ void UPSWorldSubsystem::PerformCleanUp()
 	// Subsystem clean up  
 	UMyPrimaryDataAsset::ResetDataAsset(DataAssetInternal);
 	HUDComponentInternal = nullptr;
-	SpotComponentArrayInternal.Empty();
 	SpotComponentsMapInternal.Empty();
 
 	// Saves clean up 
