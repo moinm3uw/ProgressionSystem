@@ -126,7 +126,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	class UPSSpotComponent* FindSpotByRowName(FName RowName) const;
 
-
 	/** Returns Progression Star Dynamic Material by state
 	 * Each state has own instance Dynamic Material Instance 
 	 * @param StarState a star state (Locked, Unlocked, Partial) */
