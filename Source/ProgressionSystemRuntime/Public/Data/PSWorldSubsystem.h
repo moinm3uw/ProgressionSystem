@@ -120,7 +120,8 @@ public:
 
 	/** Returns current spot component returns null if spot is not found */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
-	class UPSSpotComponent* GetCurrentSpot() const;
+	FORCEINLINE class UPSSpotComponent* GetCurrentSpot() const { return FindSpotByRowName(CurrentRowNameInternal); }
+
 
 	/** Find a spot component element by row name */
 	UFUNCTION(BlueprintPure, Category = "C++")

@@ -308,24 +308,6 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 	}
 }
 
-// Returns current spot component returns null if spot is not found
-UPSSpotComponent* UPSWorldSubsystem::GetCurrentSpot() const
-{
-	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-	if (!PlayerCharacter)
-	{
-		return nullptr;
-	}
-
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (!PlayerTag.IsValid() || CurrentRowNameInternal.IsNone())
-	{
-		return nullptr;
-	}
-	UPSSpotComponent* SpotComponent = FindSpotByRowName(CurrentRowNameInternal);
-	return SpotComponent;
-}
-
 // Find a spot component element by row name
 class UPSSpotComponent* UPSWorldSubsystem::FindSpotByRowName(FName RowName) const
 {
