@@ -86,21 +86,31 @@ struct FPSSaveToDiskData
 };
 
 /**
+ * Represents the type of the overlay widget fade animation played in the menu
+ */
+UENUM(BlueprintType, DisplayName = "Overlay Widget Fade Animation Type")
+enum class EPSOverlayWidgetFadeAnimationType : uint8
+{
+	///< Default fade no animation required
+	None,
+	///< Fade-it animation
+	FadeIn,
+	///< Fade-out animation 
+	FadeOut,
+};
+
+/**
  * Represents the state of the overlay widget fade animation played in the menu.
  */
 UENUM(BlueprintType, DisplayName = "Overlay Widget Fade Animation State")
-enum class EPSOverlayWidgetFadeState : uint8
+enum class EPSOverlayWidgetFadeAnimationState : uint8
 {
-	///< Is not in the Menu
+	///< Fade to applied
 	None,
-	///< Fade-it animation
-	FadeInActive,
-	///< Fade-out animation 
-	FadeOutActive,
-	///< Fade-it animation
-	FadeInFinished,
-	///< Fade-out animation 
-	FadeOutFinished,
+	///< Animation in progress
+	Active,
+	///< Animation finished 
+	Finished,
 };
 
 /**
