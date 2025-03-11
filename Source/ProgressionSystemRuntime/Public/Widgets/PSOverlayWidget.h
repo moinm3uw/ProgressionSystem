@@ -21,10 +21,10 @@ public:
 	/**
 	* Sets the visibility of the overlay elements and playing fade animation if needed 
 	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
-	* @param bShouldPlayFadeAnimation Defines if the fade animation should be played after or before widget is visible
+	* @param bShouldPlayInstantAnimation Defines if the fade animation should be played after or before widget is visible
 	*/
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void SetOverlayVisibility(ESlateVisibility VisibilitySlate, bool bShouldPlayFadeAnimation = false);
+	void SetOverlayVisibility(EPSOverlayWidgetFadeState NewDesiredState);
 
 protected:
 	/** overrides NativeTick to make the user widget tickable **/
@@ -42,13 +42,6 @@ protected:
 	/** When a character has been changed current active progression row also changes */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnCurrentRowDataChanged(FPlayerTag PlayerTag);
-	
-	/**
-	* Sets the visibility of the background overlay and lock icon.
-	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
-	*/
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void SetOverlayItemsVisibility(ESlateVisibility VisibilitySlate);
 
 	/** Overlay widget which is a root for all fade-in/out overlay elements */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
@@ -63,8 +56,12 @@ protected:
 	bool bShouldPlayFadeAnimationInternal = false;
 
 	/** Current overlay widget fade state. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Overlay Widget Fade State"))
-	EPSOverlayWidgetFadeState OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::None;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade State"))
+	EPSOverlayWidgetFadeState CurrentOverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::None;
+
+	/** Previous overlay widget fade state. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Previous Overlay Widget Fade State"))
+	EPSOverlayWidgetFadeState PreviousOverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::None;
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))

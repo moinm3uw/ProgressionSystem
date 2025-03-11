@@ -16,42 +16,38 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSOverlayWidget)
 
 // Sets the visibility of the overlay elements and playing fade animation if needed
-void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bool bShouldPlayFadeAnimation/* = false*/)
+///void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bool bShouldPlayFadeAnimation/* = false*/)
+void UPSOverlayWidget::SetOverlayVisibility(EPSOverlayWidgetFadeState NewState)
 {
-	if (!bShouldPlayFadeAnimation)
+	//if new visibility is same as previous animation is not required
+	const bool bIsCurrentFadeInFinished = CurrentOverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeInFinished
+		&& NewState == EPSOverlayWidgetFadeState::FadeInActive;
+
+	const bool bIsCurrentFadeOutFinished = CurrentOverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOutFinished
+		&& NewState == EPSOverlayWidgetFadeState::FadeOutActive;
+
+	if (NewState == CurrentOverlayWidgetFadeStateInternal
+		|| bIsCurrentFadeInFinished || bIsCurrentFadeOutFinished)
 	{
-		if (PSCOverlay)
-		{
-			// reset render opacity
-			PSCOverlay->SetRenderOpacity(1.0f);
-		}
-		SetOverlayItemsVisibility(VisibilitySlate);
 		return;
 	}
 
-	bShouldPlayFadeAnimationInternal = bShouldPlayFadeAnimation;
+	CurrentOverlayWidgetFadeStateInternal = NewState;
 
-	if (VisibilitySlate == ESlateVisibility::Visible)
+	if (NewState == EPSOverlayWidgetFadeState::FadeInFinished || NewState == EPSOverlayWidgetFadeState::FadeOutFinished)
 	{
-		if (!ensureMsgf(PSCOverlay, TEXT("ASSERT: [%i] %hs:\n'PSCOverlay' is not valid!"), __LINE__, __FUNCTION__))
-		{
-			return;
-		}
-
-		ESlateVisibility PrevOverlayOpacity = GetVisibility();
-
-		//if new visibility is same as previous animation is not required 
-		if (PrevOverlayOpacity == VisibilitySlate)
-		{
-			bShouldPlayFadeAnimationInternal = false;
-			OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::None;
-		}
-		OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::FadeIn;
-		SetOverlayItemsVisibility(VisibilitySlate);
+		const ESlateVisibility desiredWidgetVisibility = NewState == EPSOverlayWidgetFadeState::FadeInFinished ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+		const float desiredOpacity = NewState == EPSOverlayWidgetFadeState::FadeInFinished ? 1.0f : 0.0f;
+		PSCOverlay->SetRenderOpacity(desiredOpacity);
+		StartTimeFadeAnimationInternal = 0.0f;
+		SetVisibility(desiredWidgetVisibility);
+		return;
 	}
-	else
+
+
+	if (NewState == EPSOverlayWidgetFadeState::FadeInActive)
 	{
-		OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::FadeOut;
+		SetVisibility(ESlateVisibility::Visible);
 	}
 
 	const UWorld* World = GetWorld();
@@ -67,11 +63,12 @@ void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bo
 void UPSOverlayWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (GetVisibility() != ESlateVisibility::Visible)
+	if (CurrentOverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::None
+		|| CurrentOverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeInFinished
+		|| CurrentOverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOutFinished)
 	{
 		return;
 	}
-
 	TickPlayFadeOverlayAnimation();
 }
 
@@ -91,25 +88,22 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 	const UWorld* World = GetWorld();
 	const float FadeDuration = UPSDataAsset::Get().GetOverlayFadeDuration();
 
-	if (!bShouldPlayFadeAnimationInternal
-		|| !World
+	if (!World
 		|| !ensureMsgf(FadeDuration > 0.0f, TEXT("ASSERT: [%i] %hs:\n'FadeDuration' must be greater than 0"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
 
-	const bool bIsFadeOutAnimation = OverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOut;
+	const bool bIsFadeOutAnimation = CurrentOverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOutActive;
 	const float SecondsSinceStart = GetWorld()->GetTimeSeconds() - StartTimeFadeAnimationInternal;
 	const float NormalizedTime = FMath::Clamp(SecondsSinceStart / FadeDuration, 0.0f, 1.0f);
 	const float OpacityValue = bIsFadeOutAnimation ? 1.0f - NormalizedTime : NormalizedTime;
 
 	if (SecondsSinceStart >= FadeDuration)
 	{
-		bShouldPlayFadeAnimationInternal = false;
-		if (OverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOut)
-		{
-			SetVisibility(ESlateVisibility::Collapsed);
-		}
+		auto FadeOutActive = CurrentOverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOutActive;
+		EPSOverlayWidgetFadeState newState = FadeOutActive ? EPSOverlayWidgetFadeState::FadeOutFinished : EPSOverlayWidgetFadeState::FadeInFinished;
+		SetOverlayVisibility(newState);
 		return;
 	}
 
@@ -123,13 +117,6 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag PlayerTag)
 {
 	DisplayLevelUIOverlay();
-}
-
-// Sets the visibility of the background overlay and lock icon.
-void UPSOverlayWidget::SetOverlayItemsVisibility(ESlateVisibility VisibilitySlate)
-{
-	// Level is unlocked hide the blocking overlay
-	SetVisibility(VisibilitySlate);
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
@@ -155,6 +142,16 @@ void UPSOverlayWidget::DisplayLevelUIOverlay()
 				OverlayVisibility = isCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
 			}
 		}
-		SetOverlayVisibility(OverlayVisibility, bShouldPlayFadeAnimation);
+
+		EPSOverlayWidgetFadeState RequestSate = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetFadeState::FadeInActive : EPSOverlayWidgetFadeState::FadeOutActive;
+
+		if (!bShouldPlayFadeAnimation)
+		{
+			auto FadeOutActive = RequestSate == EPSOverlayWidgetFadeState::FadeOutActive;
+			RequestSate = FadeOutActive ? EPSOverlayWidgetFadeState::FadeOutFinished : EPSOverlayWidgetFadeState::FadeInFinished;
+		}
+
+		// request 2 states: type and direction. 
+		SetOverlayVisibility(RequestSate);
 	}
 }

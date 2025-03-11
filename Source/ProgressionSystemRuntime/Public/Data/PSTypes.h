@@ -94,9 +94,13 @@ enum class EPSOverlayWidgetFadeState : uint8
 	///< Is not in the Menu
 	None,
 	///< Fade-it animation
-	FadeIn,
+	FadeInActive,
 	///< Fade-out animation 
-	FadeOut,
+	FadeOutActive,
+	///< Fade-it animation
+	FadeInFinished,
+	///< Fade-out animation 
+	FadeOutFinished,
 };
 
 /**
