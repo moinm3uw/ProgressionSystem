@@ -28,7 +28,7 @@ void UPSSpotComponent::OnInitialized_Implementation()
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
-
+	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 	constexpr bool bApplySkin = false;
 	RefreshAmountOfUnlockedSkins(bApplySkin);
 
@@ -44,6 +44,50 @@ void UPSSpotComponent::OnReset_Implementation()
 	for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(false, Index);
+	}
+}
+
+// Listen game states to switch character skin. 
+void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+{
+	// it's possible that spot might not be loaded till that time so no ensure added
+	UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
+
+	// check the spot  
+	if (CurrentSpot == nullptr || CurrentSpot != this)
+	{
+		return;
+	}
+
+	if (CurrentGameState == ECurrentGameState::GameStarting)
+	{
+		UMySkeletalMeshComponent& MeshComp = GetMeshChecked();
+		const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
+		bool isCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
+
+		if (!isCurrentSkinAvailable)
+		{
+			for (int32 i = CurrentSkinIndex; i >= 0; i--)
+			{
+				if (i == 0)
+				{
+					isCurrentSkinAvailable = true;
+				}
+				else
+				{
+					isCurrentSkinAvailable = MeshComp.IsSkinAvailable(i);
+				}
+
+				if (isCurrentSkinAvailable)
+				{
+					MeshComp.ApplySkinByIndex(i);
+
+					constexpr bool bApplySkin = true;
+					RefreshAmountOfUnlockedSkins(bApplySkin);
+					break;
+				}
+			}
+		}
 	}
 }
 
