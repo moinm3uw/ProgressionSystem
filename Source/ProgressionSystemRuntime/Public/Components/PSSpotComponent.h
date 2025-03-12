@@ -28,11 +28,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh);
 
+	/** Refresh Amount Of Unlocked skins for the character (level) */
+	UFUNCTION(BlueprintCallable, Category= "C++")
+	void RefreshAmountOfUnlockedSkins(bool bApplySkin);
+
 protected:
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnInitialized();
+
+	/** Once the save file is reset the spot component needs to reset skins
+	* Before progression loaded, the game has all skins available by default.
+	* But if Progression System plugin is enabled, we are changing the default state only when the first skin unlocked.
+	* This should happen right after the once the progression spot loaded and the reset cheat activated */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnReset();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -43,4 +54,8 @@ protected:
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
 	void OnCurrentActiveSaveRowChanged(const FPlayerTag PlayerTag);
+
+	/** Updates the progression unlocked skins when score changes */
+	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
+	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow);
 };

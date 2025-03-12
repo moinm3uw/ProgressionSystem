@@ -2,12 +2,15 @@
 
 #include "Data/PSSaveGameData.h"
 
+#include "Components/MySkeletalMeshComponent.h"
+#include "Components/PSSpotComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Engine/CurveTable.h"
 #include "Subsystems/GameDifficultySubsystem.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "Data/PSTypes.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveGameData)
 
@@ -53,30 +56,58 @@ void UPSSaveGameData::UnlockLevelByName(FName RowName)
 // Updates the current level's progression based on the end game state and proceeds to the next level if unlocked.
 void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 {
-	// Check if the current row exists in the map before attempting to update it
-	if (ProgressionSettingsRowDataInternal.Contains(UPSWorldSubsystem::Get().GetCurrentRowName()))
+	UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
+	if (!ensureMsgf(CurrentSpot, TEXT("ASSERT: [%i] %hs:\n'CurrentSpot' is null!"), __LINE__, __FUNCTION__))
 	{
-		// Increase the current level's progression by the reward from the end game state
-		FName CurrentRowName = UPSWorldSubsystem::Get().GetCurrentRowName();
-		FPSSaveToDiskData* CurrentSaveToDiskDataRowRef = ProgressionSettingsRowDataInternal.Find(CurrentRowName);
-		const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
-
-		// do nothing if max start achieved. Max stars of level is amount of point to unlock for a level
-		if (CurrentSaveToDiskDataRowRef->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
-		{
-			return;
-		}
-
-		const float NewProgression = CurrentSaveToDiskDataRowRef->CurrentLevelProgression + GetProgressionReward(EndGameState);
-		CurrentSaveToDiskDataRowRef->CurrentLevelProgression = FMath::Min(NewProgression, CurrentProgressionSettingsRowData.PointsToUnlock);
-
-		// Check if the current level progression has reached or surpassed the points needed to unlock
-		if (CurrentSaveToDiskDataRowRef->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
-		{
-			NextLevelProgressionRowData(); // Advance to the next level's progression data
-		}
-		UPSWorldSubsystem::Get().SaveDataAsync(); // Asynchronously save the updated data
+		return;
 	}
+	// Increase the current level's progression by the reward from the end game state
+	const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	// skins to unlock
+	const int32 DataAssetInterval = UPSDataAsset::Get().GetSkinUnlockInterval();
+	if (!ensureMsgf(DataAssetInterval > 0.f, TEXT("ASSERT: [%i] %hs:\n'DataAssetInterval = 0' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+
+	FName CurrentRowName = UPSWorldSubsystem::Get().GetCurrentRowName();
+	// Check if the current row exists in the map before attempting to update it
+	FPSSaveToDiskData* CurrentSaveToDiskDataRowPtr = ProgressionSettingsRowDataInternal.Find(CurrentRowName);
+	if (!CurrentSaveToDiskDataRowPtr)
+	{
+		return;
+	}
+
+	// do nothing if max start achieved. Max stars of level is amount of point to unlock for a level
+	if (CurrentSaveToDiskDataRowPtr->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
+	{
+		return;
+	}
+
+	const float ProgressionReward = GetProgressionReward(EndGameState);
+
+	const int32 OldAmountOfUnlockedSkins = FMath::FloorToInt(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression);
+	const float LeftoverStars = FMath::Fmod(CurrentSaveToDiskDataRowPtr->CurrentLevelProgression, DataAssetInterval);
+	const float TotalStars = LeftoverStars + ProgressionReward;
+	const int32 NewSkins = FMath::FloorToInt(TotalStars / DataAssetInterval);
+	const int32 TotalUnlockedSkins = OldAmountOfUnlockedSkins + NewSkins;
+	const int32 MaxUnlockedSkins = CurrentSpot->GetMeshChecked().GetSkinTexturesNum();
+	constexpr int32 MinAllowedToUnlockedSkins = 0;
+	CurrentSaveToDiskDataRowPtr->UnlockedSkinsAmount = FMath::Clamp(TotalUnlockedSkins, MinAllowedToUnlockedSkins, MaxUnlockedSkins);
+
+	const float NewProgression = CurrentSaveToDiskDataRowPtr->CurrentLevelProgression + ProgressionReward;
+	CurrentSaveToDiskDataRowPtr->CurrentLevelProgression = FMath::Min(NewProgression, CurrentProgressionSettingsRowData.PointsToUnlock);
+
+	// Check if the current level progression has reached or surpassed the points needed to unlock
+	if (CurrentSaveToDiskDataRowPtr->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
+	{
+		NextLevelProgressionRowData(); // Advance to the next level's progression data
+	}
+	UPSWorldSubsystem::Get().SaveDataAsync(); // Asynchronously save the updated data
 }
 
 // Advances to the next level progression row and unlocks it, if available, after the current row.
@@ -111,10 +142,25 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 // Unlocks all levels and set maximum allowed progression points
 void UPSSaveGameData::UnlockAllLevels()
 {
+	// unlock levels loop
 	for (TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
 	{
+		// levels
 		UnlockLevelByName(KeyValue.Key);
-		KeyValue.Value.CurrentLevelProgression = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName().PointsToUnlock;
+		const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetRowDataByName(KeyValue.Key);
+		if (!ensureMsgf(CurrentProgressionSettingsRowData.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
+		{
+			continue;
+		}
+		KeyValue.Value.CurrentLevelProgression = CurrentProgressionSettingsRowData.PointsToUnlock;
+
+		// skins
+		UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().FindSpotByRowName(KeyValue.Key);
+		if (SpotComponent != nullptr)
+		{
+			UMySkeletalMeshComponent& Mesh = SpotComponent->GetMeshChecked();
+			KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
+		}
 	}
 }
 
@@ -159,9 +205,9 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 // Returns the current save to disk data by name
 const FPSSaveToDiskData& UPSSaveGameData::GetSaveToDiskDataByName(FName CurrentRowName)
 {
-	if (const FPSSaveToDiskData* FoundSeeting = ProgressionSettingsRowDataInternal.Find(CurrentRowName))
+	if (const FPSSaveToDiskData* FoundSave = ProgressionSettingsRowDataInternal.Find(CurrentRowName))
 	{
-		return *FoundSeeting;
+		return *FoundSave;
 	}
 
 	return FPSSaveToDiskData::EmptyData;

@@ -79,6 +79,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FSettingTag GetInstantCharacterSwitchTag() const { return InstantCharacterSwitchTagInternal; }
 
+	/** Returns Skin Unlock Interval. Amount of stars required to unlock a skin */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE int32 GetSkinUnlockInterval() const { return SkinUnlockIntervalInternal; }
+
 protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
@@ -116,9 +120,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Multiplier Curve Table"))
 	TObjectPtr<UCurveTable> ProgressionDifficultyMultiplierCurveTableInternal = nullptr;
 
-	/** Stores the duration of fade-in/fade-out overlay animation in the main menu when cinematic started */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Fade duration"))
-	float FadeDurationInternal = 1.0;
 
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Percent Slot Name"))
@@ -136,4 +137,13 @@ protected:
 	/** When Instant character switch setting enabled fade animation will not be played */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", AdvancedDisplay, meta = (BlueprintProtected, DisplayName = "Instant Character Switch Tag"))
 	FSettingTag InstantCharacterSwitchTagInternal = FSettingTag::EmptySettingTag;
+
+	/** Stores the duration of fade-in/fade-out overlay animation in the main menu when cinematic started */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Fade duration"))
+	float FadeDurationInternal = 1.f;
+
+	/** Interval which used of amount stars required to unlock a skin
+	 * Can not be 0 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Skin Unlock Interval", ClampMin = "0"))
+	int32 SkinUnlockIntervalInternal = 1;
 };

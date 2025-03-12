@@ -4,11 +4,10 @@
 
 #include "Components/PSHUDComponent.h"
 #include "Data/PSWorldSubsystem.h"
-#include "Data/PSSaveGameData.h"
 #include "Components/MySkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/MyGameStateBase.h"
 #include "LevelActors/PlayerCharacter.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
@@ -28,8 +27,24 @@ void UPSSpotComponent::OnInitialized_Implementation()
 {
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
+	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
+
+	constexpr bool bApplySkin = false;
+	RefreshAmountOfUnlockedSkins(bApplySkin);
+
 	// Save reference of this component to the world subsystem
 	WorldSubsystem.RegisterSpotComponent(this);
+}
+
+// Once the save file is reset the spot component needs to reset skins
+void UPSSpotComponent::OnReset_Implementation()
+{
+	// reset 
+	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
+	for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
+	{
+		SpotMeshComponent.SetSkinAvailable(false, Index);
+	}
 }
 
 // Called when the game starts
@@ -38,6 +53,8 @@ void UPSSpotComponent::BeginPlay()
 	Super::BeginPlay();
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
+	WorldSubsystem.OnReset.AddDynamic(this, &ThisClass::OnReset);
+	OnReset();
 }
 
 // Clears all transient data created by this component.
@@ -50,6 +67,22 @@ void UPSSpotComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
+void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow)
+{
+	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
+	{
+		constexpr bool bApplySkin = true;
+		RefreshAmountOfUnlockedSkins(bApplySkin);
+	}
+}
+
 // Updates the progression menu widget when player changed
 void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag PlayerTag)
 {
@@ -57,6 +90,8 @@ void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlaye
 	if (Mesh.GetPlayerTag() == PlayerTag)
 	{
 		ChangeSpotVisibilityStatus(&Mesh);
+		constexpr bool bApplySkin = false;
+		RefreshAmountOfUnlockedSkins(bApplySkin);
 	}
 }
 
@@ -80,4 +115,24 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh
 	// Locks and unlocks the spot depends on the current level progression status
 	FPSSaveToDiskData SaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	Mesh->SetActive(!SaveToDiskDataRow.IsLevelLocked);
+}
+
+// Refresh Amount Of Unlocked skins for the character (level)s
+void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
+{
+	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
+	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
+
+	for (int32 Index = 0; Index <= UnlockedSkinsAmount; Index++)
+	{
+		SpotMeshComponent.SetSkinAvailable(true, Index);
+		if (bApplySkin)
+		{
+			SpotMeshComponent.ApplySkinByIndex(Index);
+			if (APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
+			{
+				PlayerCharacter->SetCustomPlayerMeshData(SpotMeshComponent.GetCustomPlayerMeshData());
+			}
+		}
+	}
 }

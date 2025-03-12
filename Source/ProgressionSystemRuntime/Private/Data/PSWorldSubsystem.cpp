@@ -64,13 +64,13 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 // Returns the data asset that contains all the assets of Progression System game feature
 const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
 {
-	return UMyPrimaryDataAsset::GetOrLoadOnce(PSDataAssetInternal);
+	return UMyPrimaryDataAsset::GetOrLoadOnce(DataAssetInternal);
 }
 
 //  Returns a current save to disk row name
 FName UPSWorldSubsystem::GetFirstSaveToDiskRowName() const
 {
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is empty!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is empty!"), __LINE__, __FUNCTION__))
 	{
 		return NAME_None;
 	}
@@ -80,7 +80,7 @@ FName UPSWorldSubsystem::GetFirstSaveToDiskRowName() const
 //  Returns a current save to disk row by name
 const FPSSaveToDiskData& UPSWorldSubsystem::GetCurrentSaveToDiskRowByName() const
 {
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is empty!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is empty!"), __LINE__, __FUNCTION__))
 	{
 		return FPSSaveToDiskData::EmptyData;
 	}
@@ -98,6 +98,17 @@ const FPSRowData& UPSWorldSubsystem::GetCurrentProgressionSettingsRowByName() co
 	return FPSRowData::EmptyData;
 }
 
+// Returns the current row data by name.
+const FPSRowData& UPSWorldSubsystem::GetRowDataByName(FName CurrentRowName) const
+{
+	if (const FPSRowData* FoundRow = ProgressionSettingsDataInternal.Find(CurrentRowName))
+	{
+		return *FoundRow;
+	}
+
+	return FPSRowData::EmptyData;
+}
+
 // Set the progression system component
 void UPSWorldSubsystem::SetHUDComponent(UPSHUDComponent* MyHUDComponent)
 {
@@ -105,7 +116,7 @@ void UPSWorldSubsystem::SetHUDComponent(UPSHUDComponent* MyHUDComponent)
 	{
 		return;
 	}
-	PSHUDComponentInternal = MyHUDComponent;
+	HUDComponentInternal = MyHUDComponent;
 }
 
 // Set the progression system spot component
@@ -115,7 +126,14 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 	{
 		return;
 	}
-	PSSpotComponentArrayInternal.AddUnique(MySpotComponent);
+
+	for (const TTuple<FName, FPSRowData>& RowData : ProgressionSettingsDataInternal)
+	{
+		if (RowData.Value.Character == MySpotComponent->GetMeshChecked().GetPlayerTag())
+		{
+			SpotComponentsMapInternal.Add(RowData.Key, MySpotComponent);
+		}
+	}
 }
 
 // Called when progression module ready
@@ -163,7 +181,7 @@ void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 // Is called when a player character is ready
 void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
 {
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -208,21 +226,20 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 	FName FirstSaveToDiskRow = GetFirstSaveToDiskRowName();
 
 	// early return if first element is not valid
-	if (!ensureMsgf(!FirstSaveToDiskRow.IsNone(), TEXT("ASSERT: [%i] %s:\n'FirstSaveToDiskRow' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(!FirstSaveToDiskRow.IsNone(), TEXT("ASSERT: [%i] %hs:\n'FirstSaveToDiskRow' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
 
 	CurrentRowNameInternal = FirstSaveToDiskRow;
 	SaveGameDataInternal->UnlockLevelByName(CurrentRowNameInternal);
-
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -291,29 +308,11 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 	}
 }
 
-// Returns current spot component returns null if spot is not found
-UPSSpotComponent* UPSWorldSubsystem::GetCurrentSpot() const
+// Find a spot component element by row name
+class UPSSpotComponent* UPSWorldSubsystem::FindSpotByRowName(FName RowName) const
 {
-	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-	if (!PlayerCharacter)
-	{
-		return nullptr;
-	}
-
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (PSSpotComponentArrayInternal.IsEmpty() || !PlayerTag.IsValid())
-	{
-		return nullptr;
-	}
-
-	for (UPSSpotComponent* SpotComponent : PSSpotComponentArrayInternal)
-	{
-		if (SpotComponent && SpotComponent->GetMeshChecked().GetPlayerTag() == PlayerTag)
-		{
-			return SpotComponent;
-		}
-	}
-	return nullptr;
+	const TObjectPtr<UPSSpotComponent>* FoundSpotPtr = SpotComponentsMapInternal.Find(RowName);
+	return FoundSpotPtr ? *FoundSpotPtr : nullptr;
 }
 
 // Returns Progression Star Dynamic Material by state
@@ -337,7 +336,7 @@ void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(USaveGam
 {
 	// load from data table
 	const UDataTable* ProgressionDataTable = UPSDataAsset::Get().GetProgressionDataTable();
-	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %s:\n'ProgressionDataTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %hs:\n'ProgressionDataTable' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -379,9 +378,9 @@ void UPSWorldSubsystem::PerformCleanUp()
 	StarDynamicProgressMaterial = nullptr;
 
 	// Subsystem clean up  
-	UMyPrimaryDataAsset::ResetDataAsset(PSDataAssetInternal);
-	PSHUDComponentInternal = nullptr;
-	PSSpotComponentArrayInternal.Empty();
+	UMyPrimaryDataAsset::ResetDataAsset(DataAssetInternal);
+	HUDComponentInternal = nullptr;
+	SpotComponentsMapInternal.Empty();
 
 	// Saves clean up 
 	if (SaveGameDataInternal)
@@ -418,7 +417,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 
 	// load from data table
 	const UDataTable* ProgressionDataTable = UPSDataAsset::Get().GetProgressionDataTable();
-	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %s:\n'ProgressionDataTable' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(ProgressionDataTable, TEXT("ASSERT: [%i] %hs:\n'ProgressionDataTable' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
@@ -429,6 +428,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 		SaveGameDataInternal->SetProgressionMap(Row.Key, FPSSaveToDiskData::EmptyData);
 	}
 
+	OnReset.Broadcast();
 	// Re-load save game object. Load game from save file or if there is no such creates a new one
 	SetFirstElementAsCurrent();
 }
@@ -436,14 +436,15 @@ void UPSWorldSubsystem::ResetSaveGameData()
 // Unlocks all levels of the Progression System
 void UPSWorldSubsystem::UnlockAllLevels()
 {
-	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %s:\n'SaveGameDataInternal' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
 	SaveGameDataInternal->UnlockAllLevels();
+
 	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %s:\n'PlayerCharacter' is not valid!"), __LINE__, *FString(__FUNCTION__)))
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
