@@ -79,6 +79,7 @@ struct FPSSaveToDiskData
 	/** Defines if level is locked or not */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	bool IsLevelLocked = true;
+};
 
 	/* Stores the amount of total unlocked skins index */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
