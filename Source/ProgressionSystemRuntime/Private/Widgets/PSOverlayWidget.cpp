@@ -36,6 +36,10 @@ void UPSOverlayWidget::SetOverlayVisibility(EPSOverlayWidgetFadeState NewState)
 
 	if (NewState == EPSOverlayWidgetFadeState::FadeInFinished || NewState == EPSOverlayWidgetFadeState::FadeOutFinished)
 	{
+		if (!ensureMsgf(PSCOverlay, TEXT("ASSERT: [%i] %hs:\n'PSCOverlay' is not valid!"), __LINE__, __FUNCTION__))
+		{
+			return;
+		}
 		const ESlateVisibility desiredWidgetVisibility = NewState == EPSOverlayWidgetFadeState::FadeInFinished ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
 		const float desiredOpacity = NewState == EPSOverlayWidgetFadeState::FadeInFinished ? 1.0f : 0.0f;
 		PSCOverlay->SetRenderOpacity(desiredOpacity);
