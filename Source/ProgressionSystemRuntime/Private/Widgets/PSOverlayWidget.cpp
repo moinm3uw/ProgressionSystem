@@ -55,8 +55,7 @@ void UPSOverlayWidget::ApplyOverlayAnimation(EPSOverlayWidgetFadeAnimation NewAn
 void UPSOverlayWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (CurrentAnimationStyleInternal == EPSOverlayWidgetFadeAnimationType::None
-		|| CurrentAnimationStyleInternal == EPSOverlayWidgetFadeAnimationType::Instant)
+	if (CurrentAnimationStyleInternal == EPSOverlayWidgetFadeAnimationType::Instant)
 	{
 		return;
 	}
