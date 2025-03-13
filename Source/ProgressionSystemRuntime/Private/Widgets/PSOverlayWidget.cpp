@@ -20,11 +20,11 @@ void UPSOverlayWidget::ApplyOverlayAnimation(EPSOverlayWidgetFadeAnimation NewAn
 {
 	if (NewAnimationType == EPSOverlayWidgetFadeAnimationType::Instant)
 	{
-		const ESlateVisibility desiredWidgetVisibility = NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
-		const float desiredOpacity = NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn ? 1.0f : 0.0f;
-		PSCOverlay->SetRenderOpacity(desiredOpacity);
+		const ESlateVisibility DesiredWidgetVisibility = NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+		const float DesiredOpacity = NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn ? 1.0f : 0.0f;
+		PSCOverlay->SetRenderOpacity(DesiredOpacity);
 		StartTimeFadeAnimationInternal = 0.0f;
-		SetVisibility(desiredWidgetVisibility);
+		SetVisibility(DesiredWidgetVisibility);
 		CurrentAnimationStyleInternal = NewAnimationType;
 		return;
 	}
@@ -127,8 +127,8 @@ void UPSOverlayWidget::DisplayLevelUIOverlay()
 			{
 				const UMySkeletalMeshComponent& MeshComp = CurrentSpot->GetMeshChecked();
 				const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
-				const bool isCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
-				OverlayVisibility = isCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
+				const bool IsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
+				OverlayVisibility = IsCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
 			}
 		}
 
