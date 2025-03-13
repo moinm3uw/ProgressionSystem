@@ -18,6 +18,11 @@
 // Sets the visibility of the overlay elements and playing fade animation if needed
 void UPSOverlayWidget::ApplyOverlayAnimation(EPSOverlayWidgetFadeAnimation NewAnimation, EPSOverlayWidgetFadeAnimationType NewAnimationType)
 {
+	if (!ensureMsgf(PSCOverlay, TEXT("ASSERT: [%i] %hs:\n'PSCOverlay' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+	
 	if (NewAnimationType == EPSOverlayWidgetFadeAnimationType::Instant)
 	{
 		const ESlateVisibility DesiredWidgetVisibility = NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
