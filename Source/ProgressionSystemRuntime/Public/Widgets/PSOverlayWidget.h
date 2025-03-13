@@ -25,7 +25,7 @@ public:
 	* @param NewAnimationType Defines the type of animation to be played: Fade or Instant style
 	*/
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void ApplyOverlayAnimation(EPSOverlayWidgetFadeAnimation NewAnimation, EPSOverlayWidgetFadeAnimationType NewAnimationType);
+	void ApplyOverlayAnimation(EPSOverlayWidgetAnimation NewAnimation, EPSOverlayWidgetAnimationType NewAnimationType);
 
 protected:
 	/** overrides NativeTick to make the user widget tickable **/
@@ -58,11 +58,11 @@ protected:
 
 	/** Current overlay widget fade state. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade State"))
-	EPSOverlayWidgetFadeAnimationType CurrentAnimationStyleInternal = EPSOverlayWidgetFadeAnimationType::None;
+	EPSOverlayWidgetAnimationType CurrentAnimationTypeInternal = EPSOverlayWidgetAnimationType::None;
 
 	/** Current overlay widget fade type. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade Type"))
-	EPSOverlayWidgetFadeAnimation CurrentAnimationInternal = EPSOverlayWidgetFadeAnimation::None;
+	EPSOverlayWidgetAnimation CurrentAnimationInternal = EPSOverlayWidgetAnimation::None;
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
