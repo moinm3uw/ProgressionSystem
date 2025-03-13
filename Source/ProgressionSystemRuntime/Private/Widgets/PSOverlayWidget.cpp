@@ -113,22 +113,22 @@ void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag PlayerT
 void UPSOverlayWidget::DisplayLevelUIOverlay()
 {
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
-	const bool IsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
+	const bool bIsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
 
 	if (const USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
 	{
 		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
-		ESlateVisibility OverlayVisibility = IsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+		ESlateVisibility OverlayVisibility = bIsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
 
-		if (!IsLevelLocked)
+		if (!bIsLevelLocked)
 		{
 			const UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
 			if (CurrentSpot)
 			{
 				const UMySkeletalMeshComponent& MeshComp = CurrentSpot->GetMeshChecked();
 				const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
-				const bool IsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
-				OverlayVisibility = IsCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
+				const bool bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
+				OverlayVisibility = bIsCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
 			}
 		}
 
