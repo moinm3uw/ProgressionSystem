@@ -57,11 +57,11 @@ protected:
 
 	/** Current overlay widget fade state. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade State"))
-	EPSOverlayWidgetFadeAnimationState CurrentOverlayWidgetFadeAnimationStateInternal = EPSOverlayWidgetFadeAnimationState::None;
+	EPSOverlayWidgetFadeAnimationState CurrentFadeStateInternal = EPSOverlayWidgetFadeAnimationState::None;
 
 	/** Current overlay widget fade type. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade Type"))
-	EPSOverlayWidgetFadeAnimationType CurrentOverlayWidgetFadeAnimationTypeInternal = EPSOverlayWidgetFadeAnimationType::None;
+	EPSOverlayWidgetFadeAnimationType CurrentFadeTypeInternal = EPSOverlayWidgetFadeAnimationType::None;
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
