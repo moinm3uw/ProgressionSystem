@@ -132,8 +132,8 @@ void UPSOverlayWidget::DisplayLevelUIOverlay()
 			}
 		}
 
-		EPSOverlayWidgetFadeAnimation Animation = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetFadeAnimation::FadeIn : EPSOverlayWidgetFadeAnimation::FadeOut;
-		EPSOverlayWidgetFadeAnimationType AnimationType = bShouldPlayFadeAnimation ? EPSOverlayWidgetFadeAnimationType::Fade : EPSOverlayWidgetFadeAnimationType::Instant;
+		const EPSOverlayWidgetFadeAnimation Animation = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetFadeAnimation::FadeIn : EPSOverlayWidgetFadeAnimation::FadeOut;
+		const EPSOverlayWidgetFadeAnimationType AnimationType = bShouldPlayFadeAnimation ? EPSOverlayWidgetFadeAnimationType::Fade : EPSOverlayWidgetFadeAnimationType::Instant;
 		ApplyOverlayAnimation(Animation, AnimationType);
 	}
 }
