@@ -10,7 +10,8 @@
 /**
  * 
  * Overlay widget which is displayed for the locked/unlocked levels in the main menu
- * If level is locked overlay is displayed. Is unlocked - no overlay 
+ * If level is locked overlay is displayed. Is unlocked - no overlay.
+ * For transition between locked and unlocked widget has fade-in, fade-out or instant appearing effect
  */
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UPSOverlayWidget : public UUserWidget
@@ -19,12 +20,12 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSOverlayWidget : public UUserWidget
 
 public:
 	/**
-	* Sets the visibility of the overlay elements and playing fade animation if needed 
-	* @param NewFadeAnimationType The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
-	* @param NewFadeAnimationState Defines if the fade animation should be played after or before widget is visible
+	* Applies animation and requested animation style
+	* @param NewAnimation defines animation to be applied: e.g. FadeIn, FadeOut
+	* @param NewAnimationType Defines the type of animation to be played: Fade or Instant style
 	*/
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void SetOverlayVisibility(EPSOverlayWidgetFadeAnimationType NewFadeAnimationType, EPSOverlayWidgetFadeAnimationState NewFadeAnimationState);
+	void ApplyOverlayAnimation(EPSOverlayWidgetFadeAnimation NewAnimation, EPSOverlayWidgetFadeAnimationType NewAnimationType);
 
 protected:
 	/** overrides NativeTick to make the user widget tickable **/
@@ -57,11 +58,11 @@ protected:
 
 	/** Current overlay widget fade state. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade State"))
-	EPSOverlayWidgetFadeAnimationState CurrentFadeStateInternal = EPSOverlayWidgetFadeAnimationState::None;
+	EPSOverlayWidgetFadeAnimationType CurrentAnimationStyleInternal = EPSOverlayWidgetFadeAnimationType::None;
 
 	/** Current overlay widget fade type. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade Type"))
-	EPSOverlayWidgetFadeAnimationType CurrentFadeTypeInternal = EPSOverlayWidgetFadeAnimationType::None;
+	EPSOverlayWidgetFadeAnimation CurrentAnimationInternal = EPSOverlayWidgetFadeAnimation::None;
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))

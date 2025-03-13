@@ -16,33 +16,31 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSOverlayWidget)
 
 // Sets the visibility of the overlay elements and playing fade animation if needed
-// Example: FadeIn, Active
-// void UPSOverlayWidget::SetOverlayVisibility(EPSOverlayWidgetFadeStateDirection NewState)
-void UPSOverlayWidget::SetOverlayVisibility(EPSOverlayWidgetFadeAnimationType NewFadeAnimationType, EPSOverlayWidgetFadeAnimationState NewFadeAnimationState)
+void UPSOverlayWidget::ApplyOverlayAnimation(EPSOverlayWidgetFadeAnimation NewAnimation, EPSOverlayWidgetFadeAnimationType NewAnimationType)
 {
-	if (NewFadeAnimationState == EPSOverlayWidgetFadeAnimationState::Finished)
+	if (NewAnimationType == EPSOverlayWidgetFadeAnimationType::Instant)
 	{
-		const ESlateVisibility desiredWidgetVisibility = NewFadeAnimationType == EPSOverlayWidgetFadeAnimationType::FadeIn ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
-		const float desiredOpacity = NewFadeAnimationType == EPSOverlayWidgetFadeAnimationType::FadeIn ? 1.0f : 0.0f;
+		const ESlateVisibility desiredWidgetVisibility = NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+		const float desiredOpacity = NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn ? 1.0f : 0.0f;
 		PSCOverlay->SetRenderOpacity(desiredOpacity);
 		StartTimeFadeAnimationInternal = 0.0f;
 		SetVisibility(desiredWidgetVisibility);
-		CurrentFadeStateInternal = NewFadeAnimationState;
+		CurrentAnimationStyleInternal = NewAnimationType;
 		return;
 	}
 
-	if (NewFadeAnimationType == EPSOverlayWidgetFadeAnimationType::FadeIn && CurrentFadeTypeInternal == EPSOverlayWidgetFadeAnimationType::FadeIn)
+	if (NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn && CurrentAnimationInternal == EPSOverlayWidgetFadeAnimation::FadeIn)
 	{
 		return;
 	}
 
-	if (NewFadeAnimationType == EPSOverlayWidgetFadeAnimationType::FadeIn)
+	if (NewAnimation == EPSOverlayWidgetFadeAnimation::FadeIn)
 	{
 		SetVisibility(ESlateVisibility::Visible);
 	}
 
-	CurrentFadeTypeInternal = NewFadeAnimationType;
-	CurrentFadeStateInternal = NewFadeAnimationState;
+	CurrentAnimationInternal = NewAnimation;
+	CurrentAnimationStyleInternal = NewAnimationType;
 
 	const UWorld* World = GetWorld();
 	if (!ensureMsgf(World, TEXT("ASSERT: [%i] %hs:\n'World' is not valid!"), __LINE__, __FUNCTION__))
@@ -57,8 +55,8 @@ void UPSOverlayWidget::SetOverlayVisibility(EPSOverlayWidgetFadeAnimationType Ne
 void UPSOverlayWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (CurrentFadeStateInternal == EPSOverlayWidgetFadeAnimationState::None
-		|| CurrentFadeStateInternal == EPSOverlayWidgetFadeAnimationState::Finished)
+	if (CurrentAnimationStyleInternal == EPSOverlayWidgetFadeAnimationType::None
+		|| CurrentAnimationStyleInternal == EPSOverlayWidgetFadeAnimationType::Instant)
 	{
 		return;
 	}
@@ -87,14 +85,14 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 		return;
 	}
 
-	const bool bIsFadeOutAnimation = CurrentFadeTypeInternal == EPSOverlayWidgetFadeAnimationType::FadeOut;
+	const bool bIsFadeOutAnimation = CurrentAnimationInternal == EPSOverlayWidgetFadeAnimation::FadeOut;
 	const float SecondsSinceStart = GetWorld()->GetTimeSeconds() - StartTimeFadeAnimationInternal;
 	const float NormalizedTime = FMath::Clamp(SecondsSinceStart / FadeDuration, 0.0f, 1.0f);
 	const float OpacityValue = bIsFadeOutAnimation ? 1.0f - NormalizedTime : NormalizedTime;
 
 	if (SecondsSinceStart >= FadeDuration)
 	{
-		SetOverlayVisibility(CurrentFadeTypeInternal, EPSOverlayWidgetFadeAnimationState::Finished);
+		ApplyOverlayAnimation(CurrentAnimationInternal, EPSOverlayWidgetFadeAnimationType::Instant);
 		return;
 	}
 
@@ -134,8 +132,8 @@ void UPSOverlayWidget::DisplayLevelUIOverlay()
 			}
 		}
 
-		EPSOverlayWidgetFadeAnimationType FadeAnimationType = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetFadeAnimationType::FadeIn : EPSOverlayWidgetFadeAnimationType::FadeOut;
-		EPSOverlayWidgetFadeAnimationState FadeAnimationState = bShouldPlayFadeAnimation ? EPSOverlayWidgetFadeAnimationState::Active : EPSOverlayWidgetFadeAnimationState::Finished;
-		SetOverlayVisibility(FadeAnimationType, FadeAnimationState);
+		EPSOverlayWidgetFadeAnimation Animation = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetFadeAnimation::FadeIn : EPSOverlayWidgetFadeAnimation::FadeOut;
+		EPSOverlayWidgetFadeAnimationType AnimationType = bShouldPlayFadeAnimation ? EPSOverlayWidgetFadeAnimationType::Fade : EPSOverlayWidgetFadeAnimationType::Instant;
+		ApplyOverlayAnimation(Animation, AnimationType);
 	}
 }
