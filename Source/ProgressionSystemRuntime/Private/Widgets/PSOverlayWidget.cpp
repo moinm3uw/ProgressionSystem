@@ -34,8 +34,7 @@ void UPSOverlayWidget::ApplyOverlayAnimation(EPSOverlayWidgetAnimation NewAnimat
 		return;
 	}
 
-	if (NewAnimation == EPSOverlayWidgetAnimation::FadeIn && CurrentAnimationInternal == EPSOverlayWidgetAnimation::FadeIn
-		|| NewAnimation == EPSOverlayWidgetAnimation::FadeOut && CurrentAnimationInternal == EPSOverlayWidgetAnimation::FadeOut)
+	if (NewAnimation == CurrentAnimationInternal)
 	{
 		return;
 	}
