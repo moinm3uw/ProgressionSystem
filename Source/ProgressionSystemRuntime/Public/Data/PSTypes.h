@@ -89,7 +89,7 @@ struct FPSSaveToDiskData
  * Represents animations of the overlay widget animations played in the menu
  */
 UENUM(BlueprintType, DisplayName = "Overlay Widget Animation Type")
-enum class EPSOverlayWidgetAnimation : uint8
+enum class EPSOverlayWidgetAnimationName : uint8
 {
 	///< Default fade no animation required
 	None,

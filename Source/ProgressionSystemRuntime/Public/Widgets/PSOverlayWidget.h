@@ -21,11 +21,11 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSOverlayWidget : public UUserWidget
 public:
 	/**
 	* Applies animation and requested animation style
-	* @param NewAnimation defines animation to be applied: e.g. FadeIn, FadeOut
-	* @param NewAnimationType Defines the type of animation to be played: Fade or Instant style
+	* @param RequestedAnimationName defines animation to be applied: e.g. FadeIn, FadeOut
+	* @param RequestedAnimationType Defines the type of animation to be played: Fade or Instant style
 	*/
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void ApplyOverlayAnimation(EPSOverlayWidgetAnimation NewAnimation, EPSOverlayWidgetAnimationType NewAnimationType);
+	void ApplyOverlayAnimation(EPSOverlayWidgetAnimationName RequestedAnimationName, EPSOverlayWidgetAnimationType RequestedAnimationType);
 
 protected:
 	/** overrides NativeTick to make the user widget tickable **/
@@ -62,7 +62,7 @@ protected:
 
 	/** Current overlay widget fade type. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade Type"))
-	EPSOverlayWidgetAnimation CurrentAnimationInternal = EPSOverlayWidgetAnimation::None;
+	EPSOverlayWidgetAnimationName CurrentAnimationNameInternal = EPSOverlayWidgetAnimationName::None;
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
