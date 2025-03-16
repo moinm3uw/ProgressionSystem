@@ -81,8 +81,6 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 {
 	// it's possible that spot might not be loaded till that time so no ensure added
 	const UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
-
-	// check the spot  
 	if (CurrentSpot == nullptr || CurrentSpot != this)
 	{
 		return;
@@ -92,20 +90,24 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 	const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
 	bool bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
 
-	if (!bIsCurrentSkinAvailable)
+	// Current skins is available no need to switch to last avaialble
+	if (bIsCurrentSkinAvailable)
 	{
-		for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
+		return;
+	}
+
+	// find last unlocked skin 
+	for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
+	{
+		bool bIsLastUnlockedFound = Count > 0 ? MeshComp.IsSkinAvailable(Count) : bIsCurrentSkinAvailable = true;
+
+		if (bIsLastUnlockedFound)
 		{
-			bIsCurrentSkinAvailable = Count > 0 ? MeshComp.IsSkinAvailable(Count) : bIsCurrentSkinAvailable = true;
+			MeshComp.ApplySkinByIndex(Count);
 
-			if (bIsCurrentSkinAvailable)
-			{
-				MeshComp.ApplySkinByIndex(Count);
-
-				constexpr bool bApplySkin = true;
-				RefreshAmountOfUnlockedSkins(bApplySkin);
-				break;
-			}
+			constexpr bool bApplySkin = true;
+			RefreshAmountOfUnlockedSkins(bApplySkin);
+			break;
 		}
 	}
 }
