@@ -66,14 +66,7 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	{
 		for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
 		{
-			if (Count == 0)
-			{
-				bIsCurrentSkinAvailable = true;
-			}
-			else
-			{
-				bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(Count);
-			}
+			bIsCurrentSkinAvailable = Count > 0 ? MeshComp.IsSkinAvailable(Count) : bIsCurrentSkinAvailable = true;
 
 			if (bIsCurrentSkinAvailable)
 			{
