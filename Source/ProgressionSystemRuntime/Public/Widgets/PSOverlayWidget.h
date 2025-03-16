@@ -55,7 +55,7 @@ protected:
 	/** if the fade-in/fade-out overlay animation in the main menu when cinematic started should be played */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Should fade animation to be played"))
 	bool bShouldPlayFadeAnimationInternal = false;
-
+	
 	/** Current overlay widget fade state. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade State"))
 	EPSOverlayWidgetAnimationType CurrentAnimationTypeInternal = EPSOverlayWidgetAnimationType::None;
@@ -64,7 +64,11 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade Type"))
 	EPSOverlayWidgetAnimationName CurrentAnimationNameInternal = EPSOverlayWidgetAnimationName::None;
 
+	/** Stores the previous player tag. Used to compare if it's a character switch or skin change */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Previous player tag"))
+	FPlayerTag PreviousPlayerTagInternal = FPlayerTag::None;
+
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void DisplayLevelUIOverlay();
+	void DisplayLevelUIOverlay(bool bIsNewCharacter);
 };

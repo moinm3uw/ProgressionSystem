@@ -111,12 +111,14 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 // When a character has been changed current active progression row also changes
 void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag PlayerTag)
 {
-	DisplayLevelUIOverlay();
+	const bool bIsNewCharacter = PreviousPlayerTagInternal != PlayerTag;
+	DisplayLevelUIOverlay(bIsNewCharacter);
+	PreviousPlayerTagInternal = PlayerTag;
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
 // by default overlay is always displayed 
-void UPSOverlayWidget::DisplayLevelUIOverlay()
+void UPSOverlayWidget::DisplayLevelUIOverlay(bool bIsnewCharacter)
 {
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	const bool bIsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
@@ -139,7 +141,11 @@ void UPSOverlayWidget::DisplayLevelUIOverlay()
 		}
 
 		const EPSOverlayWidgetAnimationName AnimationName = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetAnimationName::FadeIn : EPSOverlayWidgetAnimationName::FadeOut;
-		const EPSOverlayWidgetAnimationType AnimationType = bShouldPlayFadeAnimation ? EPSOverlayWidgetAnimationType::Fade : EPSOverlayWidgetAnimationType::Instant;
+		EPSOverlayWidgetAnimationType AnimationType = bShouldPlayFadeAnimation ? EPSOverlayWidgetAnimationType::Fade : EPSOverlayWidgetAnimationType::Instant;
+		if (!bIsnewCharacter)
+		{
+			AnimationType = EPSOverlayWidgetAnimationType::Instant;
+		}
 		ApplyOverlayAnimation(AnimationName, AnimationType);
 	}
 }
