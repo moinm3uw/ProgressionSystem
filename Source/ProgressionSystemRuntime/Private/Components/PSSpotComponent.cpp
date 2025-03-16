@@ -51,7 +51,7 @@ void UPSSpotComponent::OnReset_Implementation()
 void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
 {
 	// it's possible that spot might not be loaded till that time so no ensure added
-	UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
+	const UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
 
 	// check the spot  
 	if (CurrentSpot == nullptr || CurrentSpot != this)
