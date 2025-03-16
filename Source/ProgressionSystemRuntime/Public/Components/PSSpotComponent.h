@@ -62,4 +62,8 @@ protected:
 	/** Updates the progression unlocked skins when score changes */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
 	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow);
+	
+	/** Check is player is allowed to play with current skin if not switch to allowed */
+	UFUNCTION(BlueprintCallable, Category= "C++")
+	void TryRestorePlayerSkin();
 };
