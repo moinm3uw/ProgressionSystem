@@ -64,20 +64,20 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 
 	if (CurrentGameState == ECurrentGameState::GameStarting && !isCurrentSkinAvailable)
 	{
-		for (int32 i = CurrentSkinIndex; i >= 0; i--)
+		for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
 		{
-			if (i == 0)
+			if (Count == 0)
 			{
 				isCurrentSkinAvailable = true;
 			}
 			else
 			{
-				isCurrentSkinAvailable = MeshComp.IsSkinAvailable(i);
+				isCurrentSkinAvailable = MeshComp.IsSkinAvailable(Count);
 			}
 
 			if (isCurrentSkinAvailable)
 			{
-				MeshComp.ApplySkinByIndex(i);
+				MeshComp.ApplySkinByIndex(Count);
 
 				constexpr bool bApplySkin = true;
 				RefreshAmountOfUnlockedSkins(bApplySkin);
