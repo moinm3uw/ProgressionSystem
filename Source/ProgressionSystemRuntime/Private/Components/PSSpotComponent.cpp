@@ -58,34 +58,30 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	{
 		return;
 	}
+	UMySkeletalMeshComponent& MeshComp = GetMeshChecked();
+	const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
+	bool isCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
 
-	if (CurrentGameState == ECurrentGameState::GameStarting)
+	if (CurrentGameState == ECurrentGameState::GameStarting && !isCurrentSkinAvailable)
 	{
-		UMySkeletalMeshComponent& MeshComp = GetMeshChecked();
-		const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
-		bool isCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
-
-		if (!isCurrentSkinAvailable)
+		for (int32 i = CurrentSkinIndex; i >= 0; i--)
 		{
-			for (int32 i = CurrentSkinIndex; i >= 0; i--)
+			if (i == 0)
 			{
-				if (i == 0)
-				{
-					isCurrentSkinAvailable = true;
-				}
-				else
-				{
-					isCurrentSkinAvailable = MeshComp.IsSkinAvailable(i);
-				}
+				isCurrentSkinAvailable = true;
+			}
+			else
+			{
+				isCurrentSkinAvailable = MeshComp.IsSkinAvailable(i);
+			}
 
-				if (isCurrentSkinAvailable)
-				{
-					MeshComp.ApplySkinByIndex(i);
+			if (isCurrentSkinAvailable)
+			{
+				MeshComp.ApplySkinByIndex(i);
 
-					constexpr bool bApplySkin = true;
-					RefreshAmountOfUnlockedSkins(bApplySkin);
-					break;
-				}
+				constexpr bool bApplySkin = true;
+				RefreshAmountOfUnlockedSkins(bApplySkin);
+				break;
 			}
 		}
 	}
