@@ -32,6 +32,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "C++")
 	void RefreshAmountOfUnlockedSkins(bool bApplySkin);
 
+	/** Returns true if this is a current spot */
+	UFUNCTION(BlueprintCallable, Category= "C++")
+	bool IsCurrentSpot();
+
 protected:
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */

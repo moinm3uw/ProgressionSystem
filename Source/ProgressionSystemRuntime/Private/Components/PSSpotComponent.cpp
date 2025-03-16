@@ -114,14 +114,7 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 
 void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow)
 {
-	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
+	if (IsCurrentSpot())
 	{
 		constexpr bool bApplySkin = true;
 		RefreshAmountOfUnlockedSkins(bApplySkin);
@@ -165,6 +158,11 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh
 // Refresh Amount Of Unlocked skins for the character (level)s
 void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 {
+	if (!IsCurrentSpot())
+	{
+		return;
+	}
+	
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
 
@@ -180,4 +178,23 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 			}
 		}
 	}
+}
+
+// Returns true if this is a current spot
+bool UPSSpotComponent::IsCurrentSpot()
+{
+	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+
+	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return false;
+	}
+
+	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
+	{
+		return true;
+	}
+
+	return false;
 }

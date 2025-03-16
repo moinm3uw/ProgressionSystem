@@ -10,7 +10,8 @@
 /**
  * 
  * Overlay widget which is displayed for the locked/unlocked levels in the main menu
- * If level is locked overlay is displayed. Is unlocked - no overlay 
+ * If level is locked overlay is displayed. Is unlocked - no overlay.
+ * For transition between locked and unlocked widget has fade-in, fade-out or instant appearing effect
  */
 UCLASS()
 class PROGRESSIONSYSTEMRUNTIME_API UPSOverlayWidget : public UUserWidget
@@ -19,12 +20,12 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSOverlayWidget : public UUserWidget
 
 public:
 	/**
-	* Sets the visibility of the overlay elements and playing fade animation if needed 
-	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
-	* @param bShouldPlayFadeAnimation Defines if the fade animation should be played after or before widget is visible
+	* Applies animation and requested animation style
+	* @param RequestedAnimationName defines animation to be applied: e.g. FadeIn, FadeOut
+	* @param RequestedAnimationType Defines the type of animation to be played: Fade or Instant style
 	*/
 	UFUNCTION(BlueprintCallable, Category= "C++")
-	void SetOverlayVisibility(ESlateVisibility VisibilitySlate, bool bShouldPlayFadeAnimation = false);
+	void ApplyOverlayAnimation(EPSOverlayWidgetAnimationName RequestedAnimationName, EPSOverlayWidgetAnimationType RequestedAnimationType);
 
 protected:
 	/** overrides NativeTick to make the user widget tickable **/
@@ -42,13 +43,6 @@ protected:
 	/** When a character has been changed current active progression row also changes */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnCurrentRowDataChanged(FPlayerTag PlayerTag);
-	
-	/**
-	* Sets the visibility of the background overlay and lock icon.
-	* @param VisibilitySlate The visibility state (e.g., Visible, Collapsed) to apply to the overlay and icon.
-	*/
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void SetOverlayItemsVisibility(ESlateVisibility VisibilitySlate);
 
 	/** Overlay widget which is a root for all fade-in/out overlay elements */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
@@ -61,12 +55,20 @@ protected:
 	/** if the fade-in/fade-out overlay animation in the main menu when cinematic started should be played */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Should fade animation to be played"))
 	bool bShouldPlayFadeAnimationInternal = false;
-
+	
 	/** Current overlay widget fade state. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Overlay Widget Fade State"))
-	EPSOverlayWidgetFadeState OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::None;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade State"))
+	EPSOverlayWidgetAnimationType CurrentAnimationTypeInternal = EPSOverlayWidgetAnimationType::None;
+
+	/** Current overlay widget fade type. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade Type"))
+	EPSOverlayWidgetAnimationName CurrentAnimationNameInternal = EPSOverlayWidgetAnimationName::None;
+
+	/** Stores the previous player tag. Used to compare if it's a character switch or skin change */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Previous player tag"))
+	FPlayerTag PreviousPlayerTagInternal = FPlayerTag::None;
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void DisplayLevelUIOverlay();
+	void DisplayLevelUIOverlay(bool bIsNewCharacter);
 };
