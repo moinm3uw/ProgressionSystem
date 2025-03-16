@@ -60,22 +60,22 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	}
 	UMySkeletalMeshComponent& MeshComp = GetMeshChecked();
 	const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
-	bool isCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
+	bool bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
 
-	if (CurrentGameState == ECurrentGameState::GameStarting && !isCurrentSkinAvailable)
+	if (CurrentGameState == ECurrentGameState::GameStarting && !bIsCurrentSkinAvailable)
 	{
 		for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
 		{
 			if (Count == 0)
 			{
-				isCurrentSkinAvailable = true;
+				bIsCurrentSkinAvailable = true;
 			}
 			else
 			{
-				isCurrentSkinAvailable = MeshComp.IsSkinAvailable(Count);
+				bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(Count);
 			}
 
-			if (isCurrentSkinAvailable)
+			if (bIsCurrentSkinAvailable)
 			{
 				MeshComp.ApplySkinByIndex(Count);
 
