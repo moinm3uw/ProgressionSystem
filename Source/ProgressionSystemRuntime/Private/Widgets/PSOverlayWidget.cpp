@@ -23,6 +23,7 @@ void UPSOverlayWidget::ApplyOverlayAnimation(EPSOverlayWidgetAnimationName Reque
 		return;
 	}
 
+	// Handle state for instant animation 
 	if (RequestedAnimationType == EPSOverlayWidgetAnimationType::Instant)
 	{
 		const ESlateVisibility DesiredWidgetVisibility = RequestedAnimationName == EPSOverlayWidgetAnimationName::FadeIn ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
@@ -94,6 +95,7 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 	const float NormalizedTime = FMath::Clamp(SecondsSinceStart / FadeDuration, 0.0f, 1.0f);
 	const float OpacityValue = bIsFadeOutAnimation ? 1.0f - NormalizedTime : NormalizedTime;
 
+	// Animation finished
 	if (SecondsSinceStart >= FadeDuration)
 	{
 		ApplyOverlayAnimation(CurrentAnimationNameInternal, EPSOverlayWidgetAnimationType::Instant);
