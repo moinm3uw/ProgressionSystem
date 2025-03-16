@@ -15,7 +15,6 @@
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
-#include "GameFramework/MyGameStateBase.h"
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "MyUtilsLibraries/SaveUtilsLibrary.h"
