@@ -33,8 +33,8 @@ public:
 	void RefreshAmountOfUnlockedSkins(bool bApplySkin);
 
 	/** Returns true if this is a current spot */
-	UFUNCTION(BlueprintCallable, Category= "C++")
-	bool IsCurrentSpot();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "C++")
+	bool IsCurrentSpot() const;
 
 protected:
 	/** Called when progression module ready

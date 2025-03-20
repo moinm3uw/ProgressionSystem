@@ -182,7 +182,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 }
 
 // Returns true if this is a current spot
-bool UPSSpotComponent::IsCurrentSpot()
+bool UPSSpotComponent::IsCurrentSpot() const
 {
 	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
 	const FPlayerTag& PlayerTag = PlayerCharacter ? PlayerCharacter->GetPlayerTag() : FPlayerTag::None;
