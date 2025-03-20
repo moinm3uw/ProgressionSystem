@@ -113,7 +113,7 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 }
 
 // Updates the progression unlocked skins when score changes
-void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow)
+void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSSettingsRow& CurrentProgressionSettingsRow)
 {
 	if (IsCurrentSpot())
 	{

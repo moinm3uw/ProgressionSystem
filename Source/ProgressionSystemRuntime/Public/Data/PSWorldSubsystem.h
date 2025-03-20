@@ -23,7 +23,7 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnInitialize);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPSOnCurrentScoreChanged, const FPSSaveToDiskData&, CurrenSaveToDiskDataRow, const FPSRowData&, CurrenProgressionSettingsRow);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPSOnCurrentScoreChanged, const FPSSaveToDiskData&, CurrenSaveToDiskDataRow, const FPSSettingsRow&, CurrenProgressionSettingsRow);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnReset);
 
@@ -90,13 +90,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	const FPSSaveToDiskData& GetCurrentSaveToDiskRowByName() const;
 
-	/** Returns a current progression row settings data row by name */
+	/** Returns a current progression settings data row */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	const FPSRowData& GetCurrentProgressionSettingsRowByName() const;
+	const FPSSettingsRow& GetCurrentProgressionSettingsRow() const;
 
-	/** Returns the current row data by name. */
+	/** Returns a current progression settings data row by name. */
 	UFUNCTION(BlueprintPure, Category="C++")
-	const FPSRowData& GetRowDataByName(FName CurrentRowName) const;
+	const FPSSettingsRow& GetSettingsRowByName(FName CurrentRowName) const;
 
 	/** Set the progression system component */
 	UFUNCTION(BlueprintCallable, Category = "C++")
@@ -163,7 +163,7 @@ protected:
 
 	/** Store default values from the progression settings data table cached once on load and never changed later */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Save Game Instance"))
-	TMap<FName/*Row*/, FPSRowData> ProgressionSettingsDataInternal;
+	TMap<FName/*Row*/, FPSSettingsRow> ProgressionSettingsDataInternal;
 
 	/** Store the current row name */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Row Name"))
