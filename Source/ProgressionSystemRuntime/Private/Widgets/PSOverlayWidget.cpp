@@ -117,7 +117,7 @@ void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag NewPlay
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
 // by default overlay is always displayed 
-void UPSOverlayWidget::DisplayLevelUIOverlay(bool bIsnewCharacter)
+void UPSOverlayWidget::DisplayLevelUIOverlay(bool bIsNewCharacter)
 {
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	const bool bIsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
@@ -141,7 +141,7 @@ void UPSOverlayWidget::DisplayLevelUIOverlay(bool bIsnewCharacter)
 
 		const EPSOverlayWidgetAnimationName AnimationName = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetAnimationName::FadeIn : EPSOverlayWidgetAnimationName::FadeOut;
 		EPSOverlayWidgetAnimationType AnimationType = bShouldPlayFadeAnimation ? EPSOverlayWidgetAnimationType::Fade : EPSOverlayWidgetAnimationType::Instant;
-		if (!bIsnewCharacter)
+		if (!bIsNewCharacter)
 		{
 			AnimationType = EPSOverlayWidgetAnimationType::Instant;
 		}
