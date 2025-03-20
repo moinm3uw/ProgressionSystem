@@ -61,7 +61,7 @@ protected:
 
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
-	void OnCurrentActiveSaveRowChanged(const FPlayerTag PlayerTag);
+	void OnCurrentActiveSaveRowChanged(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag);
 
 	/** Updates the progression unlocked skins when score changes */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))

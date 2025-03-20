@@ -109,11 +109,10 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 }
 
 // When a character has been changed current active progression row also changes
-void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag PlayerTag)
+void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag NewPlayerTag, FPlayerTag PreviousPlayerTag)
 {
-	const bool bIsNewCharacter = PreviousPlayerTagInternal != PlayerTag;
+	const bool bIsNewCharacter = PreviousPlayerTag != NewPlayerTag;
 	DisplayLevelUIOverlay(bIsNewCharacter);
-	PreviousPlayerTagInternal = PlayerTag;
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level

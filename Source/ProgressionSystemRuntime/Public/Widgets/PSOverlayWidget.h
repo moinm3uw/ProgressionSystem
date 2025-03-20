@@ -42,7 +42,7 @@ protected:
 
 	/** When a character has been changed current active progression row also changes */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnCurrentRowDataChanged(FPlayerTag PlayerTag);
+	void OnCurrentRowDataChanged(FPlayerTag NewPlayerTag, FPlayerTag PreviousPlayerTag);
 
 	/** Overlay widget which is a root for all fade-in/out overlay elements */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))
@@ -63,10 +63,6 @@ protected:
 	/** Current overlay widget fade type. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Overlay Widget Fade Type"))
 	EPSOverlayWidgetAnimationName CurrentAnimationNameInternal = EPSOverlayWidgetAnimationName::None;
-
-	/** Stores the previous player tag. Used to compare if it's a character switch or skin change */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Previous player tag"))
-	FPlayerTag PreviousPlayerTagInternal = FPlayerTag::None;
 
 	/** Show locked level ui overlay */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))

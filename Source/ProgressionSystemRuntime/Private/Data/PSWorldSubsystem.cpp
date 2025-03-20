@@ -47,6 +47,9 @@ UPSWorldSubsystem& UPSWorldSubsystem::Get(const UObject& WorldContextObject)
 // Set current row of progression system by tag
 void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 {
+	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
+	const FPlayerTag& PreviousPlayerTag = CurrentSettingsRowData.Character;
+
 	for (const TTuple<FName, FPSRowData>& KeyValue : ProgressionSettingsDataInternal)
 	{
 		const FPSRowData& RowData = KeyValue.Value;
@@ -54,7 +57,7 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 		if (RowData.Character == NewRowPlayerTag)
 		{
 			CurrentRowNameInternal = KeyValue.Key;
-			OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag);
+			OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag, PreviousPlayerTag);
 			UpdateProgressionStarActors();
 			return; // Exit immediately after finding the match
 		}

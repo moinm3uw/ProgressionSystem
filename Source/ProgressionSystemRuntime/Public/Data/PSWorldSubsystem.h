@@ -19,7 +19,7 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCurrentActiveSaveRowChanged, const FPlayerTag, SavedProgressionRowData);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCurrentActiveSaveRowChanged, const FPlayerTag, NewPlayerTag, const FPlayerTag, PreviousPlayerTag);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnInitialize);
 
