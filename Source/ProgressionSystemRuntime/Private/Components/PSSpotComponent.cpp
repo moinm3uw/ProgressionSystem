@@ -99,7 +99,7 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 	// find last unlocked skin 
 	for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
 	{
-		bool bIsLastUnlockedFound = Count > 0 ? MeshComp.IsSkinAvailable(Count) : bIsCurrentSkinAvailable = true;
+		const bool bIsLastUnlockedFound = Count > 0 ? MeshComp.IsSkinAvailable(Count) : bIsCurrentSkinAvailable = true;
 
 		if (bIsLastUnlockedFound)
 		{
@@ -162,7 +162,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 	{
 		return;
 	}
-	
+
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
 
