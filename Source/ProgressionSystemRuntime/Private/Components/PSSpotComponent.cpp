@@ -185,17 +185,6 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 bool UPSSpotComponent::IsCurrentSpot()
 {
 	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return false;
-	}
-
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
-	{
-		return true;
-	}
-
-	return false;
+	const FPlayerTag& PlayerTag = PlayerCharacter ? PlayerCharacter->GetPlayerTag() : FPlayerTag::None;
+	return PlayerCharacter && GetMeshChecked().GetPlayerTag() == PlayerTag;
 }
