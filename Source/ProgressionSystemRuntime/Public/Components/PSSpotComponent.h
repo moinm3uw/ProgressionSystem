@@ -52,7 +52,7 @@ protected:
 	/** Listen game states to switch character skin. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnGameStateChanged(ECurrentGameState CurrentGameState);
-	
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
@@ -66,8 +66,8 @@ protected:
 	/** Updates the progression unlocked skins when score changes */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
 	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow);
-	
+
 	/** Check is player is allowed to play with current skin if not switch to allowed */
-	UFUNCTION(BlueprintCallable, Category= "C++")
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void TryRestorePlayerSkin();
 };
