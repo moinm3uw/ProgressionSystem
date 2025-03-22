@@ -4,9 +4,11 @@
 #include "Widgets/PSOverlayWidget.h"
 
 #include "Components/Image.h"
+#include "Components/MySkeletalMeshComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Data/PSDataAsset.h"
 #include "Components/Overlay.h"
+#include "Components/PSSpotComponent.h"
 #include "Data/PSWorldSubsystem.h"
 #include "UI/SettingsWidget.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
@@ -14,43 +16,37 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSOverlayWidget)
 
 // Sets the visibility of the overlay elements and playing fade animation if needed
-void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bool bShouldPlayFadeAnimation/* = false*/)
+void UPSOverlayWidget::ApplyOverlayAnimation(EPSOverlayWidgetAnimationName RequestedAnimationName, EPSOverlayWidgetAnimationType RequestedAnimationType)
 {
-	if (!bShouldPlayFadeAnimation)
+	if (!ensureMsgf(PSCOverlay, TEXT("ASSERT: [%i] %hs:\n'PSCOverlay' is not valid!"), __LINE__, __FUNCTION__))
 	{
-		if (PSCOverlay)
-		{
-			// reset render opacity
-			PSCOverlay->SetRenderOpacity(1.0f);
-		}
-		SetOverlayItemsVisibility(VisibilitySlate);
 		return;
 	}
 
-	bShouldPlayFadeAnimationInternal = bShouldPlayFadeAnimation;
-
-	if (VisibilitySlate == ESlateVisibility::Visible)
+	// Handle state for instant animation 
+	if (RequestedAnimationType == EPSOverlayWidgetAnimationType::Instant)
 	{
-		if (!ensureMsgf(PSCOverlay, TEXT("ASSERT: [%i] %hs:\n'PSCOverlay' is not valid!"), __LINE__, __FUNCTION__))
-		{
-			return;
-		}
-
-		ESlateVisibility PrevOverlayOpacity = GetVisibility();
-
-		//if new visibility is same as previous animation is not required 
-		if (PrevOverlayOpacity == VisibilitySlate)
-		{
-			bShouldPlayFadeAnimationInternal = false;
-			OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::None;
-		}
-		OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::FadeIn;
-		SetOverlayItemsVisibility(VisibilitySlate);
+		const ESlateVisibility DesiredWidgetVisibility = RequestedAnimationName == EPSOverlayWidgetAnimationName::FadeIn ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+		const float DesiredOpacity = RequestedAnimationName == EPSOverlayWidgetAnimationName::FadeIn ? 1.0f : 0.0f;
+		PSCOverlay->SetRenderOpacity(DesiredOpacity);
+		StartTimeFadeAnimationInternal = 0.0f;
+		SetVisibility(DesiredWidgetVisibility);
+		CurrentAnimationTypeInternal = RequestedAnimationType;
+		return;
 	}
-	else
+
+	if (RequestedAnimationName == CurrentAnimationNameInternal)
 	{
-		OverlayWidgetFadeStateInternal = EPSOverlayWidgetFadeState::FadeOut;
+		return;
 	}
+
+	if (RequestedAnimationName == EPSOverlayWidgetAnimationName::FadeIn)
+	{
+		SetVisibility(ESlateVisibility::Visible);
+	}
+
+	CurrentAnimationNameInternal = RequestedAnimationName;
+	CurrentAnimationTypeInternal = RequestedAnimationType;
 
 	const UWorld* World = GetWorld();
 	if (!ensureMsgf(World, TEXT("ASSERT: [%i] %hs:\n'World' is not valid!"), __LINE__, __FUNCTION__))
@@ -65,11 +61,10 @@ void UPSOverlayWidget::SetOverlayVisibility(ESlateVisibility VisibilitySlate, bo
 void UPSOverlayWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (GetVisibility() != ESlateVisibility::Visible)
+	if (CurrentAnimationTypeInternal != EPSOverlayWidgetAnimationType::Fade)
 	{
 		return;
 	}
-
 	TickPlayFadeOverlayAnimation();
 }
 
@@ -89,25 +84,21 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 	const UWorld* World = GetWorld();
 	const float FadeDuration = UPSDataAsset::Get().GetOverlayFadeDuration();
 
-	if (!bShouldPlayFadeAnimationInternal
-		|| !World
+	if (!World
 		|| !ensureMsgf(FadeDuration > 0.0f, TEXT("ASSERT: [%i] %hs:\n'FadeDuration' must be greater than 0"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
 
-	const bool bIsFadeOutAnimation = OverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOut;
+	const bool bIsFadeOutAnimation = CurrentAnimationNameInternal == EPSOverlayWidgetAnimationName::FadeOut;
 	const float SecondsSinceStart = GetWorld()->GetTimeSeconds() - StartTimeFadeAnimationInternal;
 	const float NormalizedTime = FMath::Clamp(SecondsSinceStart / FadeDuration, 0.0f, 1.0f);
 	const float OpacityValue = bIsFadeOutAnimation ? 1.0f - NormalizedTime : NormalizedTime;
 
+	// Animation finished
 	if (SecondsSinceStart >= FadeDuration)
 	{
-		bShouldPlayFadeAnimationInternal = false;
-		if (OverlayWidgetFadeStateInternal == EPSOverlayWidgetFadeState::FadeOut)
-		{
-			SetVisibility(ESlateVisibility::Collapsed);
-		}
+		ApplyOverlayAnimation(CurrentAnimationNameInternal, EPSOverlayWidgetAnimationType::Instant);
 		return;
 	}
 
@@ -118,29 +109,42 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 }
 
 // When a character has been changed current active progression row also changes
-void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag PlayerTag)
+void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag NewPlayerTag, FPlayerTag PreviousPlayerTag)
 {
-	DisplayLevelUIOverlay();
-}
-
-void UPSOverlayWidget::SetOverlayItemsVisibility(ESlateVisibility VisibilitySlate)
-{
-	// Level is unlocked hide the blocking overlay
-	SetVisibility(VisibilitySlate);
+	const bool bIsNewCharacter = PreviousPlayerTag != NewPlayerTag;
+	DisplayLevelUIOverlay(bIsNewCharacter);
 }
 
 // Show or hide the LevelUIOverlay depends on the level lock state for current level
 // by default overlay is always displayed 
-void UPSOverlayWidget::DisplayLevelUIOverlay()
+void UPSOverlayWidget::DisplayLevelUIOverlay(bool bIsNewCharacter)
 {
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
-	const bool IsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
+	const bool bIsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
 
-	if (USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
+	if (const USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
 	{
 		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
+		ESlateVisibility OverlayVisibility = bIsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
 
-		const ESlateVisibility OverlayVisibility = IsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
-		SetOverlayVisibility(OverlayVisibility, bShouldPlayFadeAnimation);
+		if (!bIsLevelLocked)
+		{
+			const UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
+			if (CurrentSpot)
+			{
+				const UMySkeletalMeshComponent& MeshComp = CurrentSpot->GetMeshChecked();
+				const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
+				const bool bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
+				OverlayVisibility = bIsCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
+			}
+		}
+
+		const EPSOverlayWidgetAnimationName AnimationName = OverlayVisibility == ESlateVisibility::Visible ? EPSOverlayWidgetAnimationName::FadeIn : EPSOverlayWidgetAnimationName::FadeOut;
+		EPSOverlayWidgetAnimationType AnimationType = bShouldPlayFadeAnimation ? EPSOverlayWidgetAnimationType::Fade : EPSOverlayWidgetAnimationType::Instant;
+		if (!bIsNewCharacter)
+		{
+			AnimationType = EPSOverlayWidgetAnimationType::Instant;
+		}
+		ApplyOverlayAnimation(AnimationName, AnimationType);
 	}
 }

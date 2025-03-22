@@ -12,14 +12,14 @@
  * Initial load performed once based on the data in the DT Table and never changed later
  */
 USTRUCT(BlueprintType)
-struct FPSRowData : public FTableRowBase
+struct FPSSettingsRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	static const FPSRowData EmptyData;
+	static const FPSSettingsRow EmptyData;
 
 	/** Default constructor. */
-	FPSRowData() = default;
+	FPSSettingsRow() = default;
 
 	/** Stores the value of the map for progression system component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
@@ -86,17 +86,31 @@ struct FPSSaveToDiskData
 };
 
 /**
- * Represents the state of the overlay widget fade animation played in the menu.
+ * Represents animations of the overlay widget animations played in the menu
  */
-UENUM(BlueprintType, DisplayName = "Overlay Widget Fade Animation State")
-enum class EPSOverlayWidgetFadeState : uint8
+UENUM(BlueprintType, DisplayName = "Overlay Widget Animation Type")
+enum class EPSOverlayWidgetAnimationName : uint8
 {
-	///< Is not in the Menu
+	///< Default fade no animation required
 	None,
 	///< Fade-it animation
 	FadeIn,
 	///< Fade-out animation 
 	FadeOut,
+};
+
+/**
+ * Represents type of the overlay widget animation played in the menu.
+ */
+UENUM(BlueprintType, DisplayName = "Overlay Widget Animation Type")
+enum class EPSOverlayWidgetAnimationType : uint8
+{
+	///< no type to be applied
+	None,
+	///< Fade type animation
+	Fade,
+	///< Instant (no animation) type 
+	Instant,
 };
 
 /**

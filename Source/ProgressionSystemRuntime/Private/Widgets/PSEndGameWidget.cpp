@@ -167,7 +167,7 @@ void UPSEndGameWidget::UpdateStarProgressBarValue(const FPoolObjectData& Created
 }
 
 // Updates the progression menu widget when player changed
-void UPSEndGameWidget::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrenSaveToDiskDataRow, const FPSRowData& CurrenProgressionSettingsRow)
+void UPSEndGameWidget::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrenSaveToDiskDataRow, const FPSSettingsRow& CurrenProgressionSettingsRow)
 {
 	//set updated amount of stars
 	if (CurrenSaveToDiskDataRow.CurrentLevelProgression >= CurrenProgressionSettingsRow.PointsToUnlock)

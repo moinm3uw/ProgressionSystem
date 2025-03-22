@@ -28,7 +28,7 @@ void UPSSpotComponent::OnInitialized_Implementation()
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
-
+	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 	constexpr bool bApplySkin = false;
 	RefreshAmountOfUnlockedSkins(bApplySkin);
 
@@ -44,6 +44,15 @@ void UPSSpotComponent::OnReset_Implementation()
 	for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(false, Index);
+	}
+}
+
+// Listen game states to switch character skin. 
+void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+{
+	if (CurrentGameState == ECurrentGameState::GameStarting)
+	{
+		TryRestorePlayerSkin();
 	}
 }
 
@@ -67,16 +76,43 @@ void UPSSpotComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
-void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSRowData& CurrentProgressionSettingsRow)
+// Check is player is allowed to play with current skin if not switch to allowed
+void UPSSpotComponent::TryRestorePlayerSkin()
 {
-	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
+	// it's possible that spot might not be loaded till that time so no ensure added
+	const UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
+	if (CurrentSpot == nullptr || CurrentSpot != this)
 	{
 		return;
 	}
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
-	if (GetMeshChecked().GetPlayerTag() == PlayerTag)
+
+	UMySkeletalMeshComponent& MeshComp = GetMeshChecked();
+	const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
+
+	// Current skins is available no need to switch to last avaialble
+	if (MeshComp.IsSkinAvailable(CurrentSkinIndex))
+	{
+		return;
+	}
+
+	// find last unlocked skin 
+	for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
+	{
+		if (Count == 0 || MeshComp.IsSkinAvailable(Count))
+		{
+			MeshComp.ApplySkinByIndex(Count);
+
+			constexpr bool bApplySkin = true;
+			RefreshAmountOfUnlockedSkins(bApplySkin);
+			break;
+		}
+	}
+}
+
+// Updates the progression unlocked skins when score changes
+void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSSettingsRow& CurrentProgressionSettingsRow)
+{
+	if (IsCurrentSpot())
 	{
 		constexpr bool bApplySkin = true;
 		RefreshAmountOfUnlockedSkins(bApplySkin);
@@ -84,10 +120,10 @@ void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskD
 }
 
 // Updates the progression menu widget when player changed
-void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag PlayerTag)
+void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag)
 {
 	UMySkeletalMeshComponent& Mesh = GetMeshChecked();
-	if (Mesh.GetPlayerTag() == PlayerTag)
+	if (Mesh.GetPlayerTag() == NewPlayerTag)
 	{
 		ChangeSpotVisibilityStatus(&Mesh);
 		constexpr bool bApplySkin = false;
@@ -120,6 +156,11 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh
 // Refresh Amount Of Unlocked skins for the character (level)s
 void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 {
+	if (!IsCurrentSpot())
+	{
+		return;
+	}
+
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
 
@@ -135,4 +176,12 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 			}
 		}
 	}
+}
+
+// Returns true if this is a current spot
+bool UPSSpotComponent::IsCurrentSpot() const
+{
+	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+	const FPlayerTag& PlayerTag = PlayerCharacter ? PlayerCharacter->GetPlayerTag() : FPlayerTag::None;
+	return PlayerCharacter && GetMeshChecked().GetPlayerTag() == PlayerTag;
 }
