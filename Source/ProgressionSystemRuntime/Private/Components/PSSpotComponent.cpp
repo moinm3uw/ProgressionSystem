@@ -88,10 +88,9 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 
 	UMySkeletalMeshComponent& MeshComp = GetMeshChecked();
 	const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
-	bool bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
 
 	// Current skins is available no need to switch to last avaialble
-	if (bIsCurrentSkinAvailable)
+	if (MeshComp.IsSkinAvailable(CurrentSkinIndex))
 	{
 		return;
 	}
@@ -99,9 +98,7 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 	// find last unlocked skin 
 	for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
 	{
-		const bool bIsLastUnlockedFound = Count > 0 ? MeshComp.IsSkinAvailable(Count) : bIsCurrentSkinAvailable = true;
-
-		if (bIsLastUnlockedFound)
+		if (Count == 0 || MeshComp.IsSkinAvailable(Count))
 		{
 			MeshComp.ApplySkinByIndex(Count);
 
