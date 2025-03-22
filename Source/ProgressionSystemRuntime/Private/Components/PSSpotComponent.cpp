@@ -10,8 +10,12 @@
 #include "LevelActors/PlayerCharacter.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "NativeGameplayTags.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
+
+// Skeletal mesh actor should own this tag, used to prevent initializing PS spots on other skeletal mesh actors, like from cinematics
+UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_NMM_SPOT, TEXT("NMM.Spot"));
 
 // Sets default values for this component's properties
 UPSSpotComponent::UPSSpotComponent()
@@ -60,6 +64,16 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 void UPSSpotComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Skeletal mesh actor should own this tag, used to prevent initializing PS spots on other skeletal mesh actors, like from cinematics
+	static const FName ExpectedTagName = TAG_NMM_SPOT.GetTag().GetTagName();
+	if (!GetOwner()->ActorHasTag(ExpectedTagName))
+	{
+		UE_LOG(LogBomber, Log, TEXT("[%i] %hs: Skip initializing '%s' spot for '%s' actor, it doesn't have '%s' tag."),
+			   __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
+		return;
+	}
+
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
 	WorldSubsystem.OnReset.AddDynamic(this, &ThisClass::OnReset);
