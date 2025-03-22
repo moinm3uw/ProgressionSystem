@@ -47,14 +47,17 @@ UPSWorldSubsystem& UPSWorldSubsystem::Get(const UObject& WorldContextObject)
 // Set current row of progression system by tag
 void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
 {
-	for (const TTuple<FName, FPSRowData>& KeyValue : ProgressionSettingsDataInternal)
+	const FPSSettingsRow& CurrentSettingsRowData = GetCurrentProgressionSettingsRow();
+	const FPlayerTag& PreviousPlayerTag = CurrentSettingsRowData.Character;
+
+	for (const TTuple<FName, FPSSettingsRow>& KeyValue : ProgressionSettingsDataInternal)
 	{
-		const FPSRowData& RowData = KeyValue.Value;
+		const FPSSettingsRow& RowData = KeyValue.Value;
 
 		if (RowData.Character == NewRowPlayerTag)
 		{
 			CurrentRowNameInternal = KeyValue.Key;
-			OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag);
+			OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag, PreviousPlayerTag);
 			UpdateProgressionStarActors();
 			return; // Exit immediately after finding the match
 		}
@@ -87,26 +90,26 @@ const FPSSaveToDiskData& UPSWorldSubsystem::GetCurrentSaveToDiskRowByName() cons
 	return SaveGameDataInternal->GetSaveToDiskDataByName(CurrentRowNameInternal);
 }
 
-// Returns a current progression row settings data row by name
-const FPSRowData& UPSWorldSubsystem::GetCurrentProgressionSettingsRowByName() const
+// Returns a current progression settings data row
+const FPSSettingsRow& UPSWorldSubsystem::GetCurrentProgressionSettingsRow() const
 {
-	if (const FPSRowData* FoundRow = ProgressionSettingsDataInternal.Find(CurrentRowNameInternal))
+	if (const FPSSettingsRow* FoundRow = ProgressionSettingsDataInternal.Find(CurrentRowNameInternal))
 	{
 		return *FoundRow;
 	}
 
-	return FPSRowData::EmptyData;
+	return FPSSettingsRow::EmptyData;
 }
 
-// Returns the current row data by name.
-const FPSRowData& UPSWorldSubsystem::GetRowDataByName(FName CurrentRowName) const
+// Returns a current progression settings data row by name
+const FPSSettingsRow& UPSWorldSubsystem::GetSettingsRowByName(FName CurrentRowName) const
 {
-	if (const FPSRowData* FoundRow = ProgressionSettingsDataInternal.Find(CurrentRowName))
+	if (const FPSSettingsRow* FoundRow = ProgressionSettingsDataInternal.Find(CurrentRowName))
 	{
 		return *FoundRow;
 	}
 
-	return FPSRowData::EmptyData;
+	return FPSSettingsRow::EmptyData;
 }
 
 // Set the progression system component
@@ -127,7 +130,7 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 		return;
 	}
 
-	for (const TTuple<FName, FPSRowData>& RowData : ProgressionSettingsDataInternal)
+	for (const TTuple<FName, FPSSettingsRow>& RowData : ProgressionSettingsDataInternal)
 	{
 		if (RowData.Value.Character == MySpotComponent->GetMeshChecked().GetPlayerTag())
 		{
@@ -269,7 +272,7 @@ void UPSWorldSubsystem::UpdateProgressionStarActors()
 	};
 
 	// --- Spawn actors
-	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrentSettingsRowData = GetCurrentProgressionSettingsRow();
 	if (CurrentSettingsRowData.PointsToUnlock)
 	{
 		UPoolManagerSubsystem::Get().TakeFromPoolArray(PoolActorHandlersInternal, UPSDataAsset::Get().GetStarActorClass(), CurrentSettingsRowData.PointsToUnlock, OnTakeActorsFromPoolCompleted, ESpawnRequestPriority::High);
@@ -279,7 +282,7 @@ void UPSWorldSubsystem::UpdateProgressionStarActors()
 // Dynamically adds Star actors which representing unlocked and locked progression above the character
 void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects)
 {
-	const FPSRowData& CurrentSettingsRowData = GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrentSettingsRowData = GetCurrentProgressionSettingsRow();
 	const FPSSaveToDiskData& CurrentSaveToDiskRowData = GetCurrentSaveToDiskRowByName();
 
 	float CurrentAmountOfUnlocked = CurrentSaveToDiskRowData.CurrentLevelProgression;
@@ -351,7 +354,7 @@ void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(USaveGam
 
 		if (SaveGameDataInternal)
 		{
-			for (const TTuple<FName, FPSRowData>& Row : ProgressionSettingsDataInternal)
+			for (const TTuple<FName, FPSSettingsRow>& Row : ProgressionSettingsDataInternal)
 			{
 				SaveGameDataInternal->SetProgressionMap(Row.Key, FPSSaveToDiskData::EmptyData);
 			}
@@ -398,7 +401,7 @@ void UPSWorldSubsystem::SaveDataAsync()
 		return;
 	}
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = GetCurrentSaveToDiskRowByName();
-	const FPSRowData& CurrenProgressionSettingsRow = GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrenProgressionSettingsRow = GetCurrentProgressionSettingsRow();
 
 	UpdateProgressionStarActors();
 	OnCurrentScoreChanged.Broadcast(CurrenSaveToDiskDataRow, CurrenProgressionSettingsRow);
@@ -423,7 +426,7 @@ void UPSWorldSubsystem::ResetSaveGameData()
 	}
 	UMyDataTable::GetRows(*ProgressionDataTable, ProgressionSettingsDataInternal);
 
-	for (const TTuple<FName, FPSRowData>& Row : ProgressionSettingsDataInternal)
+	for (const TTuple<FName, FPSSettingsRow>& Row : ProgressionSettingsDataInternal)
 	{
 		SaveGameDataInternal->SetProgressionMap(Row.Key, FPSSaveToDiskData::EmptyData);
 	}

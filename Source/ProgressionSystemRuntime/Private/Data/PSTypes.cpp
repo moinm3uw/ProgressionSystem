@@ -3,5 +3,5 @@
 #include "Data/PSTypes.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSTypes)
-const FPSRowData FPSRowData::EmptyData = FPSRowData{};
+const FPSSettingsRow FPSSettingsRow::EmptyData = FPSSettingsRow{};
 const FPSSaveToDiskData FPSSaveToDiskData::EmptyData = FPSSaveToDiskData{};

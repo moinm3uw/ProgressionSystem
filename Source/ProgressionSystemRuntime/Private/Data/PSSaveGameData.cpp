@@ -62,7 +62,7 @@ void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
 		return;
 	}
 	// Increase the current level's progression by the reward from the end game state
-	const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
 	if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
@@ -147,7 +147,7 @@ void UPSSaveGameData::UnlockAllLevels()
 	{
 		// levels
 		UnlockLevelByName(KeyValue.Key);
-		const FPSRowData& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetRowDataByName(KeyValue.Key);
+		const FPSSettingsRow& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetSettingsRowByName(KeyValue.Key);
 		if (!ensureMsgf(CurrentProgressionSettingsRowData.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
 		{
 			continue;

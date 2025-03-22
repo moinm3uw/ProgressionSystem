@@ -92,7 +92,7 @@ void APSStarActor::OnAnyCinematicStarted_Implementation(const UObject* LevelSequ
 // Hiding stars with animation in main menu when cinematic is start to play
 void APSStarActor::TryPlayHideStarAnimation()
 {
-	const FPSRowData& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
 	const bool bIsFinished = !TryPlayStarAnimation(StartTimeHideStarsInternal, CurrentProgressionSettingsRow.HideStarsAnimation);
 	if (bIsFinished)
 	{
@@ -104,7 +104,7 @@ void APSStarActor::TryPlayHideStarAnimation()
 // Menu stars with animation in main menu idle 
 void APSStarActor::TryPlayMenuStarAnimation()
 {
-	const FPSRowData& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
 	const bool bIsFinished = !TryPlayStarAnimation(StartTimeMenuStarsInternal, CurrentProgressionSettingsRow.MenuStarsAnimation);
 	if (bIsFinished)
 	{
@@ -147,7 +147,7 @@ void APSStarActor::SetStartTimeMenuStars()
 //  Is get called when a Star actor is initialized
 void APSStarActor::OnInitialized(const FVector& PreviousActorLocation)
 {
-	const FPSRowData& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
 	FTransform DesiredTransform = CurrentProgressionSettingsRow.StarActorTransform;
 
 	// set offset from previous if it's not first
@@ -206,7 +206,7 @@ void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynam
 	}
 
 	// Add a face texture over current star material
-	const FPSRowData& CurrentSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRowByName();
+	const FPSSettingsRow& CurrentSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
 	const FName StarFaceTextureParameter = UPSDataAsset::Get().GetStarFaceTextureParameter();
 	const FName StarProgressionMaterialSlotName = UPSDataAsset::Get().GetStarMaterialSlotName();
 	UTexture* StarFaceTexture = CurrentSettingsRowData.StarFaceTexture;
