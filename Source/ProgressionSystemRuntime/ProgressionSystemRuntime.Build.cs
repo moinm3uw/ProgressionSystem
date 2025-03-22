@@ -20,9 +20,10 @@ public class ProgressionSystemRuntime : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new[]
 			{
-				"CoreUObject", "Engine", "Slate", "SlateCore", // Core
+				"CoreUObject", "Engine", "Slate", "SlateCore" // Core
+				, "GameplayTags" // UE_DEFINE_GAMEPLAY_TAG_STATIC
 				// Bomber modules 
-				"MyUtils" 
+				, "MyUtils" 
 				, "PoolManager" // Star and Widget Actors
 				, "MetaCheatManager" // PSCheatExtension
 			}
