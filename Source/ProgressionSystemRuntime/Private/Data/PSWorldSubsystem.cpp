@@ -9,11 +9,14 @@
 #include "Components/StaticMeshComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
+#include "DataAssets/BombDataAsset.h"
+#include "DataAssets/LevelActorDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "LevelActors/PlayerCharacter.h"
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "Engine/Engine.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -137,6 +140,22 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 			SpotComponentsMapInternal.Add(RowData.Key, MySpotComponent);
 		}
 	}
+
+	const ELevelType SpotType = MySpotComponent->GetMeshChecked().GetAssociatedLevelType();
+	const ULevelActorRow* BombRow = UBombDataAsset::Get().GetRowByLevelType(SpotType);
+	if (!ensureMsgf(BombRow, TEXT("ASSERT: [%i] %hs:\n'BombRow' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+
+	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh) : nullptr;
+	if (!ensureMsgf(BombMesh, TEXT("ASSERT: [%i] %hs:\n'BombMesh' is null!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+
+	UMaterialInstanceDynamic* DynamicOverlayMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionOverlayMaterial(), this);
+	StarMaterialOverlayMap.Add(MySpotComponent->GetMeshChecked().GetPlayerTag(), DynamicOverlayMaterial);
 }
 
 // Called when progression module ready
@@ -152,6 +171,8 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	StarDynamicProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 	StarLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
+
+	StarOverlayProgressionMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
@@ -332,6 +353,18 @@ UMaterialInstanceDynamic* UPSWorldSubsystem::GetStarProgressionDynamicMaterial(E
 	default:
 		return nullptr;
 	}
+}
+
+// Returns created on load overlay dynamic material by player tag
+UMaterialInstanceDynamic* UPSWorldSubsystem::GetOverlayProgressionDynamicMaterialByTag(FPlayerTag PlayerTag) const
+{
+	if (!StarMaterialOverlayMap.Contains(PlayerTag))
+	{
+		return nullptr;
+	}
+
+	UMaterialInstanceDynamic* FoundMaterial = StarMaterialOverlayMap[PlayerTag];
+	return FoundMaterial ? FoundMaterial : nullptr;
 }
 
 // Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load.

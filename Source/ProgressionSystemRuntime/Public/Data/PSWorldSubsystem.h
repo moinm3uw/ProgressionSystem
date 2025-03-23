@@ -122,7 +122,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	FORCEINLINE class UPSSpotComponent* GetCurrentSpot() const { return FindSpotByRowName(CurrentRowNameInternal); }
 
-
 	/** Find a spot component element by row name */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	class UPSSpotComponent* FindSpotByRowName(FName RowName) const;
@@ -132,6 +131,11 @@ public:
 	 * @param StarState a star state (Locked, Unlocked, Partial) */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	class UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
+
+	/** Returns created on load overlay dynamic material by player tag
+	 * @param PlayerTag a current player tag to obtain dynamic material  
+	*/
+	UMaterialInstanceDynamic* GetOverlayProgressionDynamicMaterialByTag(FPlayerTag PlayerTag) const;
 
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
@@ -185,6 +189,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Unlocked Progress Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarUnLockedProgressMaterial = nullptr;
 
+	/** Store the material for overlay progression material fill for a star actor */
+	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Overlay Progression Material"))
+	TObjectPtr<class UMaterialInstanceDynamic> StarOverlayProgressionMaterial = nullptr;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Material Overlay Map"))
+	TMap<FPlayerTag, TObjectPtr<class UMaterialInstanceDynamic>> StarMaterialOverlayMap;
+	
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */

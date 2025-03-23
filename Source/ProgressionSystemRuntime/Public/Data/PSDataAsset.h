@@ -55,6 +55,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE class UMaterialInterface* GetDynamicProgressionMaterial() const { return DynamicProgressionMaterialInternal; }
 
+	/** Returns Material overlay applied for dynamic progression material (star is filled partially depends on progression) */
+	UFUNCTION(BlueprintPure, Category = "C++")
+	FORCEINLINE class UMaterialInterface* GetDynamicProgressionOverlayMaterial() const { return DynamicProgressionOverlayMaterialInternal; }
+
 	/** Returns progression difficulty multiplier */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	const FORCEINLINE class UCurveTable* GetProgressionDifficultyMultiplierCurveTable() const { return ProgressionDifficultyMultiplierCurveTableInternal; }
@@ -66,10 +70,6 @@ public:
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FName GetStarMaterialSlotName() const { return StarPercentSlotNameInternal; }
-
-	/** Returns Star Face Texture Parameter name used to apply a face over each star */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE FName GetStarFaceTextureParameter() const { return StarFaceTextureParameter; }
 
 	/** Returns temp value to tweak the stars with bad UV  to look as expected. Could not be 0 */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -116,18 +116,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Dynamic Progression Material"))
 	TObjectPtr<class UMaterialInterface> DynamicProgressionMaterialInternal = nullptr;
 
+	/** Material applied as  dynamic progression overlay material (star is filled partially depends on progression) */
+	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Dynamic Progression Overlay Material"))
+	TObjectPtr<class UMaterialInterface> DynamicProgressionOverlayMaterialInternal = nullptr;
+
 	/** The Progression difficulty multiplier. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Multiplier Curve Table"))
 	TObjectPtr<UCurveTable> ProgressionDifficultyMultiplierCurveTableInternal = nullptr;
-
-
+	
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Percent Slot Name"))
 	FName StarPercentSlotNameInternal = NAME_None;
-
-	/** Star Face Texture Parameter name to add a face texture for each character*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Face Texture Parameter Name"))
-	FName StarFaceTextureParameter = NAME_None;
 
 	/** Used to tweak the stars UV. Set 1 to have no impact
 	 * Can not be 0 */
