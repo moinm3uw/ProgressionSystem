@@ -137,8 +137,7 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 }
 
 // Updates the progression unlocked skins when score changes
-void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow,
-                                                            const FPSSettingsRow& CurrentProgressionSettingsRow)
+void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSSettingsRow& CurrentProgressionSettingsRow)
 {
 	if (IsCurrentSpot())
 	{
@@ -148,8 +147,7 @@ void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskD
 }
 
 // Updates the progression menu widget when player changed
-void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag,
-                                                                    const FPlayerTag PreviousPlayerTag)
+void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag)
 {
 	UMySkeletalMeshComponent& Mesh = GetMeshChecked();
 	if (Mesh.GetPlayerTag() == NewPlayerTag)
