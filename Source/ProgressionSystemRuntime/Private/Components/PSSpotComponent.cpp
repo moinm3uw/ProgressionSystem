@@ -82,8 +82,7 @@ void UPSSpotComponent::BeginPlay()
 	static const FName ExpectedTagName = TAG_NMM_SPOT.GetTag().GetTagName();
 	if (!GetOwner()->ActorHasTag(ExpectedTagName))
 	{
-		UE_LOG(LogBomber, Log, TEXT("[%i] %hs: Skip initializing '%s' spot for '%s' actor, it doesn't have '%s' tag."),
-		       __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
+		UE_LOG(LogBomber, Log, TEXT("[%i] %hs: Skip initializing '%s' spot for '%s' actor, it doesn't have '%s' tag."), __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
 		return;
 	}
 
