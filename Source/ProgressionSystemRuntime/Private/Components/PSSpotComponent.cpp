@@ -54,9 +54,22 @@ void UPSSpotComponent::OnReset_Implementation()
 // Listen game states to switch character skin. 
 void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
 {
-	if (CurrentGameState == ECurrentGameState::GameStarting)
+	if (!IsCurrentSpot())
 	{
+		return;
+	}
+
+	constexpr bool bApplySkin = true;
+	switch (CurrentGameState)
+	{
+	case ECurrentGameState::GameStarting:
 		TryRestorePlayerSkin();
+		PreviousUnlockedAmountOfSkins = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
+		break;
+	case ECurrentGameState::Menu:
+		RefreshAmountOfUnlockedSkins(bApplySkin);
+		break;
+	default: break;
 	}
 }
 
@@ -70,7 +83,7 @@ void UPSSpotComponent::BeginPlay()
 	if (!GetOwner()->ActorHasTag(ExpectedTagName))
 	{
 		UE_LOG(LogBomber, Log, TEXT("[%i] %hs: Skip initializing '%s' spot for '%s' actor, it doesn't have '%s' tag."),
-			   __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
+		       __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
 		return;
 	}
 
@@ -124,17 +137,19 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 }
 
 // Updates the progression unlocked skins when score changes
-void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSSettingsRow& CurrentProgressionSettingsRow)
+void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow,
+                                                            const FPSSettingsRow& CurrentProgressionSettingsRow)
 {
 	if (IsCurrentSpot())
 	{
-		constexpr bool bApplySkin = true;
+		constexpr bool bApplySkin = false;
 		RefreshAmountOfUnlockedSkins(bApplySkin);
 	}
 }
 
 // Updates the progression menu widget when player changed
-void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag)
+void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag,
+                                                                    const FPlayerTag PreviousPlayerTag)
 {
 	UMySkeletalMeshComponent& Mesh = GetMeshChecked();
 	if (Mesh.GetPlayerTag() == NewPlayerTag)
@@ -177,11 +192,11 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
-
-	for (int32 Index = 0; Index <= UnlockedSkinsAmount; Index++)
+	const int32 CurrentSkinIndex = SpotMeshComponent.GetAppliedSkinIndex();
+	for (int32 Index = CurrentSkinIndex; Index <= UnlockedSkinsAmount; Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(true, Index);
-		if (bApplySkin)
+		if (bApplySkin && PreviousUnlockedAmountOfSkins != UnlockedSkinsAmount)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
 			if (APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())

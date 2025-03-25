@@ -37,6 +37,9 @@ public:
 	bool IsCurrentSpot() const;
 
 protected:
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Previous Skin Index"))
+	int32 PreviousUnlockedAmountOfSkins = 0;
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
