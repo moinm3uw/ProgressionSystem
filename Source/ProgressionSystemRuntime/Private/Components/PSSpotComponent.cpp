@@ -11,6 +11,7 @@
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 #include "NativeGameplayTags.h"
+#include "Components/MapComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
 
@@ -184,9 +185,10 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		if (bApplySkin)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
-			if (APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
+			const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+			if (UMapComponent* MapComponent = UMapComponent::GetMapComponent(PlayerCharacter))
 			{
-				PlayerCharacter->SetCustomPlayerMeshData(SpotMeshComponent.GetCustomPlayerMeshData());
+				MapComponent->SetReplicatedMeshData(SpotMeshComponent.GetMeshData());
 			}
 		}
 	}
