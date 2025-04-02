@@ -37,9 +37,6 @@ public:
 	bool IsCurrentSpot() const;
 
 protected:
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Previous Skin Index"))
-	int32 PreviousUnlockedAmountOfSkins = 0;
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
@@ -65,10 +62,6 @@ protected:
 	/** Updates the progression menu widget when player changed */
 	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
 	void OnCurrentActiveSaveRowChanged(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag);
-
-	/** Updates the progression unlocked skins when score changes */
-	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
-	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSSettingsRow& CurrentProgressionSettingsRow);
 
 	/** Check is player is allowed to play with current skin if not switch to allowed */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))

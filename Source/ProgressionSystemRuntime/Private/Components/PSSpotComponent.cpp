@@ -31,7 +31,6 @@ void UPSSpotComponent::OnInitialized_Implementation()
 {
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
-	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 	constexpr bool bApplySkin = false;
 	RefreshAmountOfUnlockedSkins(bApplySkin);
@@ -64,7 +63,6 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	{
 	case ECurrentGameState::GameStarting:
 		TryRestorePlayerSkin();
-		PreviousUnlockedAmountOfSkins = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
 		break;
 	case ECurrentGameState::Menu:
 		RefreshAmountOfUnlockedSkins(bApplySkin);
@@ -136,16 +134,6 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 	}
 }
 
-// Updates the progression unlocked skins when score changes
-void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSSettingsRow& CurrentProgressionSettingsRow)
-{
-	if (IsCurrentSpot())
-	{
-		constexpr bool bApplySkin = false;
-		RefreshAmountOfUnlockedSkins(bApplySkin);
-	}
-}
-
 // Updates the progression menu widget when player changed
 void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag)
 {
@@ -191,10 +179,29 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
 	const int32 CurrentSkinIndex = SpotMeshComponent.GetAppliedSkinIndex();
+	const int32 TotalSkins = SpotMeshComponent.GetSkinTexturesNum();
+
+	if (AMyGameStateBase::GetCurrentGameState() == ECurrentGameState::Menu)
+	{
+		int32 PreviousAmountOfUnlockedSkins = 0;
+		for (int32 SkinIndex = 0; SkinIndex < TotalSkins; SkinIndex++)
+		{
+			if (SpotMeshComponent.IsSkinAvailable(SkinIndex))
+			{
+				PreviousAmountOfUnlockedSkins++;
+			}
+		}
+		// do nothing skins amount is not changed 
+		if (PreviousAmountOfUnlockedSkins != 1 && PreviousAmountOfUnlockedSkins == UnlockedSkinsAmount + 1)
+		{
+			return;
+		}
+	}
+
 	for (int32 Index = CurrentSkinIndex; Index <= UnlockedSkinsAmount; Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(true, Index);
-		if (bApplySkin && PreviousUnlockedAmountOfSkins != UnlockedSkinsAmount)
+		if (bApplySkin)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
 			if (APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
