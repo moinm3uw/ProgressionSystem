@@ -190,6 +190,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 			if (SpotMeshComponent.IsSkinAvailable(SkinIndex))
 			{
 				PreviousAmountOfUnlockedSkins++;
+				bApplySkin = true;
 			}
 		}
 		// do nothing skins amount is not changed 
