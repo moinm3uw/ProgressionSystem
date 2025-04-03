@@ -206,11 +206,11 @@ protected:
 
 	/** Subscribes to the end game state change notification on the player state. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPlayerStateReady(AMyPlayerState* PlayerState, int32 CharacterID);
+	void OnLocalPlayerStateReady(class AMyPlayerState* PlayerState, int32 CharacterID);
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(FPlayerTag PlayerTag);
+	void OnPlayerTypeChanged(class UMapComponent* MapComponent, const class ULevelActorRow* NewRow, const class ULevelActorRow* PreviousRow);
 
 	/** Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.)  */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
