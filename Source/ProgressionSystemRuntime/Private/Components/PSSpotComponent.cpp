@@ -182,6 +182,11 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 	const int32 CurrentSkinIndex = SpotMeshComponent.GetAppliedSkinIndex();
 	const int32 TotalSkins = SpotMeshComponent.GetSkinTexturesNum();
 
+	if (!ensureMsgf(UnlockedSkinsAmount <= TotalSkins, TEXT("ASSERT: [%i] %hs:\n Unlocked amount of skins is more than characters has, check the configuration!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+
 	if (AMyGameStateBase::GetCurrentGameState() == ECurrentGameState::Menu)
 	{
 		int32 PreviousAmountOfUnlockedSkins = 0;
