@@ -175,9 +175,8 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 		return DefaultProgressionReward;
 	}
 
-	// string below is used to find in curve table data asset. Curve table automatically converts names in to a human-readable string HonorLoss -> Honor Loss
-	// In the non-editor context this does not working. With Editor UE converts names in to a human-readable string for UEnum::GetDisplayValueAsText
-	const FString ContextString = FName::NameToDisplayString(UEnum::GetDisplayValueAsText(EndGameState).ToString(), false);
+	UEnum* EnumPtr = StaticEnum<EEndGameState>();
+	const FString ContextString = EnumPtr->GetNameStringByValue(TO_FLAG(EndGameState));
 	const FName RowName = *ContextString;
 
 	FCurveTableRowHandle Handle;
