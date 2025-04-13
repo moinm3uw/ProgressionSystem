@@ -6,26 +6,41 @@ public class ProgressionSystemRuntime : ModuleRules
 {
 	public ProgressionSystemRuntime(ReadOnlyTargetRules Target) : base(Target)
 	{
-		CppStandard = CppStandardVersion.Latest; 
-		bEnableNonInlinedGenCppWarnings = true;
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		if (Target.bBuildEditor)
+		{
+			//no optimization for editor to be applied for debug 
+			PCHUsage = PCHUsageMode.NoPCHs;
+			CppStandard = CppStandardVersion.Latest;
+			bEnableNonInlinedGenCppWarnings = true;
+			OptimizeCode = CodeOptimization.Never; 
+			bUseUnity = false;
+		}
+		else
+		{
+			CppStandard = CppStandardVersion.Latest;
+			bEnableNonInlinedGenCppWarnings = true;
+			PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		}
+
 		PublicDependencyModuleNames.AddRange(new[]
 			{
-				"Core", "UMG" 
+				"Core", "UMG"
 				// Bomber modules
-				, "Bomber"
-				,"SettingsWidgetConstructor"
+				,
+				"Bomber", "SettingsWidgetConstructor"
 			}
 		);
 
 		PrivateDependencyModuleNames.AddRange(new[]
 			{
 				"CoreUObject", "Engine", "Slate", "SlateCore" // Core
-				, "GameplayTags" // UE_DEFINE_GAMEPLAY_TAG_STATIC
+				,
+				"GameplayTags" // UE_DEFINE_GAMEPLAY_TAG_STATIC
 				// Bomber modules 
-				, "MyUtils" 
-				, "PoolManager" // Star and Widget Actors
-				, "MetaCheatManager" // PSCheatExtension
+				,
+				"MyUtils", "PoolManager" // Star and Widget Actors
+				,
+				"MetaCheatManager" // PSCheatExtension
 			}
 		);
 	}
