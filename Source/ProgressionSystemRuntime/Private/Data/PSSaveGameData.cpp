@@ -175,7 +175,8 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 		return DefaultProgressionReward;
 	}
 
-	const FString ContextString = UEnum::GetDisplayValueAsText(EndGameState).ToString();
+	UEnum* EnumPtr = StaticEnum<EEndGameState>();
+	const FString ContextString = EnumPtr->GetNameStringByValue(TO_FLAG(EndGameState));
 	const FName RowName = *ContextString;
 
 	FCurveTableRowHandle Handle;
