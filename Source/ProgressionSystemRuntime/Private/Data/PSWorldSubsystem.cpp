@@ -154,14 +154,14 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 		return;
 	}
 
-	UMaterialInstanceDynamic* DynamicOverlayMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetDynamicProgressionOverlayMaterial(), this);
+	UMaterialInstanceDynamic* DynamicOverlayMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetBombDynamicProgressionOverlayMaterial(), this);
 	StarMaterialOverlayMap.Add(MySpotComponent->GetMeshChecked().GetPlayerTag(), DynamicOverlayMaterial);
 }
 
 // Called when progression module ready
 void UPSWorldSubsystem::OnInitialized_Implementation()
 {
-	UMaterialInterface* StarMaterial = UPSDataAsset::Get().GetDynamicProgressionMaterial();
+	UMaterialInterface* StarMaterial = UPSDataAsset::Get().GetBombDynamicProgressionOverlayMaterial();
 
 	if (!ensureMsgf(StarMaterial, TEXT("ASSERT: [%i] %hs:\n'StarMaterial' is null!"), __LINE__, __FUNCTION__))
 	{

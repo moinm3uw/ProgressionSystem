@@ -51,13 +51,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class AActor> GetStarActorClass() const { return StarActorClassInternal; }
 
-	/** Returns Material applied for dynamic progression material (star is filled partially depends on progression) */
+	/** Returns Material overlay applied as dynamic progression (character's bomb is filled partially depends on progression) in the main menu */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UMaterialInterface* GetDynamicProgressionMaterial() const { return DynamicProgressionMaterialInternal; }
-
-	/** Returns Material overlay applied for dynamic progression material (star is filled partially depends on progression) */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UMaterialInterface* GetDynamicProgressionOverlayMaterial() const { return DynamicProgressionOverlayMaterialInternal; }
+	FORCEINLINE class UMaterialInterface* GetBombDynamicProgressionOverlayMaterial() const { return DynamicProgressionBombOverlayMaterialInternal; }
 
 	/** Returns progression difficulty multiplier */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -112,13 +108,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Unlocked Progression Icon"))
 	TObjectPtr<class UTexture2D> UnlockedProgressionIconInternal = nullptr;
 
-	/** Material applied for dynamic progression material (star is filled partially depends on progression) */
-	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Dynamic Progression Material"))
-	TObjectPtr<class UMaterialInterface> DynamicProgressionMaterialInternal = nullptr;
-
-	/** Material applied as  dynamic progression overlay material (star is filled partially depends on progression) */
-	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Dynamic Progression Overlay Material"))
-	TObjectPtr<class UMaterialInterface> DynamicProgressionOverlayMaterialInternal = nullptr;
+	/** Material applied as dynamic progression overlay material (character's bomb is filled partially depends on progression) in the main menu*/
+	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Dynamic Progression Bomb Overlay Material"))
+	TObjectPtr<class UMaterialInterface> DynamicProgressionBombOverlayMaterialInternal = nullptr;
 
 	/** The Progression difficulty multiplier. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Multiplier Curve Table"))
