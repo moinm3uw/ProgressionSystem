@@ -21,19 +21,15 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSHUDComponent final : public UActorComponen
 public:
 	/** Sets default values for this component's properties. */
 	UPSHUDComponent();
-	
-	/*********************************************************************************************
-	* Protected properties
-	********************************************************************************************* */
-protected:
-	/** Created Main Menu widget. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Widget"))
-	TObjectPtr<class UPSEndGameWidget> ProgressionEndGameWidgetInternal = nullptr;
 
-	/** Created Main Menu overlay widget. */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression Menu Overaly Widget"))
-	TObjectPtr<class UPSOverlayWidget> ProgressionMenuOverlayWidgetInternal = nullptr;
-	
+	/** Returns the Progression End Game widget. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
+	class UPSEndGameWidget* GetProgressionEndGameWidget() const;
+
+	/** Returns the Progression Menu overlay widget. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
+	class UPSOverlayWidget* GetProgressionMenuOverlayWidget() const;
+
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */

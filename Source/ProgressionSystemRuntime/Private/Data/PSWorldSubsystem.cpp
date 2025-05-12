@@ -3,6 +3,7 @@
 #include "Data/PSWorldSubsystem.h"
 
 #include "PoolManagerSubsystem.h"
+#include "Components/MapComponent.h"
 #include "Components/MySkeletalMeshComponent.h"
 #include "Components/PSHUDComponent.h"
 #include "Components/PSSpotComponent.h"
@@ -21,7 +22,6 @@
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "MyUtilsLibraries/SaveUtilsLibrary.h"
-#include "Subsystems/GameDifficultySubsystem.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 
@@ -205,11 +205,12 @@ void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 // Is called when a player character is ready
 void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
 {
-	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
+	UMapComponent* MapComponent = UMapComponent::GetMapComponent(PlayerCharacter);
+	if (!ensureMsgf(MapComponent, TEXT("ASSERT: [%i] %hs:\n'PlayerMapComponent' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
-	PlayerCharacter->OnPlayerTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
+	MapComponent->OnActorTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
 }
 
 // Subscribes to the end game state change notification on the player state. 
@@ -220,9 +221,13 @@ void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(AMyPlayerState* P
 }
 
 // Is called when a player has been changed
-void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(FPlayerTag PlayerTag)
+void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(UMapComponent* MapComponent, const ULevelActorRow* NewRow, const ULevelActorRow* PreviousRow)
 {
-	SetCurrentRowByTag(PlayerTag);
+	const APlayerCharacter* PlayerCharacter = MapComponent->GetOwner<APlayerCharacter>();
+	if (ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is invalid!"), __LINE__, __FUNCTION__))
+	{
+		SetCurrentRowByTag(PlayerCharacter->GetPlayerTag());
+	}
 }
 
 // Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.) 

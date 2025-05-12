@@ -11,6 +11,7 @@
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 #include "NativeGameplayTags.h"
+#include "Components/MapComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
 
@@ -31,7 +32,6 @@ void UPSSpotComponent::OnInitialized_Implementation()
 {
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
-	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 	constexpr bool bApplySkin = false;
 	RefreshAmountOfUnlockedSkins(bApplySkin);
@@ -54,9 +54,21 @@ void UPSSpotComponent::OnReset_Implementation()
 // Listen game states to switch character skin. 
 void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
 {
-	if (CurrentGameState == ECurrentGameState::GameStarting)
+	if (!IsCurrentSpot())
 	{
+		return;
+	}
+
+	constexpr bool bApplySkin = true;
+	switch (CurrentGameState)
+	{
+	case ECurrentGameState::GameStarting:
 		TryRestorePlayerSkin();
+		break;
+	case ECurrentGameState::Menu:
+		RefreshAmountOfUnlockedSkins(bApplySkin);
+		break;
+	default: break;
 	}
 }
 
@@ -70,7 +82,7 @@ void UPSSpotComponent::BeginPlay()
 	if (!GetOwner()->ActorHasTag(ExpectedTagName))
 	{
 		UE_LOG(LogBomber, Log, TEXT("[%i] %hs: Skip initializing '%s' spot for '%s' actor, it doesn't have '%s' tag."),
-			   __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
+		       __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
 		return;
 	}
 
@@ -123,16 +135,6 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 	}
 }
 
-// Updates the progression unlocked skins when score changes
-void UPSSpotComponent::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrentSaveToDiskDataRow, const FPSSettingsRow& CurrentProgressionSettingsRow)
-{
-	if (IsCurrentSpot())
-	{
-		constexpr bool bApplySkin = true;
-		RefreshAmountOfUnlockedSkins(bApplySkin);
-	}
-}
-
 // Updates the progression menu widget when player changed
 void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag)
 {
@@ -177,16 +179,42 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 
 	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
+	const int32 CurrentSkinIndex = SpotMeshComponent.GetAppliedSkinIndex();
+	const int32 TotalSkins = SpotMeshComponent.GetSkinTexturesNum();
 
-	for (int32 Index = 0; Index <= UnlockedSkinsAmount; Index++)
+	if (!ensureMsgf(UnlockedSkinsAmount <= TotalSkins, TEXT("ASSERT: [%i] %hs:\n Unlocked amount of skins is more than characters has, check the configuration!"), __LINE__, __FUNCTION__))
+	{
+		return;
+	}
+
+	if (AMyGameStateBase::GetCurrentGameState() == ECurrentGameState::Menu)
+	{
+		int32 PreviousAmountOfUnlockedSkins = 0;
+		for (int32 SkinIndex = 0; SkinIndex < TotalSkins; SkinIndex++)
+		{
+			if (SpotMeshComponent.IsSkinAvailable(SkinIndex))
+			{
+				PreviousAmountOfUnlockedSkins++;
+				bApplySkin = true;
+			}
+		}
+		// do nothing skins amount is not changed 
+		if (PreviousAmountOfUnlockedSkins != 1 && PreviousAmountOfUnlockedSkins == UnlockedSkinsAmount + 1)
+		{
+			return;
+		}
+	}
+
+	for (int32 Index = CurrentSkinIndex; Index <= UnlockedSkinsAmount; Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(true, Index);
 		if (bApplySkin)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
-			if (APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter())
+			const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+			if (UMapComponent* MapComponent = UMapComponent::GetMapComponent(PlayerCharacter))
 			{
-				PlayerCharacter->SetCustomPlayerMeshData(SpotMeshComponent.GetCustomPlayerMeshData());
+				MapComponent->SetReplicatedMeshData(SpotMeshComponent.GetMeshData());
 			}
 		}
 	}

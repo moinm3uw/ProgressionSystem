@@ -13,8 +13,12 @@
 #include "Subsystems/WidgetsSubsystem.h"
 #include "Widgets/PSOverlayWidget.h"
 #include "LevelActors/PlayerCharacter.h"
+#include "NativeGameplayTags.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
+
+UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_WIDGET_PROGRESSIONSYSTEM_ENDGAME, TEXT("UI.Widget.ProgressionSystem.EndGame"));
+UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_WIDGET_PROGRESSIONSYSTEM_MENUOVERLAY, TEXT("UI.Widget.ProgressionSystem.MenuOverlay"));
 
 // Sets default values for this component's properties
 UPSHUDComponent::UPSHUDComponent()
@@ -23,6 +27,20 @@ UPSHUDComponent::UPSHUDComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
+}
+
+// Returns the Progression End Game widget
+UPSEndGameWidget* UPSHUDComponent::GetProgressionEndGameWidget() const
+{
+	const UWidgetsSubsystem* WidgetsSubsystem = UWidgetsSubsystem::GetWidgetsSubsystem();
+	return WidgetsSubsystem ? WidgetsSubsystem->GetWidgetByTag<UPSEndGameWidget>(TAG_UI_WIDGET_PROGRESSIONSYSTEM_ENDGAME) : nullptr;
+}
+
+// Returns the Progression Menu overlay widget
+UPSOverlayWidget* UPSHUDComponent::GetProgressionMenuOverlayWidget() const
+{
+	const UWidgetsSubsystem* WidgetsSubsystem = UWidgetsSubsystem::GetWidgetsSubsystem();
+	return WidgetsSubsystem ? WidgetsSubsystem->GetWidgetByTag<UPSOverlayWidget>(TAG_UI_WIDGET_PROGRESSIONSYSTEM_MENUOVERLAY) : nullptr;
 }
 
 // Called when main save game file is loaded
@@ -48,19 +66,10 @@ void UPSHUDComponent::OnUnregister()
 
 	UPSWorldSubsystem::Get().PerformCleanUp();
 
-	if (ProgressionEndGameWidgetInternal)
+	if (UWidgetsSubsystem* WidgetsSubsystem = UWidgetsSubsystem::GetWidgetsSubsystem())
 	{
-		FWidgetUtilsLibrary::DestroyWidget(*ProgressionEndGameWidgetInternal);
-		ProgressionEndGameWidgetInternal = nullptr;
-	}
-	if (ProgressionMenuOverlayWidgetInternal)
-	{
-		FWidgetUtilsLibrary::DestroyWidget(*ProgressionMenuOverlayWidgetInternal);
-		ProgressionMenuOverlayWidgetInternal = nullptr;
-	}
-	if (UGlobalEventsSubsystem* EventSubsystem = UGlobalEventsSubsystem::GetGlobalEventsSubsystem())
-	{
-		EventSubsystem->BP_OnLocalCharacterReady.RemoveAll(this);
+		WidgetsSubsystem->DestroyManageableWidgetByTag(TAG_UI_WIDGET_PROGRESSIONSYSTEM_ENDGAME);
+		WidgetsSubsystem->DestroyManageableWidgetByTag(TAG_UI_WIDGET_PROGRESSIONSYSTEM_MENUOVERLAY);
 	}
 }
 
@@ -73,9 +82,8 @@ void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Cha
 	}
 
 	// Create widgets now as fast as possible, later we will register them in Widgets Subsystem
-	UWidgetsSubsystem& WidgetsSubsystem = UWidgetsSubsystem::Get();
-	ProgressionEndGameWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSEndGameWidget>(UPSDataAsset::Get().GetProgressionEndGameWidget());
-	ProgressionMenuOverlayWidgetInternal = WidgetsSubsystem.CreateManageableWidgetChecked<UPSOverlayWidget>(UPSDataAsset::Get().GetProgressionOverlayWidget());
+	UWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionEndGameWidget());
+	UWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionOverlayWidget());
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnInitialize.AddUniqueDynamic(this, &ThisClass::OnInitialized);

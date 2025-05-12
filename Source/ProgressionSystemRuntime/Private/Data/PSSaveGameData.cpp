@@ -7,7 +7,7 @@
 #include "Data/PSDataAsset.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Engine/CurveTable.h"
-#include "Subsystems/GameDifficultySubsystem.h"
+#include "Components/GameDifficultyManagerComponent.h"
 #include "Subsystems/GlobalEventsSubsystem.h"
 #include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
 #include "Data/PSTypes.h"
@@ -175,7 +175,8 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 		return DefaultProgressionReward;
 	}
 
-	const FString ContextString = UEnum::GetDisplayValueAsText(EndGameState).ToString();
+	UEnum* EnumPtr = StaticEnum<EEndGameState>();
+	const FString ContextString = EnumPtr->GetNameStringByValue(TO_FLAG(EndGameState));
 	const FName RowName = *ContextString;
 
 	FCurveTableRowHandle Handle;
@@ -192,7 +193,7 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 	float MaxTime = 0.f;
 	Curve->GetTimeRange(/*out*/MinTime, /*out*/MaxTime);
 
-	float DifficultyType = static_cast<float>(UGameDifficultySubsystem::Get().GetDifficultyLevel());
+	float DifficultyType = static_cast<float>(UGameDifficultyManagerComponent::Get().GetDifficultyLevel());
 
 	DifficultyType = FMath::Clamp(DifficultyType, MinTime, MaxTime);
 
