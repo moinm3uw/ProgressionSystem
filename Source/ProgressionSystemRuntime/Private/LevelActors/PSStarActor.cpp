@@ -242,8 +242,6 @@ void APSStarActor::ChangeStarMesh(const UPSSpotComponent* SpotComponent)
 		return; // Early return if pointers are invalid
 	}
 
-	UMaterialInterface* Material = BombMesh->GetMaterial(0);
-
+	StarMeshComponent->SetMaterial(0, nullptr);
 	StarMeshComponent->SetStaticMesh(BombMesh);
-	StarMeshComponent->SetMaterial(0, Material);
 }
