@@ -188,9 +188,8 @@ void APSStarActor::UpdateStarActorProgressMeshMaterial(float AmountOfStars, EPSS
 	// unlocked stars with fractional part
 	if (AmountOfStars > 0 && AmountOfStars < 1)
 	{
-		const float PartialUnLockedStarAmount = AmountOfStars / UPSDataAsset::Get().GetStarMaterialFractionalDivisor();
 		StarProgressionDynamicMaterial = UPSWorldSubsystem::Get().GetStarProgressionDynamicMaterial(EPSStarActorState::Partial); // StarMaterialFractionalDivisor is hardcoded value to 3 to tweak bad UV to simulate it's working
-		SetStarActorProgressMeshMaterial(StarProgressionDynamicMaterial, PartialUnLockedStarAmount);
+		SetStarActorProgressMeshMaterial(StarProgressionDynamicMaterial, AmountOfStars);
 		return; // Early return for fractional stars
 	}
 

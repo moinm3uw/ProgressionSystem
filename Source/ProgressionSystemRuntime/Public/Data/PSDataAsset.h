@@ -67,10 +67,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FName GetStarMaterialSlotName() const { return StarPercentSlotNameInternal; }
 
-	/** Returns temp value to tweak the stars with bad UV  to look as expected. Could not be 0 */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE float GetStarMaterialFractionalDivisor() const { return StarMaterialFractionalDivisorInternal; }
-
 	/** Returns Instant Character Switch Tag. When Instant character switch setting enabled fade animation will not be played */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FSettingTag GetInstantCharacterSwitchTag() const { return InstantCharacterSwitchTagInternal; }
@@ -119,11 +115,6 @@ protected:
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Percent Slot Name"))
 	FName StarPercentSlotNameInternal = NAME_None;
-
-	/** Used to tweak the stars UV. Set 1 to have no impact
-	 * Can not be 0 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Material Fractional Divisor"))
-	float StarMaterialFractionalDivisorInternal = 1.f;
 
 	/** When Instant character switch setting enabled fade animation will not be played */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", AdvancedDisplay, meta = (BlueprintProtected, DisplayName = "Instant Character Switch Tag"))
