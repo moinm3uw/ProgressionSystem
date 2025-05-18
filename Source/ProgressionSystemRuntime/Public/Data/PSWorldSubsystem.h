@@ -118,6 +118,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void UnlockAllLevels();
 
+	/** Get the highest amount of points possible to be unlocked */
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	int32 GetMaxNumberOfUnlockableLevels() const;
+	
 	/** Returns current spot component returns null if spot is not found */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	FORCEINLINE class UPSSpotComponent* GetCurrentSpot() const { return FindSpotByRowName(CurrentRowNameInternal); }
@@ -132,10 +136,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	class UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
 
-	/** Returns created on load overlay dynamic material by player tag
-	 * @param PlayerTag a current player tag to obtain dynamic material  
-	*/
-	UMaterialInstanceDynamic* GetOverlayProgressionDynamicMaterialByTag(FPlayerTag PlayerTag) const;
+	/** Returns created on load overlay dynamic material from indexed tMap */
+	UMaterialInstanceDynamic* GetDynamicOverlayMaterial();
 
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
@@ -193,9 +195,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Overlay Progression Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarOverlayProgressionMaterial = nullptr;
 
+	/** Stores dynamic material instances */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Material Overlay Map"))
-	TMap<FPlayerTag, TObjectPtr<class UMaterialInstanceDynamic>> StarMaterialOverlayMap;
-	
+	TMap<int32, TObjectPtr<class UMaterialInstanceDynamic>> StarMaterialOverlayMap;
+
+	/** Index to store current material index in use */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Star Material Overlay Index"))
+	int32 CurrentMaterialOverlayIndex = 0;
+
 	/*********************************************************************************************
 	* Protected functions
 	********************************************************************************************* */

@@ -140,22 +140,6 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 			SpotComponentsMapInternal.Add(RowData.Key, MySpotComponent);
 		}
 	}
-
-	const ELevelType SpotType = MySpotComponent->GetMeshChecked().GetAssociatedLevelType();
-	const ULevelActorRow* BombRow = UBombDataAsset::Get().GetRowByLevelType(SpotType);
-	if (!ensureMsgf(BombRow, TEXT("ASSERT: [%i] %hs:\n'BombRow' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
-	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh) : nullptr;
-	if (!ensureMsgf(BombMesh, TEXT("ASSERT: [%i] %hs:\n'BombMesh' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
-
-	UMaterialInstanceDynamic* DynamicOverlayMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetBombDynamicProgressionOverlayMaterial(), this);
-	StarMaterialOverlayMap.Add(MySpotComponent->GetMeshChecked().GetPlayerTag(), DynamicOverlayMaterial);
 }
 
 // Called when progression module ready
@@ -173,6 +157,12 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 
 	StarOverlayProgressionMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
+
+	for (int32 dynamicOverlayIndex = 0; dynamicOverlayIndex < GetMaxNumberOfUnlockableLevels(); dynamicOverlayIndex++)
+	{
+		UMaterialInstanceDynamic* DynamicOverlayMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetBombDynamicProgressionOverlayMaterial(), this);
+		StarMaterialOverlayMap.Add(dynamicOverlayIndex, DynamicOverlayMaterial);
+	}
 
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
@@ -335,6 +325,9 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 		SpawnedActor.OnInitialized(PreviousActorLocation);
 		PreviousActorLocation = SpawnedActor.GetActorLocation();
 	}
+
+	// reset current material index once all stars added to prevent using wrong materials
+	CurrentMaterialOverlayIndex  = 0;
 }
 
 // Find a spot component element by row name
@@ -361,14 +354,24 @@ UMaterialInstanceDynamic* UPSWorldSubsystem::GetStarProgressionDynamicMaterial(E
 }
 
 // Returns created on load overlay dynamic material by player tag
-UMaterialInstanceDynamic* UPSWorldSubsystem::GetOverlayProgressionDynamicMaterialByTag(FPlayerTag PlayerTag) const
+UMaterialInstanceDynamic* UPSWorldSubsystem::GetDynamicOverlayMaterial()
 {
-	if (!StarMaterialOverlayMap.Contains(PlayerTag))
+	if (StarMaterialOverlayMap.Num() == 0 || StarMaterialOverlayMap.Num() < CurrentMaterialOverlayIndex - 1)
 	{
 		return nullptr;
 	}
 
-	UMaterialInstanceDynamic* FoundMaterial = StarMaterialOverlayMap[PlayerTag];
+	UMaterialInstanceDynamic* FoundMaterial = StarMaterialOverlayMap[CurrentMaterialOverlayIndex];
+
+	if (CurrentMaterialOverlayIndex == GetMaxNumberOfUnlockableLevels())
+	{
+		CurrentMaterialOverlayIndex = 0;
+	} else
+	{
+		CurrentMaterialOverlayIndex++;
+	}
+
+
 	return FoundMaterial ? FoundMaterial : nullptr;
 }
 
@@ -492,4 +495,10 @@ void UPSWorldSubsystem::UnlockAllLevels()
 	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
 	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
+}
+
+// Get the highest amount of points possible to be unlocked
+int32 UPSWorldSubsystem::GetMaxNumberOfUnlockableLevels() const
+{
+	return SaveGameDataInternal->GetMaxNumberOfUnlockableLevels();
 }

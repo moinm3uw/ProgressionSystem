@@ -60,6 +60,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="C++")
 	const FPSSaveToDiskData& GetSaveToDiskDataByName(FName CurrentRowName);
 
+	/** Returns the maximum number of levels possible from all levels. If Maya - 3 points to unlock, Hugo - 5 points, returned amount:  5) */
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	const int32 GetMaxNumberOfUnlockableLevels();
+
 protected:
 	/** The current Saved Progression of a player. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Saved Progression Rows"))

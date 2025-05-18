@@ -214,13 +214,12 @@ void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynam
 	{
 		return; // Early return if pointers are invalid
 	}
-
-	const FPlayerTag CurrentSpotPlayerTag = SpotComponent->GetMeshChecked().GetPlayerTag();
+	
 	const FName StarProgressionMaterialSlotName = UPSDataAsset::Get().GetStarMaterialSlotName();
 
 	ChangeStarMesh(SpotComponent);
 
-	UMaterialInstanceDynamic* DynamicOverlay = UPSWorldSubsystem::Get().GetOverlayProgressionDynamicMaterialByTag(CurrentSpotPlayerTag);
+	UMaterialInstanceDynamic* DynamicOverlay = UPSWorldSubsystem::Get().GetDynamicOverlayMaterial();
 	if (!ensureMsgf(DynamicOverlay, TEXT("ASSERT: [%i] %hs:\n'DynamicOverlay' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return; // Early return if pointers are invalid
