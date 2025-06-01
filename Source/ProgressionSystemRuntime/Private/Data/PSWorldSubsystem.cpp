@@ -156,14 +156,6 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	StarLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 
-	StarOverlayProgressionMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
-
-	for (int32 dynamicOverlayIndex = 0; dynamicOverlayIndex < GetMaxNumberOfUnlockableLevels(); dynamicOverlayIndex++)
-	{
-		UMaterialInstanceDynamic* DynamicOverlayMaterial = UMaterialInstanceDynamic::Create(UPSDataAsset::Get().GetBombDynamicProgressionOverlayMaterial(), this);
-		StarMaterialOverlayMap.Add(dynamicOverlayIndex, DynamicOverlayMaterial);
-	}
-
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
 
@@ -351,28 +343,6 @@ UMaterialInstanceDynamic* UPSWorldSubsystem::GetStarProgressionDynamicMaterial(E
 	default:
 		return nullptr;
 	}
-}
-
-// Returns created on load overlay dynamic material by player tag
-UMaterialInstanceDynamic* UPSWorldSubsystem::GetDynamicOverlayMaterial()
-{
-	if (StarMaterialOverlayMap.Num() == 0 || StarMaterialOverlayMap.Num() < CurrentMaterialOverlayIndex - 1)
-	{
-		return nullptr;
-	}
-
-	UMaterialInstanceDynamic* FoundMaterial = StarMaterialOverlayMap[CurrentMaterialOverlayIndex];
-
-	if (CurrentMaterialOverlayIndex == GetMaxNumberOfUnlockableLevels())
-	{
-		CurrentMaterialOverlayIndex = 0;
-	} else
-	{
-		CurrentMaterialOverlayIndex++;
-	}
-
-
-	return FoundMaterial ? FoundMaterial : nullptr;
 }
 
 // Is called from AsyncLoadGameFromSlot once Save Game is loaded, or null if it failed to load.

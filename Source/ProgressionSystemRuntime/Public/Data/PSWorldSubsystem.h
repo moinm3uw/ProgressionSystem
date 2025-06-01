@@ -136,9 +136,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
 	class UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
 
-	/** Returns created on load overlay dynamic material from indexed tMap */
-	UMaterialInstanceDynamic* GetDynamicOverlayMaterial();
-
 protected:
 	/** Contains all the assets and tweaks of Progression System game feature.
 	 * Note: Since Subsystem is code-only, there is config property set in BaseProgressionSystem.ini.
@@ -190,18 +187,6 @@ protected:
 	/** Store the material for unlocked progress material fill for a star actor */
 	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Unlocked Progress Material"))
 	TObjectPtr<class UMaterialInstanceDynamic> StarUnLockedProgressMaterial = nullptr;
-
-	/** Store the material for overlay progression material fill for a star actor */
-	UPROPERTY(BlueprintReadWrite, Transient, AdvancedDisplay, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Overlay Progression Material"))
-	TObjectPtr<class UMaterialInstanceDynamic> StarOverlayProgressionMaterial = nullptr;
-
-	/** Stores dynamic material instances */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Star Material Overlay Map"))
-	TMap<int32, TObjectPtr<class UMaterialInstanceDynamic>> StarMaterialOverlayMap;
-
-	/** Index to store current material index in use */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Current Star Material Overlay Index"))
-	int32 CurrentMaterialOverlayIndex = 0;
 
 	/*********************************************************************************************
 	* Protected functions

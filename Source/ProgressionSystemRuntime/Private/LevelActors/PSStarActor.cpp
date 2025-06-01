@@ -219,14 +219,8 @@ void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynam
 
 	ChangeStarMesh(SpotComponent);
 
-	UMaterialInstanceDynamic* DynamicOverlay = UPSWorldSubsystem::Get().GetDynamicOverlayMaterial();
-	if (!ensureMsgf(DynamicOverlay, TEXT("ASSERT: [%i] %hs:\n'DynamicOverlay' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return; // Early return if pointers are invalid
-	}
-
-	DynamicOverlay->SetScalarParameterValue(StarProgressionMaterialSlotName, StarProgressionAmount);
-	StarMeshComponent->SetOverlayMaterial(DynamicOverlay);
+	StarDynamicMaterial->SetScalarParameterValue(StarProgressionMaterialSlotName, StarProgressionAmount);
+	StarMeshComponent->SetOverlayMaterial(StarDynamicMaterial);
 }
 
 // Changes current bomb mesh to current spot bomb mesh
