@@ -317,9 +317,6 @@ void UPSWorldSubsystem::OnTakeActorsFromPoolCompleted(const TArray<FPoolObjectDa
 		SpawnedActor.OnInitialized(PreviousActorLocation);
 		PreviousActorLocation = SpawnedActor.GetActorLocation();
 	}
-
-	// reset current material index once all stars added to prevent using wrong materials
-	CurrentMaterialOverlayIndex  = 0;
 }
 
 // Find a spot component element by row name
