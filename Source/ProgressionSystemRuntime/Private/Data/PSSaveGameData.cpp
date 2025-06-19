@@ -217,7 +217,7 @@ const FPSSaveToDiskData& UPSSaveGameData::GetSaveToDiskDataByName(FName CurrentR
 // Returns the maximum number of levels possible from all levels. If Maya - 3 points to unlock, Hugo - 5 points, returned amount:  5)
 const int32 UPSSaveGameData::GetMaxNumberOfUnlockableLevels()
 {
-	int32 maxPossibleLevels = 0;
+	int32 MaxPossibleLevels = 0;
 	for (TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
 	{
 		const FPSSettingsRow& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetSettingsRowByName(KeyValue.Key);
@@ -226,11 +226,11 @@ const int32 UPSSaveGameData::GetMaxNumberOfUnlockableLevels()
 			return 0;
 		}
 
-		if (maxPossibleLevels < CurrentProgressionSettingsRowData.PointsToUnlock)
+		if (MaxPossibleLevels < CurrentProgressionSettingsRowData.PointsToUnlock)
 		{
-			maxPossibleLevels = CurrentProgressionSettingsRowData.PointsToUnlock;
+			MaxPossibleLevels = CurrentProgressionSettingsRowData.PointsToUnlock;
 		}
 	}
 
-	return maxPossibleLevels;
+	return MaxPossibleLevels;
 }
