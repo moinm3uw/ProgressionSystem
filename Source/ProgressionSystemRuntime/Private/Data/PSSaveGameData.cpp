@@ -215,7 +215,7 @@ const FPSSaveToDiskData& UPSSaveGameData::GetSaveToDiskDataByName(FName CurrentR
 }
 
 // Returns the maximum number of levels possible from all levels. If Maya - 3 points to unlock, Hugo - 5 points, returned amount:  5)
-const int32 UPSSaveGameData::GetMaxNumberOfUnlockableLevels()
+int32 UPSSaveGameData::GetMaxNumberOfUnlockableLevels()
 {
 	int32 MaxPossibleLevels = 0;
 	for (TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
