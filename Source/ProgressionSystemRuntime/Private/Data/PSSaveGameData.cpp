@@ -218,7 +218,7 @@ const FPSSaveToDiskData& UPSSaveGameData::GetSaveToDiskDataByName(FName CurrentR
 int32 UPSSaveGameData::GetMaxNumberOfUnlockableLevels()
 {
 	int32 MaxPossibleLevels = 0;
-	for (TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
+	for (const TTuple<FName, FPSSaveToDiskData>& KeyValue : ProgressionSettingsRowDataInternal)
 	{
 		const FPSSettingsRow& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetSettingsRowByName(KeyValue.Key);
 		if (!ensureMsgf(CurrentProgressionSettingsRowData.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
