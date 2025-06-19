@@ -210,11 +210,7 @@ void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynam
 	}
 
 	const UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().GetCurrentSpot();
-	if (!ensureMsgf(SpotComponent, TEXT("ASSERT: [%i] %hs:\n'SpotComponent' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return; // Early return if pointers are invalid
-	}
-	
+
 	const FName StarProgressionMaterialSlotName = UPSDataAsset::Get().GetStarMaterialSlotName();
 
 	ChangeStarMesh(SpotComponent);
