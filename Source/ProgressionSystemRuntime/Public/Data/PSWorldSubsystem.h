@@ -117,10 +117,6 @@ public:
 	/** Unlocks all levels of the Progression System */
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void UnlockAllLevels();
-
-	/** Get the highest amount of points possible to be unlocked */
-	UFUNCTION(BlueprintCallable, Category = "C++")
-	int32 GetMaxNumberOfUnlockableLevels() const;
 	
 	/** Returns current spot component returns null if spot is not found */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")

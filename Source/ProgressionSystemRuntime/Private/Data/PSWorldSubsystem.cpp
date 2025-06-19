@@ -463,9 +463,3 @@ void UPSWorldSubsystem::UnlockAllLevels()
 	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
 }
-
-// Get the highest amount of points possible to be unlocked
-int32 UPSWorldSubsystem::GetMaxNumberOfUnlockableLevels() const
-{
-	return SaveGameDataInternal->GetMaxNumberOfUnlockableLevels();
-}
