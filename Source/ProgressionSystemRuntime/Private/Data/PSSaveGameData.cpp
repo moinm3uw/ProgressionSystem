@@ -223,7 +223,7 @@ const int32 UPSSaveGameData::GetMaxNumberOfUnlockableLevels()
 		const FPSSettingsRow& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetSettingsRowByName(KeyValue.Key);
 		if (!ensureMsgf(CurrentProgressionSettingsRowData.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
 		{
-			return 0;
+			continue;
 		}
 
 		if (MaxPossibleLevels < CurrentProgressionSettingsRowData.PointsToUnlock)
