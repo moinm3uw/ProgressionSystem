@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "Components/PSSpotComponent.h"
 #include "GameFramework/Actor.h"
 #include "PSStarActor.generated.h"
 
@@ -96,5 +95,5 @@ protected:
 
 	/** Changes current bomb mesh to current spot bomb mesh */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
-	void ChangeStarMesh(const UPSSpotComponent* SpotComponent);
+	void ChangeStarMesh(const class UPSSpotComponent* SpotComponent);
 };
