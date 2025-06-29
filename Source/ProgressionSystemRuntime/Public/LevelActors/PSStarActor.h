@@ -92,4 +92,8 @@ protected:
 	/** Applies the star dynamic material */
 	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
 	void SetStarActorProgressMeshMaterial(class UMaterialInstanceDynamic* StarDynamicMaterial, float StarProgressionAmount);
+
+	/** Changes current bomb mesh to current spot bomb mesh */
+	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	void ChangeStarMesh(const class UPSSpotComponent* SpotComponent);
 };

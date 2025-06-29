@@ -49,10 +49,6 @@ struct FPSSettingsRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
 	TObjectPtr<class UCurveTable> MenuStarsAnimation = nullptr;
 
-	/** Defines a star face texture for each character. Displayed in the main menu */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	TObjectPtr<class UTexture> StarFaceTexture = nullptr;
-
 	/** Returns true is this does not contain any data. */
 	bool FORCEINLINE IsValid() const { return Character.IsValid() && PointsToUnlock > 0.f; }
 };
