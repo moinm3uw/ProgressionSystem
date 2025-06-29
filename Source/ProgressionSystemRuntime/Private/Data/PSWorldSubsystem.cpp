@@ -15,6 +15,7 @@
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "Engine/Engine.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -142,7 +143,7 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 // Called when progression module ready
 void UPSWorldSubsystem::OnInitialized_Implementation()
 {
-	UMaterialInterface* StarMaterial = UPSDataAsset::Get().GetDynamicProgressionMaterial();
+	UMaterialInterface* StarMaterial = UPSDataAsset::Get().GetBombDynamicProgressionOverlayMaterial();
 
 	if (!ensureMsgf(StarMaterial, TEXT("ASSERT: [%i] %hs:\n'StarMaterial' is null!"), __LINE__, __FUNCTION__))
 	{

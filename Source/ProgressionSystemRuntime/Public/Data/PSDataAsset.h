@@ -51,9 +51,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE TSubclassOf<class AActor> GetStarActorClass() const { return StarActorClassInternal; }
 
-	/** Returns Material applied for dynamic progression material (star is filled partially depends on progression) */
+	/** Returns Material overlay applied as dynamic progression (character's bomb is filled partially depends on progression) in the main menu */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE class UMaterialInterface* GetDynamicProgressionMaterial() const { return DynamicProgressionMaterialInternal; }
+	FORCEINLINE class UMaterialInterface* GetBombDynamicProgressionOverlayMaterial() const { return DynamicProgressionBombOverlayMaterialInternal; }
 
 	/** Returns progression difficulty multiplier */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -66,14 +66,6 @@ public:
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	FORCEINLINE FName GetStarMaterialSlotName() const { return StarPercentSlotNameInternal; }
-
-	/** Returns Star Face Texture Parameter name used to apply a face over each star */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE FName GetStarFaceTextureParameter() const { return StarFaceTextureParameter; }
-
-	/** Returns temp value to tweak the stars with bad UV  to look as expected. Could not be 0 */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	FORCEINLINE float GetStarMaterialFractionalDivisor() const { return StarMaterialFractionalDivisorInternal; }
 
 	/** Returns Instant Character Switch Tag. When Instant character switch setting enabled fade animation will not be played */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -112,27 +104,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Unlocked Progression Icon"))
 	TObjectPtr<class UTexture2D> UnlockedProgressionIconInternal = nullptr;
 
-	/** Material applied for dynamic progression material (star is filled partially depends on progression) */
-	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Dynamic Progression Material"))
-	TObjectPtr<class UMaterialInterface> DynamicProgressionMaterialInternal = nullptr;
+	/** Material applied as dynamic progression overlay material (character's bomb is filled partially depends on progression) in the main menu*/
+	UPROPERTY(EditAnywhere, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Dynamic Progression Bomb Overlay Material"))
+	TObjectPtr<class UMaterialInterface> DynamicProgressionBombOverlayMaterialInternal = nullptr;
 
 	/** The Progression difficulty multiplier. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Multiplier Curve Table"))
 	TObjectPtr<UCurveTable> ProgressionDifficultyMultiplierCurveTableInternal = nullptr;
-
-
+	
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Percent Slot Name"))
 	FName StarPercentSlotNameInternal = NAME_None;
-
-	/** Star Face Texture Parameter name to add a face texture for each character*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Face Texture Parameter Name"))
-	FName StarFaceTextureParameter = NAME_None;
-
-	/** Used to tweak the stars UV. Set 1 to have no impact
-	 * Can not be 0 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Material Fractional Divisor"))
-	float StarMaterialFractionalDivisorInternal = 1.f;
 
 	/** When Instant character switch setting enabled fade animation will not be played */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++", AdvancedDisplay, meta = (BlueprintProtected, DisplayName = "Instant Character Switch Tag"))

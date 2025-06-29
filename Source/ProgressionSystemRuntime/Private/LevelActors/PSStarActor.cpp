@@ -4,11 +4,16 @@
 #include "LevelActors/PSStarActor.h"
 
 #include "PoolManagerSubsystem.h"
+#include "Components/MySkeletalMeshComponent.h"
+#include "Components/PSSpotComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Controllers/MyPlayerController.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
+#include "DataAssets/BombDataAsset.h"
+#include "DataAssets/LevelActorDataAsset.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/MyGameStateBase.h"
 #include "LevelActors/PlayerCharacter.h"
@@ -183,9 +188,8 @@ void APSStarActor::UpdateStarActorProgressMeshMaterial(float AmountOfStars, EPSS
 	// unlocked stars with fractional part
 	if (AmountOfStars > 0 && AmountOfStars < 1)
 	{
-		const float PartialUnLockedStarAmount = AmountOfStars / UPSDataAsset::Get().GetStarMaterialFractionalDivisor();
-		StarProgressionDynamicMaterial = UPSWorldSubsystem::Get().GetStarProgressionDynamicMaterial(EPSStarActorState::Partial); // StarMaterialFractionalDivisor is hardcoded value to 3 to tweak bad UV to simulate it's working
-		SetStarActorProgressMeshMaterial(StarProgressionDynamicMaterial, PartialUnLockedStarAmount);
+		StarProgressionDynamicMaterial = UPSWorldSubsystem::Get().GetStarProgressionDynamicMaterial(EPSStarActorState::Partial);
+		SetStarActorProgressMeshMaterial(StarProgressionDynamicMaterial, AmountOfStars);
 		return; // Early return for fractional stars
 	}
 
@@ -205,13 +209,32 @@ void APSStarActor::SetStarActorProgressMeshMaterial(class UMaterialInstanceDynam
 		return; // Early return if pointers are invalid
 	}
 
-	// Add a face texture over current star material
-	const FPSSettingsRow& CurrentSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
-	const FName StarFaceTextureParameter = UPSDataAsset::Get().GetStarFaceTextureParameter();
-	const FName StarProgressionMaterialSlotName = UPSDataAsset::Get().GetStarMaterialSlotName();
-	UTexture* StarFaceTexture = CurrentSettingsRowData.StarFaceTexture;
+	const UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().GetCurrentSpot();
 
-	StarMeshComponent->SetMaterial(0, StarDynamicMaterial);
+	const FName StarProgressionMaterialSlotName = UPSDataAsset::Get().GetStarMaterialSlotName();
+
+	ChangeStarMesh(SpotComponent);
+
 	StarDynamicMaterial->SetScalarParameterValue(StarProgressionMaterialSlotName, StarProgressionAmount);
-	StarDynamicMaterial->SetTextureParameterValue(StarFaceTextureParameter, StarFaceTexture);
+	StarMeshComponent->SetOverlayMaterial(StarDynamicMaterial);
+}
+
+// Changes current bomb mesh to current spot bomb mesh
+void APSStarActor::ChangeStarMesh(const UPSSpotComponent* SpotComponent)
+{
+	if (!ensureMsgf(SpotComponent, TEXT("ASSERT: [%i] %hs:\n'SpotComponent' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return; // Early return if pointers are invalid
+	}
+
+	const ELevelType SpotType = SpotComponent->GetMeshChecked().GetAssociatedLevelType();
+	const ULevelActorRow* BombRow = UBombDataAsset::Get().GetRowByLevelType(SpotType);
+	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh) : nullptr;
+	if (!ensureMsgf(BombMesh, TEXT("ASSERT: [%i] %hs:\n'BombMesh' is not valid!"), __LINE__, __FUNCTION__))
+	{
+		return; // Early return if pointers are invalid
+	}
+
+	StarMeshComponent->SetMaterial(0, nullptr);
+	StarMeshComponent->SetStaticMesh(BombMesh);
 }
