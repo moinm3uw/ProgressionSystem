@@ -6,8 +6,7 @@ public class ProgressionSystemRuntime : ModuleRules
 {
 	public ProgressionSystemRuntime(ReadOnlyTargetRules Target) : base(Target)
 	{
-		CppStandard = CppStandardVersion.Latest; 
-		CppCompileWarningSettings.NonInlinedGenCppWarningLevel = WarningLevel.Error;
+	    CppCompileWarningSettings.NonInlinedGenCppWarningLevel = WarningLevel.Error;
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicDependencyModuleNames.AddRange(new[]
 			{
