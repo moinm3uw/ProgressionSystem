@@ -42,7 +42,7 @@ public:
 
 	/** Unlock level by Index, used only for the first level */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void SavePoints(EEndGameState EndGameState);
+	void SavePoints(EBmrEndGameState EndGameState);
 
 	/** Unlocks the next level*/
 	UFUNCTION(BlueprintCallable, Category = "C++")
@@ -54,7 +54,7 @@ public:
 
 	/** Returns the endgame reward. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="C++")
-	float GetProgressionReward(EEndGameState EndGameState) const;
+	float GetProgressionReward(EBmrEndGameState EndGameState) const;
 
 	/** Returns the current save to disk data by name. */
 	UFUNCTION(BlueprintCallable, Category="C++")

@@ -2,26 +2,26 @@
 
 #include "Data/PSWorldSubsystem.h"
 
-#include "PoolManagerSubsystem.h"
-#include "Components/MapComponent.h"
-#include "Components/MySkeletalMeshComponent.h"
+#include "Actors/BmrPawn.h"
+#include "Components/BmrMapComponent.h"
+#include "Components/BmrSkeletalMeshComponent.h"
 #include "Components/PSHUDComponent.h"
 #include "Components/PSSpotComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
-#include "Kismet/GameplayStatics.h"
-#include "LevelActors/PlayerCharacter.h"
-#include "MyDataTable/MyDataTable.h"
-#include "MyUtilsLibraries/UtilsLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "LevelActors/PSStarActor.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/SaveUtilsLibrary.h"
-#include "Subsystems/GlobalEventsSubsystem.h"
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "MyUtilsLibraries/UtilsLibrary.h"
+#include "PoolManagerSubsystem.h"
+#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSWorldSubsystem)
 
@@ -46,10 +46,10 @@ UPSWorldSubsystem& UPSWorldSubsystem::Get(const UObject& WorldContextObject)
 }
 
 // Set current row of progression system by tag
-void UPSWorldSubsystem::SetCurrentRowByTag(FPlayerTag NewRowPlayerTag)
+void UPSWorldSubsystem::SetCurrentRowByTag(FBmrPlayerTag NewRowPlayerTag)
 {
 	const FPSSettingsRow& CurrentSettingsRowData = GetCurrentProgressionSettingsRow();
-	const FPlayerTag& PreviousPlayerTag = CurrentSettingsRowData.Character;
+	const FBmrPlayerTag& PreviousPlayerTag = CurrentSettingsRowData.Character;
 
 	for (const TTuple<FName, FPSSettingsRow>& KeyValue : ProgressionSettingsDataInternal)
 	{
@@ -155,13 +155,13 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 
 	// Subscribe events on player type changed and Character spawned
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
+	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);
 
 	// Binds the local player state ready event to the handler
 	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 }
 
-// Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors 
+// Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors
 void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
@@ -183,9 +183,9 @@ void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 }
 
 // Is called when a player character is ready
-void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* PlayerCharacter, int32 CharacterID)
+void UPSWorldSubsystem::OnLocalPawnReady_Implementation(ABmrPawn* PlayerCharacter, int32 CharacterID)
 {
-	UMapComponent* MapComponent = UMapComponent::GetMapComponent(PlayerCharacter);
+	UBmrMapComponent* MapComponent = UBmrMapComponent::GetMapComponent(PlayerCharacter);
 	if (!ensureMsgf(MapComponent, TEXT("ASSERT: [%i] %hs:\n'PlayerMapComponent' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
@@ -193,34 +193,34 @@ void UPSWorldSubsystem::OnLocalCharacterReady_Implementation(APlayerCharacter* P
 	MapComponent->OnActorTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
 }
 
-// Subscribes to the end game state change notification on the player state. 
-void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(AMyPlayerState* PlayerState, int32 CharacterID)
+// Subscribes to the end game state change notification on the player state.
+void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(ABmrPlayerState* PlayerState, int32 CharacterID)
 {
 	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }
 
 // Is called when a player has been changed
-void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(UMapComponent* MapComponent, const ULevelActorRow* NewRow, const ULevelActorRow* PreviousRow)
+void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(UBmrMapComponent* MapComponent, const UBmrLevelActorRow* NewRow, const UBmrLevelActorRow* PreviousRow)
 {
-	const APlayerCharacter* PlayerCharacter = MapComponent->GetOwner<APlayerCharacter>();
+	const ABmrPawn* PlayerCharacter = MapComponent->GetOwner<ABmrPawn>();
 	if (ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is invalid!"), __LINE__, __FUNCTION__))
 	{
 		SetCurrentRowByTag(PlayerCharacter->GetPlayerTag());
 	}
 }
 
-// Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.) 
-void UPSWorldSubsystem::OnEndGameStateChanged_Implementation(EEndGameState EndGameState)
+// Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.)
+void UPSWorldSubsystem::OnEndGameStateChanged_Implementation(EBmrEndGameState EndGameState)
 {
-	if (EndGameState != EEndGameState::None)
+	if (EndGameState != EBmrEndGameState::None)
 	{
 		SavePoints(EndGameState);
 	}
 }
 
-// Save the progression depends on EEndGameState. 
-void UPSWorldSubsystem::SavePoints(EEndGameState EndGameState)
+// Save the progression depends on EBmrEndGameState.
+void UPSWorldSubsystem::SavePoints(EBmrEndGameState EndGameState)
 {
 	if (!ensureMsgf(SaveGameDataInternal, TEXT("ASSERT: [%i] %hs:\n'SaveGameDataInternal' is null!"), __LINE__, __FUNCTION__))
 	{
@@ -246,13 +246,13 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 
 	CurrentRowNameInternal = FirstSaveToDiskRow;
 	SaveGameDataInternal->UnlockLevelByName(CurrentRowNameInternal);
-	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+	ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
 
 	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+	const FBmrPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
 	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
 }
@@ -260,7 +260,7 @@ void UPSWorldSubsystem::SetFirstElementAsCurrent()
 // Spawn/add the stars actors for a spot
 void UPSWorldSubsystem::UpdateProgressionStarActors()
 {
-	//Return to Pool Manager the list of handles which is not needed (if there are any) 
+	// Return to Pool Manager the list of handles which is not needed (if there are any)
 
 	if (!PoolActorHandlersInternal.IsEmpty())
 	{
@@ -329,14 +329,14 @@ UMaterialInstanceDynamic* UPSWorldSubsystem::GetStarProgressionDynamicMaterial(E
 {
 	switch (StarState)
 	{
-	case EPSStarActorState::Locked:
-		return StarLockedProgressMaterial;
-	case EPSStarActorState::Unlocked:
-		return StarUnLockedProgressMaterial;
-	case EPSStarActorState::Partial:
-		return StarDynamicProgressMaterial;
-	default:
-		return nullptr;
+		case EPSStarActorState::Locked:
+			return StarLockedProgressMaterial;
+		case EPSStarActorState::Unlocked:
+			return StarUnLockedProgressMaterial;
+		case EPSStarActorState::Partial:
+			return StarDynamicProgressMaterial;
+		default:
+			return nullptr;
 	}
 }
 
@@ -386,12 +386,12 @@ void UPSWorldSubsystem::PerformCleanUp()
 	ProgressionSettingsDataInternal.Empty();
 	StarDynamicProgressMaterial = nullptr;
 
-	// Subsystem clean up  
+	// Subsystem clean up
 	UMyPrimaryDataAsset::ResetDataAsset(DataAssetInternal);
 	HUDComponentInternal = nullptr;
 	SpotComponentsMapInternal.Empty();
 
-	// Saves clean up 
+	// Saves clean up
 	if (SaveGameDataInternal)
 	{
 		SaveGameDataInternal->ConditionalBeginDestroy();
@@ -451,13 +451,13 @@ void UPSWorldSubsystem::UnlockAllLevels()
 	}
 	SaveGameDataInternal->UnlockAllLevels();
 
-	APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
+	ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
 
 	if (!ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return;
 	}
-	const FPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
+	const FBmrPlayerTag& PlayerTag = PlayerCharacter->GetPlayerTag();
 	SetCurrentRowByTag(PlayerTag);
 	SaveDataAsync();
 }

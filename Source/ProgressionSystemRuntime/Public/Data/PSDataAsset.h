@@ -5,10 +5,10 @@
 #include "Data/MyPrimaryDataAsset.h"
 #include "Data/SettingTag.h"
 #include "Layout/Margin.h"
-#include "Structures/ManageableWidgetData.h"
+#include "Structures/BmrManageableWidgetData.h"
 #include "PSDataAsset.generated.h"
 
-enum class EGameDifficulty : uint8;
+enum class EBmrGameDifficulty : uint8;
 
 /**
  * Contains all progression assets used in the module 
@@ -29,11 +29,11 @@ public:
 
 	/** Returns a progression menu widget to be displayed in the main menu*/
 	UFUNCTION(BlueprintPure, Category = "C++")
-	const FORCEINLINE FManageableWidgetData& GetProgressionEndGameWidget() const { return ProgressionEndGameWidgetInternal; }
+	const FORCEINLINE FBmrManageableWidgetData& GetProgressionEndGameWidget() const { return ProgressionEndGameWidgetInternal; }
 
 	/** Returns a progression overlay widget to be displayed in the main menu for locked levels */
 	UFUNCTION(BlueprintPure, Category = "C++")
-	const FORCEINLINE FManageableWidgetData& GetProgressionOverlayWidget() const { return ProgressionOverlayWidgetInternal; }
+	const FORCEINLINE FBmrManageableWidgetData& GetProgressionOverlayWidget() const { return ProgressionOverlayWidgetInternal; }
 
 	/** Returns a locked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -82,11 +82,11 @@ protected:
 
 	/** Main menu and end-game progression widget */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "End Game Progression Widget"))
-	FManageableWidgetData ProgressionEndGameWidgetInternal;
+	FBmrManageableWidgetData ProgressionEndGameWidgetInternal;
 
 	/** Main Menu overlay widget */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "Main Menu Overlay Widget"))
-	FManageableWidgetData ProgressionOverlayWidgetInternal;
+	FBmrManageableWidgetData ProgressionOverlayWidgetInternal;
 
 	/** Star icon widget */
 	UPROPERTY(EditAnywhere, Category = "UI", meta = (BlueprintProtected, DisplayName = "Star Widget"))
