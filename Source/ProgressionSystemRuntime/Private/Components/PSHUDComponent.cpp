@@ -3,17 +3,17 @@
 #include "Components/PSHUDComponent.h"
 //---
 
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
-#include "Data/PSDataAsset.h"
+#include "Actors/BmrPawn.h"
 #include "Blueprint/WidgetTree.h"
-#include "Widgets/PSEndGameWidget.h"
+#include "Data/PSDataAsset.h"
 #include "Data/PSWorldSubsystem.h"
 #include "MyUtilsLibraries/WidgetUtilsLibrary.h"
-#include "Subsystems/GlobalEventsSubsystem.h"
-#include "Subsystems/WidgetsSubsystem.h"
-#include "Widgets/PSOverlayWidget.h"
-#include "LevelActors/PlayerCharacter.h"
 #include "NativeGameplayTags.h"
+#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "Subsystems/BmrWidgetsSubsystem.h"
+#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
+#include "Widgets/PSEndGameWidget.h"
+#include "Widgets/PSOverlayWidget.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
 
@@ -32,14 +32,14 @@ UPSHUDComponent::UPSHUDComponent()
 // Returns the Progression End Game widget
 UPSEndGameWidget* UPSHUDComponent::GetProgressionEndGameWidget() const
 {
-	const UWidgetsSubsystem* WidgetsSubsystem = UWidgetsSubsystem::GetWidgetsSubsystem();
+	const UBmrWidgetsSubsystem* WidgetsSubsystem = UBmrWidgetsSubsystem::GetWidgetsSubsystem();
 	return WidgetsSubsystem ? WidgetsSubsystem->GetWidgetByTag<UPSEndGameWidget>(TAG_UI_WIDGET_PROGRESSIONSYSTEM_ENDGAME) : nullptr;
 }
 
 // Returns the Progression Menu overlay widget
 UPSOverlayWidget* UPSHUDComponent::GetProgressionMenuOverlayWidget() const
 {
-	const UWidgetsSubsystem* WidgetsSubsystem = UWidgetsSubsystem::GetWidgetsSubsystem();
+	const UBmrWidgetsSubsystem* WidgetsSubsystem = UBmrWidgetsSubsystem::GetWidgetsSubsystem();
 	return WidgetsSubsystem ? WidgetsSubsystem->GetWidgetByTag<UPSOverlayWidget>(TAG_UI_WIDGET_PROGRESSIONSYSTEM_MENUOVERLAY) : nullptr;
 }
 
@@ -56,7 +56,7 @@ void UPSHUDComponent::BeginPlay()
 	Super::BeginPlay();
 	// Binds to local character ready to guarantee that the player controller is initialized
 	// so we can safely use Widget's Subsystem
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
+	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);
 }
 
 // Called when the component is unregistered, used to clean up resources
@@ -66,15 +66,15 @@ void UPSHUDComponent::OnUnregister()
 
 	UPSWorldSubsystem::Get().PerformCleanUp();
 
-	if (UWidgetsSubsystem* WidgetsSubsystem = UWidgetsSubsystem::GetWidgetsSubsystem())
+	if (UBmrWidgetsSubsystem* WidgetsSubsystem = UBmrWidgetsSubsystem::GetWidgetsSubsystem())
 	{
 		WidgetsSubsystem->DestroyManageableWidgetByTag(TAG_UI_WIDGET_PROGRESSIONSYSTEM_ENDGAME);
 		WidgetsSubsystem->DestroyManageableWidgetByTag(TAG_UI_WIDGET_PROGRESSIONSYSTEM_MENUOVERLAY);
 	}
 }
 
-//Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
-void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Character, int32 CharacterID)
+// Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
+void UPSHUDComponent::OnLocalPawnReady_Implementation(ABmrPawn* Character, int32 CharacterID)
 {
 	if (!Character || !Character->IsLocallyControlled())
 	{
@@ -82,8 +82,8 @@ void UPSHUDComponent::OnLocalCharacterReady_Implementation(APlayerCharacter* Cha
 	}
 
 	// Create widgets now as fast as possible, later we will register them in Widgets Subsystem
-	UWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionEndGameWidget());
-	UWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionOverlayWidget());
+	UBmrWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionEndGameWidget());
+	UBmrWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionOverlayWidget());
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnInitialize.AddUniqueDynamic(this, &ThisClass::OnInitialized);

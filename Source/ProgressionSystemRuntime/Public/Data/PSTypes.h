@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Bomber.h"
-#include "Structures/PlayerTag.h"
+#include "Structures/BmrPlayerTag.h"
 #include "Engine/DataTable.h"
 #include "PSTypes.generated.h"
 
@@ -23,11 +23,11 @@ struct FPSSettingsRow : public FTableRowBase
 
 	/** Stores the value of the map for progression system component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	ELevelType Map = ELevelType::None;
+	EBmrLevelType Map = EBmrLevelType::None;
 
 	/** Contains the character player tag used in the save/load progression system */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
-	FPlayerTag Character = FPlayerTag::None;
+	FBmrPlayerTag Character = FBmrPlayerTag::None;
 
 	/** Transform of Stars above the character on a level */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="C++")
