@@ -2,15 +2,15 @@
 
 #include "Data/PSSaveGameData.h"
 
-#include "Components/MySkeletalMeshComponent.h"
+#include "Components/BmrGameDifficultyManagerComponent.h"
+#include "Components/BmrSkeletalMeshComponent.h"
 #include "Components/PSSpotComponent.h"
 #include "Data/PSDataAsset.h"
+#include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Engine/CurveTable.h"
-#include "Components/GameDifficultyManagerComponent.h"
-#include "Subsystems/GlobalEventsSubsystem.h"
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
-#include "Data/PSTypes.h"
+#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveGameData)
 
@@ -21,7 +21,7 @@ FString UPSSaveGameData::GetSaveSlotName(int32 SaveSlotVersion)
 	return FString::Printf(TEXT("%s-%d"), *StaticClass()->GetName(), SaveSlotVersion);
 }
 
-// Retrieves the saved game progression row by index from internal saved rows. If the index is out of range, returns a static empty data object. 
+// Retrieves the saved game progression row by index from internal saved rows. If the index is out of range, returns a static empty data object.
 FName UPSSaveGameData::GetSavedProgressionRowByIndex(int32 Index) const
 {
 	int32 Idx = 0;
@@ -54,7 +54,7 @@ void UPSSaveGameData::UnlockLevelByName(FName RowName)
 }
 
 // Updates the current level's progression based on the end game state and proceeds to the next level if unlocked.
-void UPSSaveGameData::SavePoints(EEndGameState EndGameState)
+void UPSSaveGameData::SavePoints(EBmrEndGameState EndGameState)
 {
 	UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
 	if (!ensureMsgf(CurrentSpot, TEXT("ASSERT: [%i] %hs:\n'CurrentSpot' is null!"), __LINE__, __FUNCTION__))
@@ -133,7 +133,7 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 
 			if (Index == ProgressionSettingsRowDataInternal.Num())
 			{
-				UGlobalEventsSubsystem::Get().OnGameProgressionCompleted.Broadcast();
+				UBmrGlobalEventsSubsystem::Get().OnGameProgressionCompleted.Broadcast();
 			}
 		}
 	}
@@ -158,14 +158,14 @@ void UPSSaveGameData::UnlockAllLevels()
 		UPSSpotComponent* SpotComponent = UPSWorldSubsystem::Get().FindSpotByRowName(KeyValue.Key);
 		if (SpotComponent != nullptr)
 		{
-			UMySkeletalMeshComponent& Mesh = SpotComponent->GetMeshChecked();
+			UBmrSkeletalMeshComponent& Mesh = SpotComponent->GetMeshChecked();
 			KeyValue.Value.UnlockedSkinsAmount = Mesh.GetSkinTexturesNum() - UPSDataAsset::Get().GetSkinUnlockInterval();
 		}
 	}
 }
 
 // Retrieves the progression reward based on the end game state for the current level.
-float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
+float UPSSaveGameData::GetProgressionReward(EBmrEndGameState EndGameState) const
 {
 	constexpr float DefaultProgressionReward = 0.f;
 
@@ -175,7 +175,7 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 		return DefaultProgressionReward;
 	}
 
-	UEnum* EnumPtr = StaticEnum<EEndGameState>();
+	UEnum* EnumPtr = StaticEnum<EBmrEndGameState>();
 	const FString ContextString = EnumPtr->GetNameStringByValue(TO_FLAG(EndGameState));
 	const FName RowName = *ContextString;
 
@@ -191,9 +191,9 @@ float UPSSaveGameData::GetProgressionReward(EEndGameState EndGameState) const
 
 	float MinTime = 0.f;
 	float MaxTime = 0.f;
-	Curve->GetTimeRange(/*out*/MinTime, /*out*/MaxTime);
+	Curve->GetTimeRange(/*out*/ MinTime, /*out*/ MaxTime);
 
-	float DifficultyType = static_cast<float>(UGameDifficultyManagerComponent::Get().GetDifficultyLevel());
+	float DifficultyType = static_cast<float>(UBmrGameDifficultyManagerComponent::Get().GetDifficultyLevel());
 
 	DifficultyType = FMath::Clamp(DifficultyType, MinTime, MaxTime);
 

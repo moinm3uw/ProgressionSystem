@@ -4,8 +4,8 @@
 
 #include "Bomber.h"
 #include "Components/ActorComponent.h"
-#include "GameFramework/MyPlayerState.h"
-#include "Structures/PlayerTag.h"
+#include "GameFramework/BmrPlayerState.h"
+#include "Structures/BmrPlayerTag.h"
 //---
 #include "PSHUDComponent.generated.h"
 
@@ -13,7 +13,7 @@
  * Implements the core logic on project about Progression System.
  */
 
-UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PROGRESSIONSYSTEMRUNTIME_API UPSHUDComponent final : public UActorComponent
 {
 	GENERATED_BODY()
@@ -31,8 +31,8 @@ public:
 	class UPSOverlayWidget* GetProgressionMenuOverlayWidget() const;
 
 	/*********************************************************************************************
-	* Protected functions
-	********************************************************************************************* */
+	 * Protected functions
+	 ********************************************************************************************* */
 protected:
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
@@ -47,5 +47,5 @@ protected:
 
 	/** Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalCharacterReady(class APlayerCharacter* Character, int32 CharacterID);
+	void OnLocalPawnReady(class ABmrPawn* Character, int32 CharacterID);
 };

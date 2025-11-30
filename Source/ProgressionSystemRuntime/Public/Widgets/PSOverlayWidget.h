@@ -42,7 +42,7 @@ protected:
 
 	/** When a character has been changed current active progression row also changes */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnCurrentRowDataChanged(FPlayerTag NewPlayerTag, FPlayerTag PreviousPlayerTag);
+	void OnCurrentRowDataChanged(FBmrPlayerTag NewPlayerTag, FBmrPlayerTag PreviousPlayerTag);
 
 	/** Overlay widget which is a root for all fade-in/out overlay elements */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, BindWidget))

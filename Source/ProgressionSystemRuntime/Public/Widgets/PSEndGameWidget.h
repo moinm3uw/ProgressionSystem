@@ -6,8 +6,8 @@
 #include "PoolManagerTypes.h"
 #include "PSEndGameWidget.generated.h"
 
-enum class ECurrentGameState : uint8;
-enum class EEndGameState : uint8;
+enum class EBmrCurrentGameState : uint8;
+enum class EBmrEndGameState : uint8;
 
 /**
  * Widget to display the progression as stars in the end game state
@@ -45,15 +45,15 @@ protected:
 
 	/** Called when the end game state was changed to toggle progression widget visibility. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(ECurrentGameState CurrentGameState);
+	void OnGameStateChanged(EBmrCurrentGameState CurrentGameState);
 
 	/** Subscribes to the end game state change notification on the player state. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPlayerStateReady(class AMyPlayerState* PlayerState, int32 CharacterID);
+	void OnLocalPlayerStateReady(class ABmrPlayerState* PlayerState, int32 CharacterID);
 
 	/** Called when the end game state was changed. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnEndGameStateChanged(EEndGameState EndGameState);
+	void OnEndGameStateChanged(EBmrEndGameState EndGameState);
 
 	/**
 	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.

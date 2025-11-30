@@ -4,14 +4,14 @@
 #include "Widgets/PSOverlayWidget.h"
 
 #include "Components/Image.h"
-#include "Components/MySkeletalMeshComponent.h"
+#include "Components/BmrSkeletalMeshComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Data/PSDataAsset.h"
 #include "Components/Overlay.h"
 #include "Components/PSSpotComponent.h"
 #include "Data/PSWorldSubsystem.h"
 #include "UI/SettingsWidget.h"
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSOverlayWidget)
 
@@ -109,7 +109,7 @@ void UPSOverlayWidget::TickPlayFadeOverlayAnimation()
 }
 
 // When a character has been changed current active progression row also changes
-void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FPlayerTag NewPlayerTag, FPlayerTag PreviousPlayerTag)
+void UPSOverlayWidget::OnCurrentRowDataChanged_Implementation(FBmrPlayerTag NewPlayerTag, FBmrPlayerTag PreviousPlayerTag)
 {
 	const bool bIsNewCharacter = PreviousPlayerTag != NewPlayerTag;
 	DisplayLevelUIOverlay(bIsNewCharacter);
@@ -122,7 +122,7 @@ void UPSOverlayWidget::DisplayLevelUIOverlay(bool bIsNewCharacter)
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
 	const bool bIsLevelLocked = CurrenSaveToDiskDataRow.IsLevelLocked;
 
-	if (const USettingsWidget* SettingsWidget = UMyBlueprintFunctionLibrary::GetSettingsWidget())
+	if (const USettingsWidget* SettingsWidget = UBmrBlueprintFunctionLibrary::GetSettingsWidget())
 	{
 		const bool bShouldPlayFadeAnimation = !SettingsWidget->GetCheckboxValue(UPSDataAsset::Get().GetInstantCharacterSwitchTag());
 		ESlateVisibility OverlayVisibility = bIsLevelLocked ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
@@ -132,7 +132,7 @@ void UPSOverlayWidget::DisplayLevelUIOverlay(bool bIsNewCharacter)
 			const UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
 			if (CurrentSpot)
 			{
-				const UMySkeletalMeshComponent& MeshComp = CurrentSpot->GetMeshChecked();
+				const UBmrSkeletalMeshComponent& MeshComp = CurrentSpot->GetMeshChecked();
 				const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
 				const bool bIsCurrentSkinAvailable = MeshComp.IsSkinAvailable(CurrentSkinIndex);
 				OverlayVisibility = bIsCurrentSkinAvailable ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;

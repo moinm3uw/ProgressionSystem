@@ -14,10 +14,10 @@
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Engine/CurveTable.h"
-#include "GameFramework/MyGameStateBase.h"
-#include "GameFramework/MyPlayerState.h"
-#include "Subsystems/GlobalEventsSubsystem.h"
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "GameFramework/BmrGameState.h"
+#include "GameFramework/BmrPlayerState.h"
+#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSEndGameWidget)
@@ -41,12 +41,12 @@ void UPSEndGameWidget::NativeConstruct()
 }
 
 // Called when the end game state was changed to toggle progression widget visibility
-void UPSEndGameWidget::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+void UPSEndGameWidget::OnGameStateChanged_Implementation(EBmrCurrentGameState CurrentGameState)
 {
 	switch (CurrentGameState)
 	{
-	case ECurrentGameState::GameStarting: // Fallthrough
-	case ECurrentGameState::Menu:
+	case EBmrCurrentGameState::GameStarting: // Fallthrough
+	case EBmrCurrentGameState::Menu:
 		SetVisibility(ESlateVisibility::Collapsed);
 		break;
 	default: break;
@@ -54,7 +54,7 @@ void UPSEndGameWidget::OnGameStateChanged_Implementation(ECurrentGameState Curre
 }
 
 // Subscribes to the end game state change notification on the player state
-void UPSEndGameWidget::OnLocalPlayerStateReady_Implementation(AMyPlayerState* PlayerState, int32 CharacterID)
+void UPSEndGameWidget::OnLocalPlayerStateReady_Implementation(ABmrPlayerState* PlayerState, int32 CharacterID)
 {
 	// Ensure that PlayerState is not null before subscribing to the event
 	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
@@ -62,9 +62,9 @@ void UPSEndGameWidget::OnLocalPlayerStateReady_Implementation(AMyPlayerState* Pl
 }
 
 // Called when the end game state was changed
-void UPSEndGameWidget::OnEndGameStateChanged_Implementation(EEndGameState EndGameState)
+void UPSEndGameWidget::OnEndGameStateChanged_Implementation(EBmrEndGameState EndGameState)
 {
-	if (EndGameState != EEndGameState::None)
+	if (EndGameState != EBmrEndGameState::None)
 	{
 		// show the stars widget at the bottom.
 		SetVisibility(ESlateVisibility::Visible);

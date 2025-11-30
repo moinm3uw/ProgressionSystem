@@ -2,16 +2,16 @@
 
 #include "Components/PSSpotComponent.h"
 
+#include "Actors/BmrPawn.h"
+#include "Components/BmrMapComponent.h"
+#include "Components/BmrSkeletalMeshComponent.h"
 #include "Components/PSHUDComponent.h"
-#include "Data/PSWorldSubsystem.h"
-#include "Components/MySkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "GameFramework/MyGameStateBase.h"
-#include "LevelActors/PlayerCharacter.h"
-#include "Subsystems/GlobalEventsSubsystem.h"
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "Data/PSWorldSubsystem.h"
+#include "GameFramework/BmrGameState.h"
 #include "NativeGameplayTags.h"
-#include "Components/MapComponent.h"
+#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
 
@@ -43,16 +43,16 @@ void UPSSpotComponent::OnInitialized_Implementation()
 // Once the save file is reset the spot component needs to reset skins
 void UPSSpotComponent::OnReset_Implementation()
 {
-	// reset 
-	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
+	// reset
+	UBmrSkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	for (int32 Index = 1; Index < SpotMeshComponent.GetSkinTexturesNum(); Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(false, Index);
 	}
 }
 
-// Listen game states to switch character skin. 
-void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState CurrentGameState)
+// Listen game states to switch character skin.
+void UPSSpotComponent::OnGameStateChanged_Implementation(EBmrCurrentGameState CurrentGameState)
 {
 	if (!IsCurrentSpot())
 	{
@@ -62,13 +62,13 @@ void UPSSpotComponent::OnGameStateChanged_Implementation(ECurrentGameState Curre
 	constexpr bool bApplySkin = true;
 	switch (CurrentGameState)
 	{
-	case ECurrentGameState::GameStarting:
-		TryRestorePlayerSkin();
-		break;
-	case ECurrentGameState::Menu:
-		RefreshAmountOfUnlockedSkins(bApplySkin);
-		break;
-	default: break;
+		case EBmrCurrentGameState::GameStarting:
+			TryRestorePlayerSkin();
+			break;
+		case EBmrCurrentGameState::Menu:
+			RefreshAmountOfUnlockedSkins(bApplySkin);
+			break;
+		default: break;
 	}
 }
 
@@ -95,7 +95,7 @@ void UPSSpotComponent::BeginPlay()
 // Clears all transient data created by this component.
 void UPSSpotComponent::OnUnregister()
 {
-	// reset back to initial state. By default, the spot is unlocked 
+	// reset back to initial state. By default, the spot is unlocked
 	constexpr bool bSpotUnlocked = true;
 	GetMeshChecked().SetActive(bSpotUnlocked);
 
@@ -112,7 +112,7 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 		return;
 	}
 
-	UMySkeletalMeshComponent& MeshComp = GetMeshChecked();
+	UBmrSkeletalMeshComponent& MeshComp = GetMeshChecked();
 	const int32 CurrentSkinIndex = MeshComp.GetAppliedSkinIndex();
 
 	// Current skins is available no need to switch to last avaialble
@@ -121,7 +121,7 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 		return;
 	}
 
-	// find last unlocked skin 
+	// find last unlocked skin
 	for (int32 Count = CurrentSkinIndex; Count >= 0; Count--)
 	{
 		if (Count == 0 || MeshComp.IsSkinAvailable(Count))
@@ -136,9 +136,9 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 }
 
 // Updates the progression menu widget when player changed
-void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlayerTag NewPlayerTag, const FPlayerTag PreviousPlayerTag)
+void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FBmrPlayerTag NewPlayerTag, const FBmrPlayerTag PreviousPlayerTag)
 {
-	UMySkeletalMeshComponent& Mesh = GetMeshChecked();
+	UBmrSkeletalMeshComponent& Mesh = GetMeshChecked();
 	if (Mesh.GetPlayerTag() == NewPlayerTag)
 	{
 		ChangeSpotVisibilityStatus(&Mesh);
@@ -148,21 +148,21 @@ void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FPlaye
 }
 
 // Returns the Skeletal Mesh of the Bomber character
-UMySkeletalMeshComponent* UPSSpotComponent::GetMySkeletalMeshComponent() const
+UBmrSkeletalMeshComponent* UPSSpotComponent::GetMySkeletalMeshComponent() const
 {
-	return GetOwner()->FindComponentByClass<UMySkeletalMeshComponent>();
+	return GetOwner()->FindComponentByClass<UBmrSkeletalMeshComponent>();
 }
 
 // Returns the Skeletal Mesh of the Bomber character
-UMySkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
+UBmrSkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
 {
-	UMySkeletalMeshComponent* Mesh = GetMySkeletalMeshComponent();
+	UBmrSkeletalMeshComponent* Mesh = GetMySkeletalMeshComponent();
 	ensureMsgf(Mesh, TEXT("ASSERT: [%i] %hs:\n'Mesh' is nullptr, can not get mesh for spot.!"), __LINE__, __FUNCTION__);
 	return *Mesh;
 }
 
-// Changes the player spot depends on current level state 
-void UPSSpotComponent::ChangeSpotVisibilityStatus(UMySkeletalMeshComponent* Mesh)
+// Changes the player spot depends on current level state
+void UPSSpotComponent::ChangeSpotVisibilityStatus(UBmrSkeletalMeshComponent* Mesh)
 {
 	// Locks and unlocks the spot depends on the current level progression status
 	FPSSaveToDiskData SaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
@@ -177,7 +177,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		return;
 	}
 
-	UMySkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
+	UBmrSkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
 	const int32 CurrentSkinIndex = SpotMeshComponent.GetAppliedSkinIndex();
 	const int32 TotalSkins = SpotMeshComponent.GetSkinTexturesNum();
@@ -187,7 +187,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		return;
 	}
 
-	if (AMyGameStateBase::GetCurrentGameState() == ECurrentGameState::Menu)
+	if (ABmrGameState::GetCurrentGameState() == EBmrCurrentGameState::Menu)
 	{
 		int32 PreviousAmountOfUnlockedSkins = 0;
 		for (int32 SkinIndex = 0; SkinIndex < TotalSkins; SkinIndex++)
@@ -198,7 +198,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 				bApplySkin = true;
 			}
 		}
-		// do nothing skins amount is not changed 
+		// do nothing skins amount is not changed
 		if (PreviousAmountOfUnlockedSkins != 1 && PreviousAmountOfUnlockedSkins == UnlockedSkinsAmount + 1)
 		{
 			return;
@@ -211,8 +211,8 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		if (bApplySkin)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
-			const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-			if (UMapComponent* MapComponent = UMapComponent::GetMapComponent(PlayerCharacter))
+			const ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
+			if (UBmrMapComponent* MapComponent = UBmrMapComponent::GetMapComponent(PlayerCharacter))
 			{
 				MapComponent->SetReplicatedMeshData(SpotMeshComponent.GetMeshData());
 			}
@@ -223,7 +223,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 // Returns true if this is a current spot
 bool UPSSpotComponent::IsCurrentSpot() const
 {
-	const APlayerCharacter* PlayerCharacter = UMyBlueprintFunctionLibrary::GetLocalPlayerCharacter();
-	const FPlayerTag& PlayerTag = PlayerCharacter ? PlayerCharacter->GetPlayerTag() : FPlayerTag::None;
+	const ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
+	const FBmrPlayerTag& PlayerTag = PlayerCharacter ? PlayerCharacter->GetPlayerTag() : FBmrPlayerTag::None;
 	return PlayerCharacter && GetMeshChecked().GetPlayerTag() == PlayerTag;
 }

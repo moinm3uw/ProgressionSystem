@@ -1,26 +1,25 @@
 // Copyright (c) Valerii Rotermel and Yevhenii Selivanov
 
-
 #include "LevelActors/PSStarActor.h"
 
-#include "PoolManagerSubsystem.h"
-#include "Components/MySkeletalMeshComponent.h"
+#include "Actors/BmrPawn.h"
+#include "Components/BmrSkeletalMeshComponent.h"
 #include "Components/PSSpotComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Controllers/MyPlayerController.h"
+#include "Controllers/BmrPlayerController.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
-#include "DataAssets/BombDataAsset.h"
-#include "DataAssets/LevelActorDataAsset.h"
+#include "DataAssets/BmrBombDataAsset.h"
+#include "DataAssets/BmrLevelActorDataAsset.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
-#include "GameFramework/MyGameStateBase.h"
-#include "LevelActors/PlayerCharacter.h"
+#include "GameFramework/BmrGameState.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
-#include "Subsystems/GlobalEventsSubsystem.h"
-#include "UtilityLibraries/MyBlueprintFunctionLibrary.h"
+#include "PoolManagerSubsystem.h"
+#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSStarActor)
 
@@ -39,8 +38,8 @@ void APSStarActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Listen to hande when local character is ready 
-	BIND_ON_LOCAL_CHARACTER_READY(this, ThisClass::OnLocalCharacterReady);
+	// Listen to hande when local character is ready
+	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);
 
 	// Listen to handle input for each game state
 	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
@@ -64,9 +63,9 @@ void APSStarActor::Tick(float DeltaTime)
 }
 
 // When a local character load finished
-void APSStarActor::OnLocalCharacterReady_Implementation(APlayerCharacter* Character, int32 CharacterID)
+void APSStarActor::OnLocalPawnReady_Implementation(ABmrPawn* Character, int32 CharacterID)
 {
-	AMyPlayerController* LocalPC = Character ? Character->GetController<AMyPlayerController>() : nullptr;
+	ABmrPlayerController* LocalPC = Character ? Character->GetController<ABmrPlayerController>() : nullptr;
 	if (ensureMsgf(LocalPC, TEXT("ASSERT: [%i] %hs:\n'LocalPC' is null!"), __LINE__, __FUNCTION__))
 	{
 		LocalPC->OnAnyCinematicStarted.AddDynamic(this, &APSStarActor::OnAnyCinematicStarted);
@@ -74,9 +73,9 @@ void APSStarActor::OnLocalCharacterReady_Implementation(APlayerCharacter* Charac
 }
 
 // Called when the current game state was changed
-void APSStarActor::OnGameStateChanged_Implementation(ECurrentGameState GameState)
+void APSStarActor::OnGameStateChanged_Implementation(EBmrCurrentGameState GameState)
 {
-	if (GameState == ECurrentGameState::Menu)
+	if (GameState == EBmrCurrentGameState::Menu)
 	{
 		SetStartTimeMenuStars();
 		TryPlayMenuStarAnimation();
@@ -106,7 +105,7 @@ void APSStarActor::TryPlayHideStarAnimation()
 	}
 }
 
-// Menu stars with animation in main menu idle 
+// Menu stars with animation in main menu idle
 void APSStarActor::TryPlayMenuStarAnimation()
 {
 	const FPSSettingsRow& CurrentProgressionSettingsRow = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
@@ -227,8 +226,8 @@ void APSStarActor::ChangeStarMesh(const UPSSpotComponent* SpotComponent)
 		return; // Early return if pointers are invalid
 	}
 
-	const ELevelType SpotType = SpotComponent->GetMeshChecked().GetAssociatedLevelType();
-	const ULevelActorRow* BombRow = UBombDataAsset::Get().GetRowByLevelType(SpotType);
+	const EBmrLevelType SpotType = SpotComponent->GetMeshChecked().GetAssociatedLevelType();
+	const UBmrLevelActorRow* BombRow = UBmrBombDataAsset::Get().GetRowByLevelType(SpotType);
 	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh) : nullptr;
 	if (!ensureMsgf(BombMesh, TEXT("ASSERT: [%i] %hs:\n'BombMesh' is not valid!"), __LINE__, __FUNCTION__))
 	{
