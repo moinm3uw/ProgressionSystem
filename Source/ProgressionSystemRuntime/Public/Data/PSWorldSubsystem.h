@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "PSTypes.h"
-#include "PoolManagerTypes.h"
 #include "Subsystems/WorldSubsystem.h"
+
+#include "Data/PoolObjectHandle.h"
+#include "PSTypes.h"
 
 #include "PSWorldSubsystem.generated.h"
 

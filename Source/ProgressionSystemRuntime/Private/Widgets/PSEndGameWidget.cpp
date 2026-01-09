@@ -2,23 +2,21 @@
 
 #include "Widgets/PSEndGameWidget.h"
 //---
-#include "Data/PSDataAsset.h"
 #include "Components/HorizontalBox.h"
 #include "Components/Image.h"
+#include "Data/PSDataAsset.h"
 #include "Widgets/PSStarWidget.h"
 //---
 
-#include "PoolManagerSubsystem.h"
-#include "PoolManagerTypes.h"
 #include "Components/StaticMeshComponent.h"
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
 #include "Engine/CurveTable.h"
 #include "GameFramework/BmrGameState.h"
 #include "GameFramework/BmrPlayerState.h"
+#include "PoolManagerSubsystem.h"
 #include "Subsystems/BmrGlobalEventsSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
-
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSEndGameWidget)
 
@@ -45,11 +43,11 @@ void UPSEndGameWidget::OnGameStateChanged_Implementation(EBmrCurrentGameState Cu
 {
 	switch (CurrentGameState)
 	{
-	case EBmrCurrentGameState::GameStarting: // Fallthrough
-	case EBmrCurrentGameState::Menu:
-		SetVisibility(ESlateVisibility::Collapsed);
-		break;
-	default: break;
+		case EBmrCurrentGameState::GameStarting: // Fallthrough
+		case EBmrCurrentGameState::Menu:
+			SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		default: break;
 	}
 }
 
@@ -74,7 +72,7 @@ void UPSEndGameWidget::OnEndGameStateChanged_Implementation(EBmrEndGameState End
 // Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
 void UPSEndGameWidget::AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints)
 {
-	//Return to Pool Manager the list of handles which is not needed (if there are any) 
+	// Return to Pool Manager the list of handles which is not needed (if there are any)
 
 	if (!PoolWidgetHandlersInternal.IsEmpty())
 	{
@@ -159,7 +157,7 @@ void UPSEndGameWidget::UpdateStarImages(const FPoolObjectData& CreatedData, floa
 	}
 }
 
-// Updates Progress bar icon for unlocked icons 
+// Updates Progress bar icon for unlocked icons
 void UPSEndGameWidget::UpdateStarProgressBarValue(const FPoolObjectData& CreatedData, float NewProgressBarValue)
 {
 	UPSStarWidget& SpawnedWidget = CreatedData.GetChecked<UPSStarWidget>();
@@ -169,15 +167,15 @@ void UPSEndGameWidget::UpdateStarProgressBarValue(const FPoolObjectData& Created
 // Updates the progression menu widget when player changed
 void UPSEndGameWidget::OnCurrentScoreChanged_Implementation(const FPSSaveToDiskData& CurrenSaveToDiskDataRow, const FPSSettingsRow& CurrenProgressionSettingsRow)
 {
-	//set updated amount of stars
+	// set updated amount of stars
 	if (CurrenSaveToDiskDataRow.CurrentLevelProgression >= CurrenProgressionSettingsRow.PointsToUnlock)
 	{
-		// set required points (stars)  to achieve for a level  
+		// set required points (stars)  to achieve for a level
 		AddImagesToHorizontalBox(CurrenProgressionSettingsRow.PointsToUnlock, 0, CurrenProgressionSettingsRow.PointsToUnlock);
 	}
 	else
 	{
-		// Calculate the unlocked against locked points (stars) 
-		AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events 
+		// Calculate the unlocked against locked points (stars)
+		AddImagesToHorizontalBox(CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock - CurrenSaveToDiskDataRow.CurrentLevelProgression, CurrenProgressionSettingsRow.PointsToUnlock); // Listen game state changes events
 	}
 }
