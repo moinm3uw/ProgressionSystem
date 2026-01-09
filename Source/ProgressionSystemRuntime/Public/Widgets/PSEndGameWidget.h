@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
-#include "PoolManagerTypes.h"
+
 #include "PSEndGameWidget.generated.h"
 
 enum class EBmrCurrentGameState : uint8;
@@ -20,11 +20,11 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSEndGameWidget : public UUserWidget
 public:
 	/**
 	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
-	 * @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
+	 * @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
 	 * @param MaxLevelPoints The maximum amount of images can be added for the level
 	 */
-	UFUNCTION(BlueprintCallable, Category= "C++")
+	UFUNCTION(BlueprintCallable, Category = "C++")
 	void AddImagesToHorizontalBox(float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
 
 	/*********************************************************************************************
@@ -37,8 +37,8 @@ protected:
 
 	/** Array of pool handlers which should be released */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Transient, Category = "C++", meta = (BlueprintProtected, DisplayName = "Pool Widget Handlers"))
-	TArray<FPoolObjectHandle> PoolWidgetHandlersInternal;
-	
+	TArray<struct FPoolObjectHandle> PoolWidgetHandlersInternal;
+
 	/** Called after the underlying slate widget is constructed.
 	 * May be called multiple times due to adding and removing from the hierarchy. */
 	virtual void NativeConstruct() override;
@@ -57,30 +57,30 @@ protected:
 
 	/**
 	 * Dynamically populates a Horizontal Box with images representing unlocked and locked progression icons.
-	* @param CreatedObjects - Handles of objects from Pool Manager
-	* @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed 
+	 * @param CreatedObjects - Handles of objects from Pool Manager
+	 * @param AmountOfUnlockedPoints The number of images (unlocked-icon as images) to be displayed
 	 * @param AmountOfLockedPoints The number of images (locked-icon as images) to be displayed
 	 * @param MaxLevelPoints The maximum amount of images can be added for the level
 	 */
-	UFUNCTION(BlueprintCallable, Category= "C++")
-	void OnTakeFromPoolCompleted(const TArray<FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
-	
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	void OnTakeFromPoolCompleted(const TArray<struct FPoolObjectData>& CreatedObjects, float AmountOfUnlockedPoints, float AmountOfLockedPoints, float MaxLevelPoints);
+
 	/** Updates star images icon to locked/unlocked according to input amount
-	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
+	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget
 	 * @param AmountOfUnlockedStars Amount of icons to be switched to Unlocked stars.
 	 * @param AmountOfLockedStars Amount of icons to be switched to Locked stars.
 	 */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void UpdateStarImages(const FPoolObjectData& CreatedData, float AmountOfUnlockedStars, float AmountOfLockedStars);
 
 	/** Updates Progress bar icon for unlocked icons
-	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget 
+	 * @param CreatedData Object received from Pool Manager which contains the reference to Start Widget
 	 * @param NewProgressBarValue percentage completion
 	 */
-	UFUNCTION(BlueprintCallable, Category= "C++", meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void UpdateStarProgressBarValue(const FPoolObjectData& CreatedData, float NewProgressBarValue);
 
 	/** Updates the progression menu widget when player changed */
-	UFUNCTION(BlueprintNativeEvent, Category= "C++", meta = (BlueprintProtected))
-	void OnCurrentScoreChanged(const FPSSaveToDiskData& CurrenSaveToDiskDataRow, const FPSSettingsRow& CurrenProgressionSettingsRow);
+	UFUNCTION(BlueprintNativeEvent, Category = "C++", meta = (BlueprintProtected))
+	void OnCurrentScoreChanged(const struct FPSSaveToDiskData& CurrenSaveToDiskDataRow, const struct FPSSettingsRow& CurrenProgressionSettingsRow);
 };
