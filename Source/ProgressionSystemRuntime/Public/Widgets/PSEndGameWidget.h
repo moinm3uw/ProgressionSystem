@@ -45,11 +45,11 @@ protected:
 
 	/** Called when the end game state was changed to toggle progression widget visibility. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(EBmrCurrentGameState CurrentGameState);
+	void OnGameStateChanged(const struct FGameplayEventData& Payload);
 
 	/** Subscribes to the end game state change notification on the player state. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPlayerStateReady(class ABmrPlayerState* PlayerState, int32 CharacterID);
+	void OnLocalPlayerStateReady(const struct FGameplayEventData& Payload);
 
 	/** Called when the end game state was changed. */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))

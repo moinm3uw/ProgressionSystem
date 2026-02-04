@@ -2,15 +2,21 @@
 
 #include "Data/PSSaveGameData.h"
 
-#include "Components/BmrGameDifficultyManagerComponent.h"
-#include "Components/BmrSkeletalMeshComponent.h"
+// PS
 #include "Components/PSSpotComponent.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
+#include "PsGameplayTags.h"
+
+// Bomber
+#include "Components/BmrGameDifficultyManagerComponent.h"
+#include "Components/BmrSkeletalMeshComponent.h"
+#include "Subsystems/BmrGameplayMessageSubsystem.h"
+
+// UE
+#include "Abilities/GameplayAbilityTypes.h"
 #include "Engine/CurveTable.h"
-#include "Subsystems/BmrGlobalEventsSubsystem.h"
-#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveGameData)
 
@@ -133,7 +139,9 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 
 			if (Index == ProgressionSettingsRowDataInternal.Num())
 			{
-				UBmrGlobalEventsSubsystem::Get().OnGameProgressionCompleted.Broadcast();
+				FGameplayEventData EventData;
+				EventData.EventTag = PsGameplayTags::Event::GameProgressionCompleted;
+				UBmrGameplayMessageSubsystem::BroadcastMessage(EventData);
 			}
 		}
 	}

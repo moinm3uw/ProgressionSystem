@@ -72,11 +72,11 @@ protected:
 
 	/** When a local character load finished */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPawnReady(class ABmrPawn* Character, int32 CharacterID);
+	void OnLocalPawnReady(const struct FGameplayEventData& Payload);
 
 	/** Called when the current game state was changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnGameStateChanged(EBmrCurrentGameState GameState);
+	void OnGameStateChanged(const struct FGameplayEventData& Payload);
 
 	/** Is called when any cinematic started to play in the main menu */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))

@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "Subsystems/WorldSubsystem.h"
-
 #include "Data/PoolObjectHandle.h"
 #include "PSTypes.h"
+#include "Subsystems/WorldSubsystem.h"
 
 #include "PSWorldSubsystem.generated.h"
 
@@ -203,11 +202,7 @@ protected:
 
 	/** Is called when a player character is ready */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPawnReady(class ABmrPawn* PlayerCharacter, int32 CharacterID);
-
-	/** Subscribes to the end game state change notification on the player state. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPlayerStateReady(class ABmrPlayerState* PlayerState, int32 CharacterID);
+	void OnLocalPawnReady(const struct FGameplayEventData& Payload);
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
