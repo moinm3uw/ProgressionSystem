@@ -2,26 +2,34 @@
 
 #include "Data/PSWorldSubsystem.h"
 
+// PS
+#include "Components/PSHUDComponent.h"
+#include "Components/PSSpotComponent.h"
+#include "Data/PSDataAsset.h"
+#include "Data/PSSaveGameData.h"
+#include "LevelActors/PSStarActor.h"
+
+// Bomber
 #include "Actors/BmrPawn.h"
 #include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
-#include "Components/PSHUDComponent.h"
-#include "Components/PSSpotComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Data/PSDataAsset.h"
-#include "Data/PSSaveGameData.h"
-#include "Engine/Engine.h"
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Kismet/GameplayStatics.h"
-#include "LevelActors/PSStarActor.h"
-#include "Materials/MaterialInstanceDynamic.h"
+#include "GameFramework/BmrPlayerState.h"
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/SaveUtilsLibrary.h"
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
-#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "Structures/BmrGameplayTags.h"
+#include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
+
+// UE
+#include "Abilities/GameplayAbilityTypes.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/Engine.h"
+#include "Engine/StaticMesh.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSWorldSubsystem)
 
@@ -156,9 +164,6 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 
 	// Subscribe events on player type changed and Character spawned
 	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);
-
-	// Binds the local player state ready event to the handler
-	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors
@@ -183,19 +188,14 @@ void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 }
 
 // Is called when a player character is ready
-void UPSWorldSubsystem::OnLocalPawnReady_Implementation(ABmrPawn* PlayerCharacter, int32 CharacterID)
+void UPSWorldSubsystem::OnLocalPawnReady_Implementation(const FGameplayEventData& Payload)
 {
+	const ABmrPawn* PlayerCharacter = Cast<ABmrPawn>(Payload.Instigator.Get());
 	UBmrMapComponent* MapComponent = UBmrMapComponent::GetMapComponent(PlayerCharacter);
-	if (!ensureMsgf(MapComponent, TEXT("ASSERT: [%i] %hs:\n'PlayerMapComponent' is not valid!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
+	checkf(MapComponent, TEXT("ERROR: [%i] %hs:\n'MapComponent' is null!"), __LINE__, __FUNCTION__);
 	MapComponent->OnActorTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
-}
 
-// Subscribes to the end game state change notification on the player state.
-void UPSWorldSubsystem::OnLocalPlayerStateReady_Implementation(ABmrPlayerState* PlayerState, int32 CharacterID)
-{
+	ABmrPlayerState* PlayerState = PlayerCharacter ? PlayerCharacter->GetPlayerState<ABmrPlayerState>() : nullptr;
 	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }

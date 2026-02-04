@@ -2,24 +2,31 @@
 
 #include "LevelActors/PSStarActor.h"
 
-#include "Actors/BmrPawn.h"
-#include "Components/BmrSkeletalMeshComponent.h"
+// PS
 #include "Components/PSSpotComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Controllers/BmrPlayerController.h"
 #include "Data/PSDataAsset.h"
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
+
+// Bomber
+#include "Actors/BmrPawn.h"
+#include "Components/BmrSkeletalMeshComponent.h"
+#include "Controllers/BmrPlayerController.h"
 #include "DataAssets/BmrBombDataAsset.h"
 #include "DataAssets/BmrLevelActorDataAsset.h"
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
 #include "GameFramework/BmrGameState.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
-#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "Structures/BmrGameplayTags.h"
+#include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
+
+// UE
+#include "Abilities/GameplayAbilityTypes.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Engine/World.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSStarActor)
 
@@ -63,8 +70,9 @@ void APSStarActor::Tick(float DeltaTime)
 }
 
 // When a local character load finished
-void APSStarActor::OnLocalPawnReady_Implementation(ABmrPawn* Character, int32 CharacterID)
+void APSStarActor::OnLocalPawnReady_Implementation(const FGameplayEventData& Payload)
 {
+	const ABmrPawn* Character = Cast<ABmrPawn>(Payload.Instigator.Get());
 	ABmrPlayerController* LocalPC = Character ? Character->GetController<ABmrPlayerController>() : nullptr;
 	if (ensureMsgf(LocalPC, TEXT("ASSERT: [%i] %hs:\n'LocalPC' is null!"), __LINE__, __FUNCTION__))
 	{
@@ -73,8 +81,9 @@ void APSStarActor::OnLocalPawnReady_Implementation(ABmrPawn* Character, int32 Ch
 }
 
 // Called when the current game state was changed
-void APSStarActor::OnGameStateChanged_Implementation(EBmrCurrentGameState GameState)
+void APSStarActor::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
+	const EBmrCurrentGameState GameState = ABmrGameState::GetCurrentGameState();
 	if (GameState == EBmrCurrentGameState::Menu)
 	{
 		SetStartTimeMenuStars();

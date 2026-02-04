@@ -2,21 +2,25 @@
 
 #include "Components/PSSpotComponent.h"
 
+// PS
+#include "Components/PSHUDComponent.h"
+#include "Data/PSWorldSubsystem.h"
+#include "PsGameplayTags.h"
+
+// Bomber
 #include "Actors/BmrPawn.h"
 #include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
-#include "Components/PSHUDComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Data/PSWorldSubsystem.h"
 #include "GameFramework/BmrGameState.h"
-#include "NativeGameplayTags.h"
-#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "Structures/BmrGameplayTags.h"
+#include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
+// UE
+#include "Abilities/GameplayAbilityTypes.h"
+#include "Components/StaticMeshComponent.h"
 
-// Skeletal mesh actor should own this tag, used to prevent initializing PS spots on other skeletal mesh actors, like from cinematics
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_NMM_SPOT, TEXT("NMM.Spot"));
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
 
 // Sets default values for this component's properties
 UPSSpotComponent::UPSSpotComponent()
@@ -52,8 +56,9 @@ void UPSSpotComponent::OnReset_Implementation()
 }
 
 // Listen game states to switch character skin.
-void UPSSpotComponent::OnGameStateChanged_Implementation(EBmrCurrentGameState CurrentGameState)
+void UPSSpotComponent::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
+	const EBmrCurrentGameState CurrentGameState = ABmrGameState::GetCurrentGameState();
 	if (!IsCurrentSpot())
 	{
 		return;
@@ -78,11 +83,11 @@ void UPSSpotComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// Skeletal mesh actor should own this tag, used to prevent initializing PS spots on other skeletal mesh actors, like from cinematics
-	static const FName ExpectedTagName = TAG_NMM_SPOT.GetTag().GetTagName();
+	static const FName ExpectedTagName = PsGameplayTags::Menu::Spot.GetTag().GetTagName();
 	if (!GetOwner()->ActorHasTag(ExpectedTagName))
 	{
 		UE_LOG(LogBomber, Log, TEXT("[%i] %hs: Skip initializing '%s' spot for '%s' actor, it doesn't have '%s' tag."),
-		       __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
+		    __LINE__, __FUNCTION__, *GetNameSafe(this), *GetNameSafe(GetOwner()), *ExpectedTagName.ToString());
 		return;
 	}
 

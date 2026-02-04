@@ -1,22 +1,27 @@
 ﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #include "Widgets/PSEndGameWidget.h"
-//---
-#include "Components/HorizontalBox.h"
-#include "Components/Image.h"
-#include "Data/PSDataAsset.h"
-#include "Widgets/PSStarWidget.h"
-//---
 
-#include "Components/StaticMeshComponent.h"
+// PS
+#include "Data/PSDataAsset.h"
 #include "Data/PSTypes.h"
 #include "Data/PSWorldSubsystem.h"
-#include "Engine/CurveTable.h"
+#include "Widgets/PSStarWidget.h"
+
+// Bomber
+#include "Actors/BmrPawn.h"
 #include "GameFramework/BmrGameState.h"
 #include "GameFramework/BmrPlayerState.h"
 #include "PoolManagerSubsystem.h"
-#include "Subsystems/BmrGlobalEventsSubsystem.h"
+#include "Structures/BmrGameplayTags.h"
+#include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
+
+// UE
+#include "Abilities/GameplayAbilityTypes.h"
+#include "Components/HorizontalBox.h"
+#include "Components/Image.h"
+#include "Components/StaticMeshComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSEndGameWidget)
 
@@ -32,15 +37,16 @@ void UPSEndGameWidget::NativeConstruct()
 	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
 
 	// Binds the local player state ready event to the handler
-	BIND_ON_LOCAL_PLAYER_STATE_READY(this, ThisClass::OnLocalPlayerStateReady);
+	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPlayerStateReady);
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 }
 
 // Called when the end game state was changed to toggle progression widget visibility
-void UPSEndGameWidget::OnGameStateChanged_Implementation(EBmrCurrentGameState CurrentGameState)
+void UPSEndGameWidget::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
+	const EBmrCurrentGameState CurrentGameState = ABmrGameState::GetCurrentGameState();
 	switch (CurrentGameState)
 	{
 		case EBmrCurrentGameState::GameStarting: // Fallthrough
@@ -52,9 +58,11 @@ void UPSEndGameWidget::OnGameStateChanged_Implementation(EBmrCurrentGameState Cu
 }
 
 // Subscribes to the end game state change notification on the player state
-void UPSEndGameWidget::OnLocalPlayerStateReady_Implementation(ABmrPlayerState* PlayerState, int32 CharacterID)
+void UPSEndGameWidget::OnLocalPlayerStateReady_Implementation(const FGameplayEventData& Payload)
 {
 	// Ensure that PlayerState is not null before subscribing to the event
+	const APawn* Pawn = Cast<APawn>(Payload.Instigator.Get());
+	ABmrPlayerState* PlayerState = Pawn ? Pawn->GetPlayerState<ABmrPlayerState>() : nullptr;
 	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
 }

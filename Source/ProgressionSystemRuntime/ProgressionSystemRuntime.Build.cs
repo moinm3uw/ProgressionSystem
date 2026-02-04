@@ -10,7 +10,7 @@ public class ProgressionSystemRuntime : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicDependencyModuleNames.AddRange(new[]
 			{
-				"Core", "UMG" 
+				"Core", "UMG"
 				// Bomber modules
 				, "Bomber"
 				,"SettingsWidgetConstructor"
@@ -20,11 +20,12 @@ public class ProgressionSystemRuntime : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new[]
 			{
 				"CoreUObject", "Engine", "Slate", "SlateCore" // Core
-				, "GameplayTags" // UE_DEFINE_GAMEPLAY_TAG_STATIC
+				, "GameplayTags", "GameplayAbilities" // Tags
 				// Bomber modules 
 				, "MyUtils" 
 				, "PoolManager" // Star and Widget Actors
 				, "MetaCheatManager" // PSCheatExtension
+				, "GameplayMessageRuntime" // BmrGameplayMessageSubsystem
 			}
 		);
 	}

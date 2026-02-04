@@ -26,6 +26,10 @@
 	"BuiltInInitialFeatureState": "Registered",
 	"Plugins": [
 		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
 			"Name": "MyEditorUtils",  
 			"Enabled": true
 		},
@@ -39,6 +43,10 @@
 		},
 		{
 			"Name": "SettingsWidgetConstructor",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayMessageRouter",
 			"Enabled": true
 		}
 	]

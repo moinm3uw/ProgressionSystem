@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include "Bomber.h"
 #include "Components/ActorComponent.h"
-#include "GameFramework/BmrPlayerState.h"
-#include "Structures/BmrPlayerTag.h"
 //---
 #include "PSHUDComponent.generated.h"
 
@@ -47,5 +44,5 @@ protected:
 
 	/** Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnLocalPawnReady(class ABmrPawn* Character, int32 CharacterID);
+	void OnLocalPawnReady(const struct FGameplayEventData& Payload);
 };
