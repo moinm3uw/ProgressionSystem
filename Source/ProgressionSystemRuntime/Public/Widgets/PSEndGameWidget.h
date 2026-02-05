@@ -6,7 +6,6 @@
 
 #include "PSEndGameWidget.generated.h"
 
-enum class EBmrCurrentGameState : uint8;
 enum class EBmrEndGameState : uint8;
 
 /**

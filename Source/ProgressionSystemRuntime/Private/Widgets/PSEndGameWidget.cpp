@@ -13,6 +13,7 @@
 #include "GameFramework/BmrGameState.h"
 #include "GameFramework/BmrPlayerState.h"
 #include "PoolManagerSubsystem.h"
+#include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
 #include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
@@ -46,14 +47,9 @@ void UPSEndGameWidget::NativeConstruct()
 // Called when the end game state was changed to toggle progression widget visibility
 void UPSEndGameWidget::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
-	const EBmrCurrentGameState CurrentGameState = ABmrGameState::GetCurrentGameState();
-	switch (CurrentGameState)
+	if (Payload.InstigatorTags.HasAny(FBmrGameStateTag::GameStarting | FBmrGameStateTag::Menu))
 	{
-		case EBmrCurrentGameState::GameStarting: // Fallthrough
-		case EBmrCurrentGameState::Menu:
-			SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		default: break;
+		SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
