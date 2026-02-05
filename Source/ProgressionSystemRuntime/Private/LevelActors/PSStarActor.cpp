@@ -17,6 +17,7 @@
 #include "GameFramework/BmrGameState.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
+#include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
 #include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
@@ -83,8 +84,7 @@ void APSStarActor::OnLocalPawnReady_Implementation(const FGameplayEventData& Pay
 // Called when the current game state was changed
 void APSStarActor::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
-	const EBmrCurrentGameState GameState = ABmrGameState::GetCurrentGameState();
-	if (GameState == EBmrCurrentGameState::Menu)
+	if (Payload.InstigatorTags.HasTag(FBmrGameStateTag::Menu))
 	{
 		SetStartTimeMenuStars();
 		TryPlayMenuStarAnimation();
