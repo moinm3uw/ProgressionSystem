@@ -12,6 +12,7 @@
 #include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "GameFramework/BmrGameState.h"
+#include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
 #include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
@@ -58,22 +59,19 @@ void UPSSpotComponent::OnReset_Implementation()
 // Listen game states to switch character skin.
 void UPSSpotComponent::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
-	const EBmrCurrentGameState CurrentGameState = ABmrGameState::GetCurrentGameState();
 	if (!IsCurrentSpot())
 	{
 		return;
 	}
 
-	constexpr bool bApplySkin = true;
-	switch (CurrentGameState)
+	if (Payload.InstigatorTags.HasTag(FBmrGameStateTag::GameStarting))
 	{
-		case EBmrCurrentGameState::GameStarting:
-			TryRestorePlayerSkin();
-			break;
-		case EBmrCurrentGameState::Menu:
-			RefreshAmountOfUnlockedSkins(bApplySkin);
-			break;
-		default: break;
+		TryRestorePlayerSkin();
+	}
+	else if (Payload.InstigatorTags.HasTag(FBmrGameStateTag::Menu))
+	{
+		constexpr bool bApplySkin = true;
+		RefreshAmountOfUnlockedSkins(bApplySkin);
 	}
 }
 
@@ -192,7 +190,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		return;
 	}
 
-	if (ABmrGameState::GetCurrentGameState() == EBmrCurrentGameState::Menu)
+	if (ABmrGameState::Get().HasMatchingGameplayTag(FBmrGameStateTag::Menu))
 	{
 		int32 PreviousAmountOfUnlockedSkins = 0;
 		for (int32 SkinIndex = 0; SkinIndex < TotalSkins; SkinIndex++)

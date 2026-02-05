@@ -8,7 +8,6 @@
 
 #include "PSWorldSubsystem.generated.h"
 
-enum class EBmrCurrentGameState : uint8;
 enum class EPSStarActorState : uint8;
 
 /**

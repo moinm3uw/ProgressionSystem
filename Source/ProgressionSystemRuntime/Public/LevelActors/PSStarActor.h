@@ -6,7 +6,6 @@
 
 #include "PSStarActor.generated.h"
 
-enum class EBmrCurrentGameState : uint8;
 enum class EPSStarActorState : uint8;
 
 UCLASS()
