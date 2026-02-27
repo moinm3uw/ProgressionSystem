@@ -11,6 +11,7 @@
 
 // Bomber
 #include "Actors/BmrPawn.h"
+#include "DalSubsystem.h"
 #include "Structures/BmrGameplayTags.h"
 #include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "Subsystems/BmrWidgetsSubsystem.h"
@@ -56,6 +57,13 @@ void UPSHUDComponent::OnInitialized_Implementation()
 void UPSHUDComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UDalSubsystem::Get().ListenForDataAsset<UPSDataAsset>(this, &ThisClass::OnDataAssetLoaded);
+}
+
+// Called when the PS data asset is loaded and available
+void UPSHUDComponent::OnDataAssetLoaded_Implementation(const UPSDataAsset* DataAsset)
+{
 	// Binds to local character ready to guarantee that the player controller is initialized
 	// so we can safely use Widget's Subsystem
 	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);

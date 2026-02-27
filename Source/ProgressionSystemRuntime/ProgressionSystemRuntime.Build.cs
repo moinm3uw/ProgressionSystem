@@ -13,6 +13,7 @@ public class ProgressionSystemRuntime : ModuleRules
 				"Core", "UMG"
 				// Bomber modules
 				, "Bomber"
+				, "DataAssetsLoader" // Created UPSDataAsset
 				,"SettingsWidgetConstructor"
 			}
 		);

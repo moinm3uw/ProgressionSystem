@@ -2,19 +2,21 @@
 
 #pragma once
 
-#include "Data/MyPrimaryDataAsset.h"
+#include "DalPrimaryDataAsset.h"
+
+// BMR
 #include "Data/SettingTag.h"
-#include "Layout/Margin.h"
 #include "Structures/BmrManageableWidgetData.h"
+
 #include "PSDataAsset.generated.h"
 
 enum class EBmrGameDifficulty : uint8;
 
 /**
- * Contains all progression assets used in the module 
+ * Contains all progression assets used in the module
  */
 UCLASS(Blueprintable, BlueprintType)
-class PROGRESSIONSYSTEMRUNTIME_API UPSDataAsset : public UMyPrimaryDataAsset
+class PROGRESSIONSYSTEMRUNTIME_API UPSDataAsset : public UDalPrimaryDataAsset
 {
 	GENERATED_BODY()
 
@@ -111,7 +113,7 @@ protected:
 	/** The Progression difficulty multiplier. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Multiplier Curve Table"))
 	TObjectPtr<UCurveTable> ProgressionDifficultyMultiplierCurveTableInternal = nullptr;
-	
+
 	/** Star Material Slot name to change the dynamic fill-in based on the progression */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI|Material", meta = (BlueprintProtected, DisplayName = "Star Percent Slot Name"))
 	FName StarPercentSlotNameInternal = NAME_None;
