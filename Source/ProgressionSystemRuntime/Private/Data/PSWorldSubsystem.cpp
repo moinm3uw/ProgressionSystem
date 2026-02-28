@@ -73,12 +73,6 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FBmrPlayerTag NewRowPlayerTag)
 	}
 }
 
-// Returns the data asset that contains all the assets of Progression System game feature
-const UPSDataAsset* UPSWorldSubsystem::GetPSDataAsset() const
-{
-	return UMyPrimaryDataAsset::GetOrLoadOnce(DataAssetInternal);
-}
-
 //  Returns a current save to disk row name
 FName UPSWorldSubsystem::GetFirstSaveToDiskRowName() const
 {
@@ -387,7 +381,6 @@ void UPSWorldSubsystem::PerformCleanUp()
 	StarDynamicProgressMaterial = nullptr;
 
 	// Subsystem clean up
-	UMyPrimaryDataAsset::ResetDataAsset(DataAssetInternal);
 	HUDComponentInternal = nullptr;
 	SpotComponentsMapInternal.Empty();
 

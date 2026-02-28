@@ -31,6 +31,10 @@ public:
 	 * Protected functions
 	 ********************************************************************************************* */
 protected:
+	/** Called when the PS data asset is loaded and available */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnDataAssetLoaded(const class UPSDataAsset* DataAsset);
+
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))

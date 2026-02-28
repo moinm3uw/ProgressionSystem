@@ -60,11 +60,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FPSOnReset OnReset;
 
-	/** Returns the data asset that contains all the assets of Progression System game feature.
-	 * @see UPSWorldSubsystem::PSDataAssetInternal. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
-	const class UPSDataAsset* GetPSDataAsset() const;
-
 	/** Returns the Save file versioning extension to avoid issues with conflicting save file versioning.
 	 * @see UPSWorldSubsytem::SaveFileVersionExtensionInternal. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "C++")
@@ -133,13 +128,6 @@ public:
 	class UMaterialInstanceDynamic* GetStarProgressionDynamicMaterial(EPSStarActorState StarState);
 
 protected:
-	/** Contains all the assets and tweaks of Progression System game feature.
-	 * Note: Since Subsystem is code-only, there is config property set in BaseProgressionSystem.ini.
-	 * Property is put to subsystem because its instance is created before any other object.
-	 * It can't be put to DevelopSettings class because it does work properly for MGF-modules. */
-	UPROPERTY(Config, VisibleInstanceOnly, BlueprintReadWrite, Category = "C++", meta = (BlueprintProtected, DisplayName = "Progression System Data Asset"))
-	TSoftObjectPtr<const class UPSDataAsset> DataAssetInternal;
-
 	/** Extension to a save file to increment with a new build
 	 * Note: it's config property stored in BaseProgressionSystem.ini and going to be changed frequently.
 	 * Intentionally added to the config-ini instead of Data Asset, as it's not for designers
