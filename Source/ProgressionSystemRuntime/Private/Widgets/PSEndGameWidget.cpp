@@ -44,6 +44,22 @@ void UPSEndGameWidget::NativeConstruct()
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
 }
 
+// Called when the widget is removed from the viewport
+void UPSEndGameWidget::NativeDestruct()
+{
+	HorizontalBox = nullptr;
+	
+	// Destroying Star Actors
+	if (!PoolWidgetHandlersInternal.IsEmpty())
+	{
+		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
+		PoolWidgetHandlersInternal.Empty();
+		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarWidgetClass());
+	}
+	
+	Super::NativeDestruct();
+}
+
 // Called when the end game state was changed to toggle progression widget visibility
 void UPSEndGameWidget::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
