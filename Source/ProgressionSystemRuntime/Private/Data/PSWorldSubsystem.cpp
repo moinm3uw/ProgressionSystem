@@ -369,18 +369,6 @@ void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(USaveGam
 // Destroy all star actors that should not be available by other objects anymore.
 void UPSWorldSubsystem::PerformCleanUp()
 {
-	// Destroying Star Actors
-	if (!PoolActorHandlersInternal.IsEmpty())
-	{
-		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
-		PoolActorHandlersInternal.Empty();
-		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarActorClass());
-	}
-
-	ProgressionSettingsDataInternal.Empty();
-	StarDynamicProgressMaterial = nullptr;
-
-	// Subsystem clean up
 	HUDComponentInternal = nullptr;
 	SpotComponentsMapInternal.Empty();
 
@@ -389,6 +377,35 @@ void UPSWorldSubsystem::PerformCleanUp()
 	{
 		SaveGameDataInternal->ConditionalBeginDestroy();
 		SaveGameDataInternal = nullptr;
+	}
+
+	ProgressionSettingsDataInternal.Empty();
+	CurrentRowNameInternal = NAME_None;
+
+	// Destroying Star Actors
+	if (!PoolActorHandlersInternal.IsEmpty())
+	{
+		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
+		PoolActorHandlersInternal.Empty();
+		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarActorClass());
+	}
+
+	if (StarDynamicProgressMaterial)
+	{
+		StarDynamicProgressMaterial->ConditionalBeginDestroy();
+		StarDynamicProgressMaterial = nullptr;
+	}
+
+	if (StarLockedProgressMaterial)
+	{
+		StarLockedProgressMaterial->ConditionalBeginDestroy();
+		StarLockedProgressMaterial = nullptr;
+	}
+
+	if (StarUnLockedProgressMaterial)
+	{
+		StarUnLockedProgressMaterial->ConditionalBeginDestroy();
+		StarUnLockedProgressMaterial = nullptr;
 	}
 }
 
