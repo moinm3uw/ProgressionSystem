@@ -10,8 +10,6 @@
 
 #include "PSDataAsset.generated.h"
 
-enum class EBmrGameDifficulty : uint8;
-
 /**
  * Contains all progression assets used in the module
  */
