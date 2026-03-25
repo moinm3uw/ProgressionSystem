@@ -10,7 +10,7 @@
 #include "PsGameplayTags.h"
 
 // Bomber
-#include "Components/BmrGameDifficultyManagerComponent.h"
+#include "Subsystems/BmrGameDifficultySubsystem.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "Subsystems/BmrGameplayMessageSubsystem.h"
 
@@ -201,7 +201,7 @@ float UPSSaveGameData::GetProgressionReward(EBmrEndGameState EndGameState) const
 	float MaxTime = 0.f;
 	Curve->GetTimeRange(/*out*/ MinTime, /*out*/ MaxTime);
 
-	float DifficultyType = static_cast<float>(UBmrGameDifficultyManagerComponent::Get().GetDifficultyLevel());
+	float DifficultyType = static_cast<float>(UBmrGameDifficultySubsystem::Get().GetDifficultyLevel());
 
 	DifficultyType = FMath::Clamp(DifficultyType, MinTime, MaxTime);
 
