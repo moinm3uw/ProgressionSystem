@@ -11,9 +11,9 @@
 
 // Bomber
 #include "DalSubsystem.h"
-#include "GlobalMessageSubsystem.h"
 #include "Structures/BmrGameplayTags.h"
 #include "Subsystems/BmrWidgetsSubsystem.h"
+#include "Subsystems/GlobalMessageSubsystem.h"
 
 // UE
 #include "Blueprint/WidgetTree.h"
