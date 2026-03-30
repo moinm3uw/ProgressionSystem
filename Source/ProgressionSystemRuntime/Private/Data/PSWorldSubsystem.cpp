@@ -14,16 +14,15 @@
 #include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "GameFramework/BmrPlayerState.h"
+#include "GlobalMessageSubsystem.h"
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/SaveUtilsLibrary.h"
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
 #include "Structures/BmrGameplayTags.h"
-#include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 // UE
-#include "Abilities/GameplayAbilityTypes.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/StaticMesh.h"
@@ -157,7 +156,7 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	StarUnLockedProgressMaterial = UMaterialInstanceDynamic::Create(StarMaterial, this);
 
 	// Subscribe events on player type changed and Character spawned
-	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::Player_LocalPawnReady, this, &ThisClass::OnLocalPawnReady);
 }
 
 // Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors
@@ -184,7 +183,7 @@ void UPSWorldSubsystem::OnWorldSubSystemInitialize_Implementation()
 // Is called when a player character is ready
 void UPSWorldSubsystem::OnLocalPawnReady_Implementation(const FGameplayEventData& Payload)
 {
-	const ABmrPawn* PlayerCharacter = Cast<ABmrPawn>(Payload.Instigator.Get());
+	const ABmrPawn* PlayerCharacter = Cast<ABmrPawn>(Payload.Instigator);
 	UBmrMapComponent* MapComponent = UBmrMapComponent::GetMapComponent(PlayerCharacter);
 	checkf(MapComponent, TEXT("ERROR: [%i] %hs:\n'MapComponent' is null!"), __LINE__, __FUNCTION__);
 	MapComponent->OnActorTypeChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);

@@ -9,20 +9,17 @@
 #include "Widgets/PSStarWidget.h"
 
 // Bomber
-#include "Actors/BmrPawn.h"
-#include "GameFramework/BmrGameState.h"
 #include "GameFramework/BmrPlayerState.h"
+#include "GlobalMessageSubsystem.h"
 #include "PoolManagerSubsystem.h"
 #include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
-#include "Subsystems/BmrGameplayMessageSubsystem.h"
-#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 // UE
-#include "Abilities/GameplayAbilityTypes.h"
 #include "Components/HorizontalBox.h"
 #include "Components/Image.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/Pawn.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSEndGameWidget)
 
@@ -35,10 +32,10 @@ void UPSEndGameWidget::NativeConstruct()
 	SetVisibility(ESlateVisibility::Collapsed);
 
 	// Listen to handle input for each game state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::GameState_Changed, this, &ThisClass::OnGameStateChanged);
 
 	// Binds the local player state ready event to the handler
-	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPlayerStateReady);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::Player_LocalPawnReady, this, &ThisClass::OnLocalPlayerStateReady);
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentScoreChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentScoreChanged);
@@ -48,7 +45,7 @@ void UPSEndGameWidget::NativeConstruct()
 void UPSEndGameWidget::NativeDestruct()
 {
 	HorizontalBox = nullptr;
-	
+
 	// Destroying Star Actors
 	if (!PoolWidgetHandlersInternal.IsEmpty())
 	{
@@ -56,7 +53,7 @@ void UPSEndGameWidget::NativeDestruct()
 		PoolWidgetHandlersInternal.Empty();
 		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarWidgetClass());
 	}
-	
+
 	Super::NativeDestruct();
 }
 
@@ -73,7 +70,7 @@ void UPSEndGameWidget::OnGameStateChanged_Implementation(const FGameplayEventDat
 void UPSEndGameWidget::OnLocalPlayerStateReady_Implementation(const FGameplayEventData& Payload)
 {
 	// Ensure that PlayerState is not null before subscribing to the event
-	const APawn* Pawn = Cast<APawn>(Payload.Instigator.Get());
+	const APawn* Pawn = Cast<APawn>(Payload.Instigator);
 	ABmrPlayerState* PlayerState = Pawn ? Pawn->GetPlayerState<ABmrPlayerState>() : nullptr;
 	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
