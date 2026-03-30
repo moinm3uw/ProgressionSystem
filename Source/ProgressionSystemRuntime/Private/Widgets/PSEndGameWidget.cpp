@@ -10,10 +10,10 @@
 
 // Bomber
 #include "GameFramework/BmrPlayerState.h"
-#include "GlobalMessageSubsystem.h"
 #include "PoolManagerSubsystem.h"
 #include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
+#include "Subsystems/GlobalMessageSubsystem.h"
 
 // UE
 #include "Components/HorizontalBox.h"

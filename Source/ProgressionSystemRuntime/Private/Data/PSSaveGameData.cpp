@@ -11,8 +11,8 @@
 
 // Bomber
 #include "Components/BmrSkeletalMeshComponent.h"
-#include "GlobalMessageSubsystem.h"
 #include "Subsystems/BmrGameDifficultySubsystem.h"
+#include "Subsystems/GlobalMessageSubsystem.h"
 
 // UE
 #include "Engine/CurveTable.h"

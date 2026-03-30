@@ -14,11 +14,11 @@
 #include "Controllers/BmrPlayerController.h"
 #include "DataAssets/BmrBombDataAsset.h"
 #include "DataAssets/BmrLevelActorDataAsset.h"
-#include "GlobalMessageSubsystem.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
 #include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
+#include "Subsystems/GlobalMessageSubsystem.h"
 
 // UE
 #include "Components/StaticMeshComponent.h"
@@ -74,7 +74,7 @@ void APSStarActor::OnLocalPawnReady_Implementation(const FGameplayEventData& Pay
 	ABmrPlayerController* LocalPC = Character ? Character->GetController<ABmrPlayerController>() : nullptr;
 	if (ensureMsgf(LocalPC, TEXT("ASSERT: [%i] %hs:\n'LocalPC' is null!"), __LINE__, __FUNCTION__))
 	{
-		LocalPC->OnAnyCinematicStarted.AddDynamic(this, &APSStarActor::OnAnyCinematicStarted);
+		LocalPC->OnAnyCinematicStarted.AddUniqueDynamic(this, &APSStarActor::OnAnyCinematicStarted);
 	}
 }
 

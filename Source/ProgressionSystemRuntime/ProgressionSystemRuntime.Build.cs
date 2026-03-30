@@ -26,7 +26,6 @@ public class ProgressionSystemRuntime : ModuleRules
 				, "MyUtils" 
 				, "PoolManager" // Star and Widget Actors
 				, "MetaCheatManager" // PSCheatExtension
-				, "AsyncMessageSystem" // Aka Lyra's Gameplay Message Router
 			}
 		);
 	}
