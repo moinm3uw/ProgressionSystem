@@ -14,16 +14,13 @@
 #include "Controllers/BmrPlayerController.h"
 #include "DataAssets/BmrBombDataAsset.h"
 #include "DataAssets/BmrLevelActorDataAsset.h"
-#include "GameFramework/BmrGameState.h"
+#include "GlobalMessageSubsystem.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
 #include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
-#include "Subsystems/BmrGameplayMessageSubsystem.h"
-#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 // UE
-#include "Abilities/GameplayAbilityTypes.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
@@ -47,10 +44,10 @@ void APSStarActor::BeginPlay()
 	Super::BeginPlay();
 
 	// Listen to hande when local character is ready
-	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::Player_LocalPawnReady, this, &ThisClass::OnLocalPawnReady);
 
 	// Listen to handle input for each game state
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::GameState_Changed, this, &ThisClass::OnGameStateChanged);
 }
 
 // Function called every frame on this Actor
@@ -73,7 +70,7 @@ void APSStarActor::Tick(float DeltaTime)
 // When a local character load finished
 void APSStarActor::OnLocalPawnReady_Implementation(const FGameplayEventData& Payload)
 {
-	const ABmrPawn* Character = Cast<ABmrPawn>(Payload.Instigator.Get());
+	const ABmrPawn* Character = Cast<ABmrPawn>(Payload.Instigator);
 	ABmrPlayerController* LocalPC = Character ? Character->GetController<ABmrPlayerController>() : nullptr;
 	if (ensureMsgf(LocalPC, TEXT("ASSERT: [%i] %hs:\n'LocalPC' is null!"), __LINE__, __FUNCTION__))
 	{

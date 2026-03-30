@@ -12,13 +12,12 @@
 #include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "GameFramework/BmrGameState.h"
+#include "GlobalMessageSubsystem.h"
 #include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
-#include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 // UE
-#include "Abilities/GameplayAbilityTypes.h"
 #include "Components/StaticMeshComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSpotComponent)
@@ -37,7 +36,7 @@ void UPSSpotComponent::OnInitialized_Implementation()
 {
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
-	BIND_ON_GAME_STATE_CHANGED(this, ThisClass::OnGameStateChanged);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::GameState_Changed, this, &ThisClass::OnGameStateChanged);
 	constexpr bool bApplySkin = false;
 	RefreshAmountOfUnlockedSkins(bApplySkin);
 

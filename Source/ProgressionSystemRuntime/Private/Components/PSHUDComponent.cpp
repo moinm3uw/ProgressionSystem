@@ -10,15 +10,12 @@
 #include "Widgets/PSOverlayWidget.h"
 
 // Bomber
-#include "Actors/BmrPawn.h"
 #include "DalSubsystem.h"
+#include "GlobalMessageSubsystem.h"
 #include "Structures/BmrGameplayTags.h"
-#include "Subsystems/BmrGameplayMessageSubsystem.h"
 #include "Subsystems/BmrWidgetsSubsystem.h"
-#include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 // UE
-#include "Abilities/GameplayAbilityTypes.h"
 #include "Blueprint/WidgetTree.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSHUDComponent)
@@ -66,7 +63,7 @@ void UPSHUDComponent::OnDataAssetLoaded_Implementation(const UPSDataAsset* DataA
 {
 	// Binds to local character ready to guarantee that the player controller is initialized
 	// so we can safely use Widget's Subsystem
-	BIND_ON_LOCAL_PAWN_READY(this, ThisClass::OnLocalPawnReady);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::Player_LocalPawnReady, this, &ThisClass::OnLocalPawnReady);
 }
 
 // Called when the component is unregistered, used to clean up resources
