@@ -14,12 +14,12 @@
 #include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "GameFramework/BmrPlayerState.h"
-#include "GlobalMessageSubsystem.h"
 #include "MyDataTable/MyDataTable.h"
 #include "MyUtilsLibraries/SaveUtilsLibrary.h"
 #include "MyUtilsLibraries/UtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
 #include "Structures/BmrGameplayTags.h"
+#include "Subsystems/GlobalMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
 // UE
