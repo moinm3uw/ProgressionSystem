@@ -10,12 +10,11 @@
 #include "PsGameplayTags.h"
 
 // Bomber
-#include "Subsystems/BmrGameDifficultySubsystem.h"
 #include "Components/BmrSkeletalMeshComponent.h"
-#include "Subsystems/BmrGameplayMessageSubsystem.h"
+#include "GlobalMessageSubsystem.h"
+#include "Subsystems/BmrGameDifficultySubsystem.h"
 
 // UE
-#include "Abilities/GameplayAbilityTypes.h"
 #include "Engine/CurveTable.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PSSaveGameData)
@@ -141,7 +140,7 @@ void UPSSaveGameData::NextLevelProgressionRowData()
 			{
 				FGameplayEventData EventData;
 				EventData.EventTag = PsGameplayTags::Event::GameProgressionCompleted;
-				UBmrGameplayMessageSubsystem::BroadcastMessage(EventData);
+				UGlobalMessageSubsystem::BroadcastGlobalMessage(EventData);
 			}
 		}
 	}
