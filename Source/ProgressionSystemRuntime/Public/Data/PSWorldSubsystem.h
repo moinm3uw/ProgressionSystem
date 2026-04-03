@@ -4,7 +4,7 @@
 
 #include "Data/PoolObjectHandle.h"
 #include "PSTypes.h"
-#include "Subsystems/WorldSubsystem.h"
+#include "Subsystems/ModularGameFeaturePluginSubsystem.h"
 
 #include "PSWorldSubsystem.generated.h"
 
@@ -14,7 +14,7 @@ enum class EPSStarActorState : uint8;
  * Implements the world subsystem to access different components in the module
  */
 UCLASS(BlueprintType, Blueprintable, Config = "ProgressionSystem", DefaultConfig)
-class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UWorldSubsystem
+class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UModularGameFeaturePluginSubsystem
 {
 	GENERATED_BODY()
 
@@ -181,11 +181,8 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnInitialized();
 
-	/** Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors */
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
-
-	/** Clears all transient data created by this subsystem. */
-	virtual void Deinitialize() override;
+	/** Clears all transient data created by this subsystem */
+	virtual void OnGameFeatureDeinitialize_Implementation() override;
 
 	/** Is called when a player character is ready */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))

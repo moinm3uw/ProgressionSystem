@@ -97,6 +97,8 @@ void UPSSpotComponent::BeginPlay()
 // Clears all transient data created by this component.
 void UPSSpotComponent::OnUnregister()
 {
+	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
+
 	// reset back to initial state. By default, the spot is unlocked
 	constexpr bool bSpotUnlocked = true;
 	GetMeshChecked().SetActive(bSpotUnlocked);
