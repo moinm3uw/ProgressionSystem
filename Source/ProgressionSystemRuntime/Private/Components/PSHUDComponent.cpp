@@ -71,6 +71,8 @@ void UPSHUDComponent::OnUnregister()
 {
 	Super::OnUnregister();
 
+	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
+
 	UPSWorldSubsystem::Get().PerformCleanUp();
 
 	if (UBmrWidgetsSubsystem* WidgetsSubsystem = UBmrWidgetsSubsystem::GetWidgetsSubsystem())

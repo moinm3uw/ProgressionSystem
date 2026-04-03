@@ -50,6 +50,14 @@ void APSStarActor::BeginPlay()
 	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::GameState_Changed, this, &ThisClass::OnGameStateChanged);
 }
 
+// Called when this actor is explicitly being destroyed during gameplay or in the editor, not called during level streaming or gameplay ending
+void APSStarActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
+
+	Super::EndPlay(EndPlayReason);
+}
+
 // Function called every frame on this Actor
 void APSStarActor::Tick(float DeltaTime)
 {

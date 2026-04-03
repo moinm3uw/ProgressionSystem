@@ -54,6 +54,8 @@ void UPSEndGameWidget::NativeDestruct()
 		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarWidgetClass());
 	}
 
+	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
+
 	Super::NativeDestruct();
 }
 

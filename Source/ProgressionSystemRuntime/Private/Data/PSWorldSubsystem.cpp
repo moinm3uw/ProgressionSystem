@@ -166,9 +166,11 @@ void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 }
 
 // Clears all transient data created by this subsystem
-void UPSWorldSubsystem::Deinitialize()
+void UPSWorldSubsystem::OnWorldEndPlay(UWorld& InWorld)
 {
-	Super::Deinitialize();
+	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
+
+	Super::OnWorldEndPlay(InWorld);
 }
 
 // Is called to initialize the world subsystem. It's a BeginPlay logic for the PS module

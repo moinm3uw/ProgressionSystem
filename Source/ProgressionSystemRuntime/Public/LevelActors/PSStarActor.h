@@ -50,6 +50,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** Called when this actor is explicitly being destroyed during gameplay or in the editor, not called during level streaming or gameplay ending */
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	/** Function called every frame on this Actor */
 	virtual void Tick(float DeltaTime) override;
 

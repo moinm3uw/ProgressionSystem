@@ -185,7 +185,7 @@ protected:
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 
 	/** Clears all transient data created by this subsystem. */
-	virtual void Deinitialize() override;
+	virtual void OnWorldEndPlay(UWorld& InWorld) override;
 
 	/** Is called when a player character is ready */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
