@@ -1,4 +1,4 @@
-﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
+// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #include "Components/PSHUDComponent.h"
 
@@ -72,8 +72,6 @@ void UPSHUDComponent::OnUnregister()
 	Super::OnUnregister();
 
 	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
-
-	UPSWorldSubsystem::Get().PerformCleanUp();
 
 	if (UBmrWidgetsSubsystem* WidgetsSubsystem = UBmrWidgetsSubsystem::GetWidgetsSubsystem())
 	{

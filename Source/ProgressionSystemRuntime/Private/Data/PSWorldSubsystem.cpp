@@ -159,18 +159,12 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(BmrGameplayTags::Event::Player_LocalPawnReady, this, &ThisClass::OnLocalPawnReady);
 }
 
-// Called when world is ready to start gameplay before the game mode transitions to the correct state and call BeginPlay on all actors
-void UPSWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
-{
-	Super::OnWorldBeginPlay(InWorld);
-}
-
 // Clears all transient data created by this subsystem
-void UPSWorldSubsystem::OnWorldEndPlay(UWorld& InWorld)
+void UPSWorldSubsystem::OnGameFeatureDeinitialize_Implementation()
 {
 	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
 
-	Super::OnWorldEndPlay(InWorld);
+	PerformCleanUp();
 }
 
 // Is called to initialize the world subsystem. It's a BeginPlay logic for the PS module
