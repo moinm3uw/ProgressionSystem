@@ -72,21 +72,11 @@ void UPSHUDComponent::OnUnregister()
 	Super::OnUnregister();
 
 	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
-
-	if (UBmrWidgetsSubsystem* WidgetsSubsystem = UBmrWidgetsSubsystem::GetWidgetsSubsystem())
-	{
-		WidgetsSubsystem->DestroyManageableWidgetByTag(PsGameplayTags::UI::Widget_EndGame);
-		WidgetsSubsystem->DestroyManageableWidgetByTag(PsGameplayTags::UI::Widget_MenuOverlay);
-	}
 }
 
 // Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
 void UPSHUDComponent::OnLocalPawnReady_Implementation(const FGameplayEventData& Payload)
 {
-	// Create widgets now as fast as possible, later we will register them in Widgets Subsystem
-	UBmrWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionEndGameWidget());
-	UBmrWidgetsSubsystem::Get().CreateManageableWidgetChecked(UPSDataAsset::Get().GetProgressionOverlayWidget());
-
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnInitialize.AddUniqueDynamic(this, &ThisClass::OnInitialized);
 	WorldSubsystem.OnWorldSubSystemInitialize();
