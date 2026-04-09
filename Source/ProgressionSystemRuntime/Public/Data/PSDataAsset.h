@@ -6,7 +6,6 @@
 
 // BMR
 #include "Data/SettingTag.h"
-#include "Structures/BmrManageableWidgetData.h"
 
 #include "PSDataAsset.generated.h"
 
@@ -26,14 +25,6 @@ public:
 	 * @see UProgressionSystemDataAsset::ProgressionDataTableInternal */
 	UFUNCTION(BlueprintPure, Category = "C++")
 	const FORCEINLINE class UDataTable* GetProgressionDataTable() const { return ProgressionDataTableInternal; }
-
-	/** Returns a progression menu widget to be displayed in the main menu*/
-	UFUNCTION(BlueprintPure, Category = "C++")
-	const FORCEINLINE FBmrManageableWidgetData& GetProgressionEndGameWidget() const { return ProgressionEndGameWidgetInternal; }
-
-	/** Returns a progression overlay widget to be displayed in the main menu for locked levels */
-	UFUNCTION(BlueprintPure, Category = "C++")
-	const FORCEINLINE FBmrManageableWidgetData& GetProgressionOverlayWidget() const { return ProgressionOverlayWidgetInternal; }
 
 	/** Returns a locked progression icon reference */
 	UFUNCTION(BlueprintPure, Category = "C++")
@@ -79,14 +70,6 @@ protected:
 	/** The Progression Data Table that is responsible for progression configuration. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected, DisplayName = "Progression Data Table", ShowOnlyInnerProperties))
 	TObjectPtr<UDataTable> ProgressionDataTableInternal = nullptr;
-
-	/** Main menu and end-game progression widget */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "End Game Progression Widget"))
-	FBmrManageableWidgetData ProgressionEndGameWidgetInternal;
-
-	/** Main Menu overlay widget */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI", meta = (BlueprintProtected, DisplayName = "Main Menu Overlay Widget"))
-	FBmrManageableWidgetData ProgressionOverlayWidgetInternal;
 
 	/** Star icon widget */
 	UPROPERTY(EditAnywhere, Category = "UI", meta = (BlueprintProtected, DisplayName = "Star Widget"))

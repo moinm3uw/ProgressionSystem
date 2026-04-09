@@ -12,8 +12,7 @@
 #include "Actors/BmrPawn.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "Controllers/BmrPlayerController.h"
-#include "DataAssets/BmrBombDataAsset.h"
-#include "DataAssets/BmrLevelActorDataAsset.h"
+#include "DataRegistries/BmrBombRow.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
 #include "Structures/BmrGameStateTag.h"
@@ -241,8 +240,8 @@ void APSStarActor::ChangeStarMesh(const UPSSpotComponent* SpotComponent)
 	}
 
 	const EBmrLevelType SpotType = SpotComponent->GetMeshChecked().GetAssociatedLevelType();
-	const UBmrLevelActorRow* BombRow = UBmrBombDataAsset::Get().GetRowByLevelType(SpotType);
-	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh) : nullptr;
+	const FBmrBombRow* BombRow = FBmrBombRow::GetRowByLevelType(SpotType);
+	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh.Get()) : nullptr;
 	if (!ensureMsgf(BombMesh, TEXT("ASSERT: [%i] %hs:\n'BombMesh' is not valid!"), __LINE__, __FUNCTION__))
 	{
 		return; // Early return if pointers are invalid
