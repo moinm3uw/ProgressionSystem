@@ -190,7 +190,7 @@ protected:
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(class UBmrMapComponent* MapComponent, const class UBmrLevelActorRow* NewRow, const class UBmrLevelActorRow* PreviousRow);
+	void OnPlayerTypeChanged(class UBmrMapComponent* MapComponent);
 
 	/** Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.)  */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))

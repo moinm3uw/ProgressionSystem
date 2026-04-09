@@ -190,7 +190,7 @@ void UPSWorldSubsystem::OnLocalPawnReady_Implementation(const FGameplayEventData
 }
 
 // Is called when a player has been changed
-void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(UBmrMapComponent* MapComponent, const UBmrLevelActorRow* NewRow, const UBmrLevelActorRow* PreviousRow)
+void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(UBmrMapComponent* MapComponent)
 {
 	const ABmrPawn* PlayerCharacter = MapComponent->GetOwner<ABmrPawn>();
 	if (ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is invalid!"), __LINE__, __FUNCTION__))
