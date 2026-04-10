@@ -46,12 +46,11 @@ void UPSEndGameWidget::NativeDestruct()
 {
 	HorizontalBox = nullptr;
 
-	// Destroying Star Actors
+	// Destroying Star Widgets
 	if (!PoolWidgetHandlersInternal.IsEmpty())
 	{
 		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolWidgetHandlersInternal);
 		PoolWidgetHandlersInternal.Empty();
-		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarWidgetClass());
 	}
 
 	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);

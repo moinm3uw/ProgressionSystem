@@ -382,7 +382,6 @@ void UPSWorldSubsystem::PerformCleanUp()
 	{
 		UPoolManagerSubsystem::Get().ReturnToPoolArray(PoolActorHandlersInternal);
 		PoolActorHandlersInternal.Empty();
-		UPoolManagerSubsystem::Get().EmptyPool(UPSDataAsset::Get().GetStarActorClass());
 	}
 
 	if (StarDynamicProgressMaterial)
