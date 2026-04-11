@@ -1,4 +1,4 @@
-﻿// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
+// Copyright (c) Valerii Rotermel & Yevhenii Selivanov
 
 #include "Widgets/PSEndGameWidget.h"
 
@@ -54,6 +54,11 @@ void UPSEndGameWidget::NativeDestruct()
 	}
 
 	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
+
+	if (UPSWorldSubsystem* WorldSubsystem = UPSWorldSubsystem::GetSubsystem())
+	{
+		WorldSubsystem->OnCurrentScoreChanged.RemoveAll(this);
+	}
 
 	Super::NativeDestruct();
 }
