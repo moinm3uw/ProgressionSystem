@@ -9,6 +9,7 @@
 
 // Bomber
 #include "Actors/BmrPawn.h"
+#include "Bomber.h"
 #include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "GameFramework/BmrGameState.h"
