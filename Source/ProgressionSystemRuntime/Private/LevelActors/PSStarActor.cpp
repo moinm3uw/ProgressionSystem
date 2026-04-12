@@ -239,8 +239,11 @@ void APSStarActor::ChangeStarMesh(const UPSSpotComponent* SpotComponent)
 		return; // Early return if pointers are invalid
 	}
 
-	const EBmrLevelType SpotType = SpotComponent->GetMeshChecked().GetAssociatedLevelType();
-	const FBmrBombRow* BombRow = FBmrBombRow::GetRowByLevelType(SpotType);
+	const FBmrPlayerTag& PlayerTag = SpotComponent->GetMeshChecked().GetPlayerTag();
+	const FBmrBombRow* BombRow = FBmrBombRow::GetRowByPredicate([&PlayerTag](const FBmrBombRow& Row)
+	{
+		return Row.PlayerTag == PlayerTag;
+	});
 	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh.Get()) : nullptr;
 	if (!ensureMsgf(BombMesh, TEXT("ASSERT: [%i] %hs:\n'BombMesh' is not valid!"), __LINE__, __FUNCTION__))
 	{
