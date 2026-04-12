@@ -10,6 +10,7 @@
 #include "PsGameplayTags.h"
 
 // Bomber
+#include "Bomber.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "Subsystems/BmrGameDifficultySubsystem.h"
 #include "Subsystems/GlobalMessageSubsystem.h"
