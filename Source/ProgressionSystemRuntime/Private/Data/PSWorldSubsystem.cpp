@@ -65,6 +65,12 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FBmrPlayerTag NewRowPlayerTag)
 	const FPSSettingsRow& CurrentSettingsRowData = GetCurrentProgressionSettingsRow();
 	const FBmrPlayerTag& PreviousPlayerTag = CurrentSettingsRowData.Character;
 
+	// Already on this row: skip to avoid re-entry via OnActorTypeChanged -> OnPlayerTypeChanged -> SetCurrentRowByTag
+	if (PreviousPlayerTag == NewRowPlayerTag)
+	{
+		return;
+	}
+
 	for (const TTuple<FName, FPSSettingsRow>& KeyValue : ProgressionSettingsDataInternal)
 	{
 		const FPSSettingsRow& RowData = KeyValue.Value;
