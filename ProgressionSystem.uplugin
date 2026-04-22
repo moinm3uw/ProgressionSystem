@@ -23,18 +23,18 @@
 		}
 	],
 	"ExplicitlyLoaded": true,
-	"BuiltInInitialFeatureState": "Active",
+	"BuiltInInitialFeatureState": "Registered",
 	"Plugins": [
 		{
 			"Name": "GameplayAbilities",
 			"Enabled": true
 		},
 		{
-			"Name": "MyEditorUtils",  
+			"Name": "MyEditorUtils",
 			"Enabled": true
 		},
 		{
-			"Name": "PoolManager", 
+			"Name": "PoolManager",
 			"Enabled": true
 		},
 		{

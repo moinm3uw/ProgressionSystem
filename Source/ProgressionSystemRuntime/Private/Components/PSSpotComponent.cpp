@@ -104,6 +104,12 @@ void UPSSpotComponent::OnUnregister()
 	constexpr bool bSpotUnlocked = true;
 	GetMeshChecked().SetActive(bSpotUnlocked);
 
+	if (UPSWorldSubsystem* WorldSubsystem = UPSWorldSubsystem::GetSubsystem())
+	{
+		WorldSubsystem->OnInitialize.RemoveAll(this);
+		WorldSubsystem->OnReset.RemoveAll(this);
+	}
+
 	Super::OnUnregister();
 }
 
