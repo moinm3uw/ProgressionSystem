@@ -10,9 +10,9 @@
 // Bomber
 #include "Actors/BmrPawn.h"
 #include "Bomber.h"
-#include "Components/BmrMapComponent.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "GameFramework/BmrGameState.h"
+#include "GameFramework/BmrPlayerState.h"
 #include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
 #include "Subsystems/GlobalMessageSubsystem.h"
@@ -223,9 +223,10 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
 			const ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
-			if (UBmrMapComponent* MapComponent = UBmrMapComponent::GetMapComponent(PlayerCharacter))
+			ABmrPlayerState* PlayerState = PlayerCharacter ? PlayerCharacter->GetPlayerState<ABmrPlayerState>() : nullptr;
+			if (PlayerState)
 			{
-				MapComponent->SetReplicatedMeshData(SpotMeshComponent.GetMeshData());
+				PlayerState->SetChosenMeshData(SpotMeshComponent.GetMeshData());
 			}
 		}
 	}
