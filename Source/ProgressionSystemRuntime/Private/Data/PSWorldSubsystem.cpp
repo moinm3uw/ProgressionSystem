@@ -67,6 +67,8 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FBmrPlayerTag NewRowPlayerTag)
 	// Already on this row: skip to avoid re-entry via OnActorTypeChanged -> OnChosenMeshDataChanged -> SetCurrentRowByTag
 	if (PreviousPlayerTag == NewRowPlayerTag)
 	{
+		// Row state already correct, just notify listeners, so skin-driven updates can reevaluate
+		OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag, PreviousPlayerTag);
 		return;
 	}
 

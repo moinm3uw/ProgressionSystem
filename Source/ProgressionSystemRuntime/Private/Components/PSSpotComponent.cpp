@@ -149,6 +149,12 @@ void UPSSpotComponent::TryRestorePlayerSkin()
 // Updates the progression menu widget when player changed
 void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FBmrPlayerTag NewPlayerTag, const FBmrPlayerTag PreviousPlayerTag)
 {
+	if (PreviousPlayerTag == NewPlayerTag)
+	{
+		// Skip this skin-only update for the same character, this callback only processess character switches
+		return;
+	}
+
 	UBmrSkeletalMeshComponent& Mesh = GetMeshChecked();
 	if (Mesh.GetPlayerTag() == NewPlayerTag)
 	{
@@ -222,11 +228,13 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 	for (int32 Index = CurrentSkinIndex; Index <= UnlockedSkinsAmount; Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(true, Index);
-		if (bApplySkin)
-		{
-			SpotMeshComponent.ApplySkinByIndex(Index);
-			PlayerState->SetChosenMeshData(SpotMeshComponent.GetMeshData());
-		}
+	}
+
+	if (bApplySkin)
+	{
+		// Apply only the highest unlocked skin once
+		SpotMeshComponent.ApplySkinByIndex(UnlockedSkinsAmount);
+		PlayerState->SetChosenMeshData(SpotMeshComponent.GetMeshData());
 	}
 }
 
