@@ -183,7 +183,10 @@ void UPSSpotComponent::ChangeSpotVisibilityStatus(UBmrSkeletalMeshComponent* Mes
 // Refresh Amount Of Unlocked skins for the character (level)s
 void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 {
-	if (!IsCurrentSpot())
+	const ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
+	ABmrPlayerState* PlayerState = PlayerCharacter ? PlayerCharacter->GetPlayerState<ABmrPlayerState>() : nullptr;
+	if (!ensureMsgf(PlayerState, TEXT("ASSERT: [%i] %hs:\n'PlayerState' is not valid!"), __LINE__, __FUNCTION__)
+	    || !IsCurrentSpot())
 	{
 		return;
 	}
@@ -222,12 +225,7 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		if (bApplySkin)
 		{
 			SpotMeshComponent.ApplySkinByIndex(Index);
-			const ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
-			ABmrPlayerState* PlayerState = PlayerCharacter ? PlayerCharacter->GetPlayerState<ABmrPlayerState>() : nullptr;
-			if (PlayerState)
-			{
-				PlayerState->SetChosenMeshData(SpotMeshComponent.GetMeshData());
-			}
+			PlayerState->SetChosenMeshData(SpotMeshComponent.GetMeshData());
 		}
 	}
 }

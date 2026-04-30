@@ -193,7 +193,7 @@ protected:
 
 	/** Is called when a player has been changed */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnPlayerTypeChanged(const struct FBmrMeshData& NewMeshData);
+	void OnChosenMeshDataChanged(const struct FBmrMeshData& NewMeshData);
 
 	/** Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.)  */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))

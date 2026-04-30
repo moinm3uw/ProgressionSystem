@@ -64,7 +64,7 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FBmrPlayerTag NewRowPlayerTag)
 	const FPSSettingsRow& CurrentSettingsRowData = GetCurrentProgressionSettingsRow();
 	const FBmrPlayerTag& PreviousPlayerTag = CurrentSettingsRowData.Character;
 
-	// Already on this row: skip to avoid re-entry via OnActorTypeChanged -> OnPlayerTypeChanged -> SetCurrentRowByTag
+	// Already on this row: skip to avoid re-entry via OnActorTypeChanged -> OnChosenMeshDataChanged -> SetCurrentRowByTag
 	if (PreviousPlayerTag == NewRowPlayerTag)
 	{
 		return;
@@ -195,11 +195,11 @@ void UPSWorldSubsystem::OnLocalPawnReady_Implementation(const FGameplayEventData
 	ABmrPlayerState* PlayerState = PlayerCharacter ? PlayerCharacter->GetPlayerState<ABmrPlayerState>() : nullptr;
 	checkf(PlayerState, TEXT("ERROR: [%i] %hs:\n'PlayerState' is null!"), __LINE__, __FUNCTION__);
 	PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
-	PlayerState->OnChosenMeshDataChanged.AddUniqueDynamic(this, &ThisClass::OnPlayerTypeChanged);
+	PlayerState->OnChosenMeshDataChanged.AddUniqueDynamic(this, &ThisClass::OnChosenMeshDataChanged);
 }
 
 // Is called when a player has been changed
-void UPSWorldSubsystem::OnPlayerTypeChanged_Implementation(const FBmrMeshData& NewMeshData)
+void UPSWorldSubsystem::OnChosenMeshDataChanged_Implementation(const FBmrMeshData& NewMeshData)
 {
 	const ABmrPawn* PlayerCharacter = UBmrBlueprintFunctionLibrary::GetLocalPawn();
 	if (ensureMsgf(PlayerCharacter, TEXT("ASSERT: [%i] %hs:\n'PlayerCharacter' is invalid!"), __LINE__, __FUNCTION__))
