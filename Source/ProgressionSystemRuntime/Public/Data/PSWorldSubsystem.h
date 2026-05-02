@@ -196,6 +196,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnChosenMeshDataChanged(const struct FBmrMeshData& NewMeshData);
 
+	/** Listen to react when entered the Menu state. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
+	void OnGameStateChanged(const struct FGameplayEventData& Payload);
+
 	/** Called when the end game state was changed to recalculate progression according to endgame (win, loss etc.)  */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
 	void OnEndGameStateChanged(EBmrEndGameState EndGameState);
