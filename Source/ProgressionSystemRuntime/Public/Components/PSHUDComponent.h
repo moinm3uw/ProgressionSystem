@@ -38,7 +38,7 @@ protected:
 	/** Called when progression module ready
 	 * Once the save file is loaded it activates the functionality of this class */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "C++", meta = (BlueprintProtected))
-	void OnInitialized();
+	void OnInitialized(const struct FGameplayEventData& Payload);
 
 	/** Called when the game starts. */
 	virtual void BeginPlay() override;

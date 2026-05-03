@@ -12,6 +12,7 @@
 #include "Actors/BmrPawn.h"
 #include "Components/BmrSkeletalMeshComponent.h"
 #include "Controllers/BmrPlayerController.h"
+#include "DalRegistrySubsystem.h"
 #include "DataRegistries/BmrBombRow.h"
 #include "MyUtilsLibraries/GameplayUtilsLibrary.h"
 #include "PoolManagerSubsystem.h"
@@ -240,14 +241,24 @@ void APSStarActor::ChangeStarMesh(const UPSSpotComponent* SpotComponent)
 	}
 
 	const FBmrPlayerTag& PlayerTag = SpotComponent->GetMeshChecked().GetPlayerTag();
-	const FBmrBombRow* BombRow = FBmrBombRow::GetRowByPredicate([&PlayerTag](const FBmrBombRow& Row)
+	const FName BombRowName = FBmrBombRow::GetRowNameByPredicate([&PlayerTag](const FBmrBombRow& Row)
 	{
 		return Row.PlayerTag == PlayerTag;
 	});
+	const FBmrBombRow* BombRow = !BombRowName.IsNone() ? FBmrBombRow::GetRowByName(BombRowName) : nullptr;
 	UStaticMesh* BombMesh = BombRow ? Cast<UStaticMesh>(BombRow->Mesh.Get()) : nullptr;
-	if (!ensureMsgf(BombMesh, TEXT("ASSERT: [%i] %hs:\n'BombMesh' is not valid!"), __LINE__, __FUNCTION__))
+	if (!BombMesh
+	    && ensureMsgf(!BombRowName.IsNone(), TEXT("ASSERT: [%i] %hs:\n'BombMesh' is not valid for BombRowName=%s!"), __LINE__, __FUNCTION__, *BombRowName.ToString()))
 	{
-		return; // Early return if pointers are invalid
+		// Soft mesh not loaded yet, wait until loaded
+		UDalRegistrySubsystem::Get().ListenForDataRegistryRow<FBmrBombRow>(this, BombRowName, [this, WeakSpot = TWeakObjectPtr(SpotComponent)](const FBmrBombRow&)
+		{
+			if (const UPSSpotComponent* StillValidSpot = WeakSpot.Get())
+			{
+				ChangeStarMesh(StillValidSpot);
+			}
+		});
+		return;
 	}
 
 	StarMeshComponent->SetMaterial(0, nullptr);

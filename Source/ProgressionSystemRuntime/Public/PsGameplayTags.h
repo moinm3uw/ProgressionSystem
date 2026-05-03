@@ -26,5 +26,8 @@ namespace PsGameplayTags
 	{
 		/** Event that fires when a player completes all levels in the progression system */
 		PROGRESSIONSYSTEMRUNTIME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameProgressionCompleted);
+
+		/** Event that fires once PS world subsystem finished initialization (save loaded, materials created etc). */
+		PROGRESSIONSYSTEMRUNTIME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ProgressionSystemInitialized);
 	} // namespace Event
 } // namespace PsGameplayTags

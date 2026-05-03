@@ -21,8 +21,6 @@ class PROGRESSIONSYSTEMRUNTIME_API UPSWorldSubsystem : public UModularGameFeatur
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCurrentActiveSaveRowChanged, const FBmrPlayerTag, NewPlayerTag, const FBmrPlayerTag, PreviousPlayerTag);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnInitialize);
-
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPSOnCurrentScoreChanged, const FPSSaveToDiskData&, CurrenSaveToDiskDataRow, const FPSSettingsRow&, CurrenProgressionSettingsRow);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPSOnReset);
@@ -51,10 +49,6 @@ public:
 	 * fires on character switch (NewPlayerTag != PreviousPlayerTag) and on skin-only updates within the same character (NewPlayerTag == PreviousPlayerTag) */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
 	FCurrentActiveSaveRowChanged OnCurrentActiveSaveRowChanged;
-
-	/* Delegate for informing save game file is loaded/created if empty */
-	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")
-	FPSOnInitialize OnInitialize;
 
 	/* Delegate for informing save game file is loaded/created if empty */
 	UPROPERTY(BlueprintAssignable, Transient, Category = "C++")

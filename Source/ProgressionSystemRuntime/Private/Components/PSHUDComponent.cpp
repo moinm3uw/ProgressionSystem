@@ -44,7 +44,7 @@ UPSOverlayWidget* UPSHUDComponent::GetProgressionMenuOverlayWidget() const
 }
 
 // Called when main save game file is loaded
-void UPSHUDComponent::OnInitialized_Implementation()
+void UPSHUDComponent::OnInitialized_Implementation(const FGameplayEventData& Payload)
 {
 	// Save reference of this component to the world subsystem
 	UPSWorldSubsystem::Get().SetHUDComponent(this);
@@ -77,7 +77,6 @@ void UPSHUDComponent::OnUnregister()
 // Is called when local player character is ready to guarantee that they player controller is initialized for the Widget SubSystem
 void UPSHUDComponent::OnLocalPawnReady_Implementation(const FGameplayEventData& Payload)
 {
-	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
-	WorldSubsystem.OnInitialize.AddUniqueDynamic(this, &ThisClass::OnInitialized);
-	WorldSubsystem.OnWorldSubSystemInitialize();
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(PsGameplayTags::Event::ProgressionSystemInitialized, this, &ThisClass::OnInitialized);
+	UPSWorldSubsystem::Get().OnWorldSubSystemInitialize();
 }

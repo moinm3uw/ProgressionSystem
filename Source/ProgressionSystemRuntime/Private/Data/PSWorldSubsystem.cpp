@@ -8,6 +8,7 @@
 #include "Data/PSDataAsset.h"
 #include "Data/PSSaveGameData.h"
 #include "LevelActors/PSStarActor.h"
+#include "PsGameplayTags.h"
 
 // Bomber
 #include "Actors/BmrPawn.h"
@@ -81,7 +82,11 @@ void UPSWorldSubsystem::SetCurrentRowByTag(FBmrPlayerTag NewRowPlayerTag)
 		{
 			CurrentRowNameInternal = KeyValue.Key;
 			OnCurrentActiveSaveRowChanged.Broadcast(NewRowPlayerTag, PreviousPlayerTag);
-			UpdateProgressionStarActors();
+			// Only spawn stars if current spot is already registered, otherwise RegisterSpotComponent will trigger it later when spot arrives
+			if (SpotComponentsMapInternal.Contains(CurrentRowNameInternal))
+			{
+				UpdateProgressionStarActors();
+			}
 			return; // Exit immediately after finding the match
 		}
 	}
@@ -152,6 +157,12 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 		if (RowData.Value.Character == MySpotComponent->GetMeshChecked().GetPlayerTag())
 		{
 			SpotComponentsMapInternal.Add(RowData.Key, MySpotComponent);
+
+			// Spawn stars now since current row spot is available: it's earliest point to spawn
+			if (RowData.Key == CurrentRowNameInternal)
+			{
+				UpdateProgressionStarActors();
+			}
 		}
 	}
 }
@@ -179,6 +190,8 @@ void UPSWorldSubsystem::OnInitialized_Implementation()
 void UPSWorldSubsystem::OnGameFeatureDeinitialize_Implementation()
 {
 	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
+
+	UGlobalMessageSubsystem::ClearCachedMessages(PsGameplayTags::Event::ProgressionSystemInitialized, this);
 
 	PerformCleanUp();
 }
@@ -216,7 +229,8 @@ void UPSWorldSubsystem::OnChosenMeshDataChanged_Implementation(const FBmrMeshDat
 void UPSWorldSubsystem::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
 	// Refreshes star actors when returning to the Menu
-	if (Payload.InstigatorTags.HasTag(FBmrGameStateTag::Menu))
+	if (Payload.InstigatorTags.HasTag(FBmrGameStateTag::Menu)
+	    && !SpotComponentsMapInternal.IsEmpty())
 	{
 		UpdateProgressionStarActors();
 	}
@@ -381,7 +395,11 @@ void UPSWorldSubsystem::OnAsyncLoadGameFromSlotCompleted_Implementation(USaveGam
 
 	SetFirstElementAsCurrent();
 	OnInitialized();
-	OnInitialize.Broadcast();
+
+	// Broadcast initialization
+	FGameplayEventData InitializedData;
+	InitializedData.EventTag = PsGameplayTags::Event::ProgressionSystemInitialized;
+	UGlobalMessageSubsystem::BroadcastGlobalMessage(InitializedData);
 }
 
 // Destroy all star actors that should not be available by other objects anymore.
@@ -436,7 +454,6 @@ void UPSWorldSubsystem::SaveDataAsync()
 	const FPSSaveToDiskData& CurrenSaveToDiskDataRow = GetCurrentSaveToDiskRowByName();
 	const FPSSettingsRow& CurrenProgressionSettingsRow = GetCurrentProgressionSettingsRow();
 
-	UpdateProgressionStarActors();
 	OnCurrentScoreChanged.Broadcast(CurrenSaveToDiskDataRow, CurrenProgressionSettingsRow);
 
 	UGameplayStatics::AsyncSaveGameToSlot(SaveGameDataInternal, UPSSaveGameData::GetSaveSlotName(SaveFileVersionExtensionInternal), SaveGameDataInternal->GetSaveSlotIndex());

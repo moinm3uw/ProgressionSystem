@@ -33,7 +33,7 @@ UPSSpotComponent::UPSSpotComponent()
 }
 
 // Called when progression module ready
-void UPSSpotComponent::OnInitialized_Implementation()
+void UPSSpotComponent::OnInitialized_Implementation(const FGameplayEventData& Payload)
 {
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
 	WorldSubsystem.OnCurrentActiveSaveRowChanged.AddUniqueDynamic(this, &ThisClass::OnCurrentActiveSaveRowChanged);
@@ -90,7 +90,7 @@ void UPSSpotComponent::BeginPlay()
 	}
 
 	UPSWorldSubsystem& WorldSubsystem = UPSWorldSubsystem::Get();
-	WorldSubsystem.OnInitialize.AddDynamic(this, &ThisClass::OnInitialized);
+	UGlobalMessageSubsystem::CallOrStartListeningForGlobalMessage(PsGameplayTags::Event::ProgressionSystemInitialized, this, &ThisClass::OnInitialized);
 	WorldSubsystem.OnReset.AddDynamic(this, &ThisClass::OnReset);
 	OnReset();
 }
@@ -106,7 +106,6 @@ void UPSSpotComponent::OnUnregister()
 
 	if (UPSWorldSubsystem* WorldSubsystem = UPSWorldSubsystem::GetSubsystem())
 	{
-		WorldSubsystem->OnInitialize.RemoveAll(this);
 		WorldSubsystem->OnReset.RemoveAll(this);
 	}
 

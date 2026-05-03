@@ -18,5 +18,6 @@ namespace PsGameplayTags
 	namespace Event
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameProgressionCompleted, "Event.ProgressionSystem.GameProgressionCompleted", "Event that fires when a player completes all levels in the progression system");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ProgressionSystemInitialized, "Event.ProgressionSystem.Initialized", "Event that fires once PS world subsystem finished initialization (save loaded, materials created etc)");
 	} // namespace Event
 } // namespace PsGameplayTags
