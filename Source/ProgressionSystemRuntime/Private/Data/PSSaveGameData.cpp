@@ -12,6 +12,7 @@
 // Bomber
 #include "Bomber.h"
 #include "Components/BmrSkeletalMeshComponent.h"
+#include "DataAssets/BmrPlayerDataAsset.h"
 #include "Subsystems/BmrGameDifficultySubsystem.h"
 #include "Subsystems/GlobalMessageSubsystem.h"
 
@@ -62,11 +63,6 @@ void UPSSaveGameData::UnlockLevelByName(FName RowName)
 // Updates the current level's progression based on the end game state and proceeds to the next level if unlocked.
 void UPSSaveGameData::SavePoints(EBmrEndGameState EndGameState)
 {
-	UPSSpotComponent* CurrentSpot = UPSWorldSubsystem::Get().GetCurrentSpot();
-	if (!ensureMsgf(CurrentSpot, TEXT("ASSERT: [%i] %hs:\n'CurrentSpot' is null!"), __LINE__, __FUNCTION__))
-	{
-		return;
-	}
 	// Increase the current level's progression by the reward from the end game state
 	const FPSSettingsRow& CurrentProgressionSettingsRowData = UPSWorldSubsystem::Get().GetCurrentProgressionSettingsRow();
 	if (!ensureMsgf(CurrentProgressionSettingsRowData.Character.IsValid(), TEXT("ASSERT: [%i] %hs:\n'CurrentProgressionSettingsRowData or Points to unlock = 0' is not valid!"), __LINE__, __FUNCTION__))
@@ -101,7 +97,7 @@ void UPSSaveGameData::SavePoints(EBmrEndGameState EndGameState)
 	const float TotalStars = LeftoverStars + ProgressionReward;
 	const int32 NewSkins = FMath::FloorToInt(TotalStars / DataAssetInterval);
 	const int32 TotalUnlockedSkins = OldAmountOfUnlockedSkins + NewSkins;
-	const int32 MaxUnlockedSkins = CurrentSpot->GetMeshChecked().GetSkinTexturesNum();
+	const int32 MaxUnlockedSkins = UBmrPlayerDataAsset::GetSkinTexturesNum(CurrentProgressionSettingsRowData.Character);
 	constexpr int32 MinAllowedToUnlockedSkins = 0;
 	CurrentSaveToDiskDataRowPtr->UnlockedSkinsAmount = FMath::Clamp(TotalUnlockedSkins, MinAllowedToUnlockedSkins, MaxUnlockedSkins);
 
