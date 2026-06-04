@@ -193,6 +193,12 @@ void UPSWorldSubsystem::OnGameFeatureDeinitialize_Implementation()
 
 	UGlobalMessageSubsystem::ClearCachedMessages(PsGameplayTags::Event::ProgressionSystemInitialized, this);
 
+	if (ABmrPlayerState* PlayerState = UBmrBlueprintFunctionLibrary::GetLocalPlayerState())
+	{
+		PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
+		PlayerState->OnChosenMeshDataChanged.AddUniqueDynamic(this, &ThisClass::OnChosenMeshDataChanged);
+	}
+
 	PerformCleanUp();
 }
 

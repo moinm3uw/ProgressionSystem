@@ -87,6 +87,9 @@ void UPSSaveGameData::SavePoints(EBmrEndGameState EndGameState)
 	// do nothing if max start achieved. Max stars of level is amount of point to unlock for a level
 	if (CurrentSaveToDiskDataRowPtr->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
 	{
+		// No points to add, but still refresh score so End Game widget shows full stars for this character
+		// instead of stale partial count from previously played, not-yet-completed character
+		UPSWorldSubsystem::Get().SaveDataAsync();
 		return;
 	}
 
