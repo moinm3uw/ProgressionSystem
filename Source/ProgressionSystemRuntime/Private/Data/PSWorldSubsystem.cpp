@@ -224,6 +224,12 @@ void UPSWorldSubsystem::OnLocalPawnReady_Implementation(const FGameplayEventData
 // Is called when a player has been changed
 void UPSWorldSubsystem::OnChosenMeshDataChanged_Implementation(const FBmrMeshData& NewMeshData)
 {
+	if (!SaveGameDataInternal)
+	{
+		// Skip: subsystem deactivated mid GFP reload (or save not async-loaded yet), OnAsyncLoadGameFromSlotCompleted re-applies it once save is back
+		return;
+	}
+
 	const ABmrPlayerState* PlayerState = UBmrBlueprintFunctionLibrary::GetLocalPlayerState();
 	if (ensureMsgf(PlayerState, TEXT("ASSERT: [%i] %hs:\n'PlayerState' is invalid!"), __LINE__, __FUNCTION__))
 	{
