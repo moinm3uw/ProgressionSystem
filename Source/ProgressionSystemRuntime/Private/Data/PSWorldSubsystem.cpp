@@ -195,8 +195,8 @@ void UPSWorldSubsystem::OnGameFeatureDeinitialize_Implementation()
 
 	if (ABmrPlayerState* PlayerState = UBmrBlueprintFunctionLibrary::GetLocalPlayerState())
 	{
-		PlayerState->OnEndGameStateChanged.AddUniqueDynamic(this, &ThisClass::OnEndGameStateChanged);
-		PlayerState->OnChosenMeshDataChanged.AddUniqueDynamic(this, &ThisClass::OnChosenMeshDataChanged);
+		PlayerState->OnEndGameStateChanged.RemoveAll(this);
+		PlayerState->OnChosenMeshDataChanged.RemoveAll(this);
 	}
 
 	PerformCleanUp();
