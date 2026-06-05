@@ -15,6 +15,7 @@
 #include "GameFramework/BmrPlayerState.h"
 #include "Structures/BmrGameStateTag.h"
 #include "Structures/BmrGameplayTags.h"
+#include "Structures/BmrMeshData.h"
 #include "Subsystems/GlobalMessageSubsystem.h"
 #include "UtilityLibraries/BmrBlueprintFunctionLibrary.h"
 
@@ -100,9 +101,13 @@ void UPSSpotComponent::OnUnregister()
 {
 	UGlobalMessageSubsystem::StopListeningForAllGlobalMessages(this);
 
-	// reset back to initial state. By default, the spot is unlocked
+	// reset back to initial state. By default, the spot and all its skins are unlocked
+	UBmrSkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	constexpr bool bSpotUnlocked = true;
-	GetMeshChecked().SetActive(bSpotUnlocked);
+	SpotMeshComponent.SetActive(bSpotUnlocked);
+
+	// Restore skins that progression locked in OnReset, so they stay unlocked once this module is gone
+	SpotMeshComponent.SetSkinAvailabilityMask(FBmrMeshData::AllSkinsAvailableMask);
 
 	if (UPSWorldSubsystem* WorldSubsystem = UPSWorldSubsystem::GetSubsystem())
 	{
