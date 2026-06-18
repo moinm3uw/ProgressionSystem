@@ -84,6 +84,12 @@ void UPSSaveGameData::SavePoints(EBmrEndGameState EndGameState)
 		return;
 	}
 
+	if (CurrentSaveToDiskDataRowPtr->IsLevelLocked)
+	{
+		// Locked level never gains progression, silently skip reward
+		return;
+	}
+
 	// do nothing if max start achieved. Max stars of level is amount of point to unlock for a level
 	if (CurrentSaveToDiskDataRowPtr->CurrentLevelProgression >= CurrentProgressionSettingsRowData.PointsToUnlock)
 	{
