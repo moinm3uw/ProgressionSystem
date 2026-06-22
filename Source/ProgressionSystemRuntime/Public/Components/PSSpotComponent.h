@@ -25,9 +25,9 @@ public:
 	class UBmrSkeletalMeshComponent* GetMySkeletalMeshComponent() const;
 	class UBmrSkeletalMeshComponent& GetMeshChecked() const;
 
-	/** Changes the player spot depends on current level state  */
+	/** Locks or unlocks this spot's mesh by given level-locked state. */
 	UFUNCTION(BlueprintCallable, Category = "C++")
-	void ChangeSpotVisibilityStatus(UBmrSkeletalMeshComponent* Mesh);
+	void ChangeSpotVisibilityStatus(bool bIsLevelLocked);
 
 	/** Refresh Amount Of Unlocked skins for the character (level) */
 	UFUNCTION(BlueprintCallable, Category = "C++")

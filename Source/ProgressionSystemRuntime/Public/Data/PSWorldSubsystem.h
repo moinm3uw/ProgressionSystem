@@ -99,6 +99,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++")
 	void RegisterSpotComponent(class UPSSpotComponent* MyHUDComponent);
 
+	/** Re-evaluates every registered spot's locked state from own save row, so availability stays correct for all spots. */
+	UFUNCTION(BlueprintCallable, Category = "C++")
+	void RefreshSpotsAvailability();
+
 	/** Saves the progression to the local files */
 	UFUNCTION()
 	void SaveDataAsync();

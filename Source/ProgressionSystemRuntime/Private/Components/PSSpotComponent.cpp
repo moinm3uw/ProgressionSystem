@@ -162,7 +162,7 @@ void UPSSpotComponent::OnCurrentActiveSaveRowChanged_Implementation(const FBmrPl
 	UBmrSkeletalMeshComponent& Mesh = GetMeshChecked();
 	if (Mesh.GetPlayerTag() == NewPlayerTag)
 	{
-		ChangeSpotVisibilityStatus(&Mesh);
+		ChangeSpotVisibilityStatus(UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().IsLevelLocked);
 		constexpr bool bApplySkin = false;
 		RefreshAmountOfUnlockedSkins(bApplySkin);
 	}
@@ -182,12 +182,10 @@ UBmrSkeletalMeshComponent& UPSSpotComponent::GetMeshChecked() const
 	return *Mesh;
 }
 
-// Changes the player spot depends on current level state
-void UPSSpotComponent::ChangeSpotVisibilityStatus(UBmrSkeletalMeshComponent* Mesh)
+// Locks or unlocks this spot's mesh by given level-locked state
+void UPSSpotComponent::ChangeSpotVisibilityStatus(bool bIsLevelLocked)
 {
-	// Locks and unlocks the spot depends on the current level progression status
-	FPSSaveToDiskData SaveToDiskDataRow = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName();
-	Mesh->SetActive(!SaveToDiskDataRow.IsLevelLocked);
+	GetMeshChecked().SetActive(!bIsLevelLocked);
 }
 
 // Refresh Amount Of Unlocked skins for the character (level)s
@@ -202,7 +200,6 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 
 	UBmrSkeletalMeshComponent& SpotMeshComponent = GetMeshChecked();
 	const int32 UnlockedSkinsAmount = UPSWorldSubsystem::Get().GetCurrentSaveToDiskRowByName().UnlockedSkinsAmount;
-	const int32 CurrentSkinIndex = SpotMeshComponent.GetAppliedSkinIndex();
 	const int32 TotalSkins = SpotMeshComponent.GetSkinTexturesNum();
 
 	if (!ensureMsgf(UnlockedSkinsAmount <= TotalSkins, TEXT("ASSERT: [%i] %hs:\n Unlocked amount of skins is more than characters has, check the configuration!"), __LINE__, __FUNCTION__))
@@ -228,7 +225,8 @@ void UPSSpotComponent::RefreshAmountOfUnlockedSkins(bool bApplySkin)
 		}
 	}
 
-	for (int32 Index = CurrentSkinIndex; Index <= UnlockedSkinsAmount; Index++)
+	// Mark every earned slot from base, so auto-applied earned skin stays available even when spot currently shows higher default skin
+	for (int32 Index = 0; Index <= UnlockedSkinsAmount; Index++)
 	{
 		SpotMeshComponent.SetSkinAvailable(true, Index);
 	}

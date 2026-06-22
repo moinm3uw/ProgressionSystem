@@ -165,6 +165,28 @@ void UPSWorldSubsystem::RegisterSpotComponent(UPSSpotComponent* MySpotComponent)
 			}
 		}
 	}
+
+	// Refresh all spots so any never-selected locked spot does not report available
+	RefreshSpotsAvailability();
+}
+
+// Re-evaluates every registered spot's locked state from own save row, so availability stays correct for all spots
+void UPSWorldSubsystem::RefreshSpotsAvailability()
+{
+	if (!SaveGameDataInternal)
+	{
+		// Save not loaded yet, spots get marked once it loads
+		return;
+	}
+
+	for (const TTuple<FName, TObjectPtr<UPSSpotComponent>>& SpotByRow : SpotComponentsMapInternal)
+	{
+		if (UPSSpotComponent* SpotComponent = SpotByRow.Value)
+		{
+			const bool bIsLevelLocked = SaveGameDataInternal->GetSaveToDiskDataByName(SpotByRow.Key).IsLevelLocked;
+			SpotComponent->ChangeSpotVisibilityStatus(bIsLevelLocked);
+		}
+	}
 }
 
 // Called when progression module ready
@@ -240,11 +262,12 @@ void UPSWorldSubsystem::OnChosenMeshDataChanged_Implementation(const FBmrMeshDat
 // Listen to react when entered the Menu state
 void UPSWorldSubsystem::OnGameStateChanged_Implementation(const FGameplayEventData& Payload)
 {
-	// Refreshes star actors when returning to the Menu
+	// Refreshes star actors and spot availability when returning to the Menu, since finished match may have unlocked level
 	if (Payload.InstigatorTags.HasTag(FBmrGameStateTag::Menu)
 	    && !SpotComponentsMapInternal.IsEmpty())
 	{
 		UpdateProgressionStarActors();
+		RefreshSpotsAvailability();
 	}
 }
 
