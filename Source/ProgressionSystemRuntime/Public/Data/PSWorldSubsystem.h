@@ -32,6 +32,10 @@ public:
 	/** Returns this Subsystem or nullptr if not available */
 	static UPSWorldSubsystem* GetSubsystem();
 
+	/** Returns pointer to this Subsystem, nullptr if world is not available. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "[Progression System]", meta = (WorldContext = "OptionalWorldContext", CallableWithoutWorldContext))
+	static UPSWorldSubsystem* GetPSWorldSubsystem(const UObject* OptionalWorldContext = nullptr);
+
 	/** Is called to initialize the world subsystem. It's a BeginPlay logic for the PS module */
 	UFUNCTION(BlueprintNativeEvent, Category = "C++", meta = (BlueprintProtected))
 	void OnWorldSubSystemInitialize();

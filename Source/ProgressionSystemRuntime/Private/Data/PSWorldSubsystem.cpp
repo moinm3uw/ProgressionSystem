@@ -60,6 +60,13 @@ UPSWorldSubsystem* UPSWorldSubsystem::GetSubsystem()
 	return World ? World->GetSubsystem<ThisClass>() : nullptr;
 }
 
+// Returns pointer to this Subsystem, nullptr if world is not available
+UPSWorldSubsystem* UPSWorldSubsystem::GetPSWorldSubsystem(const UObject* OptionalWorldContext /* = nullptr*/)
+{
+	const UWorld* World = UUtilsLibrary::GetPlayWorld(OptionalWorldContext);
+	return World ? World->GetSubsystem<ThisClass>() : nullptr;
+}
+
 // Set current row of progression system by tag
 void UPSWorldSubsystem::SetCurrentRowByTag(FBmrPlayerTag NewRowPlayerTag)
 {
